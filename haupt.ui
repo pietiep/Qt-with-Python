@@ -18,8 +18,7 @@
     <item>
      <widget class="QPlainTextEdit" name="plainTextEdit">
       <property name="plainText">
-       <string>
-</string>
+       <string/>
       </property>
      </widget>
     </item>
@@ -39,6 +38,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad"/>
+    <addaction name="actionLoad2"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -46,6 +46,11 @@
   <action name="actionLoad">
    <property name="text">
     <string>Load</string>
+   </property>
+  </action>
+  <action name="actionLoad2">
+   <property name="text">
+    <string>Load2</string>
    </property>
   </action>
  </widget>
