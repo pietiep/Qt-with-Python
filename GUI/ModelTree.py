@@ -6,6 +6,7 @@ class ModelTree(object):
         self.sys_file = sys_file
         self.bottom_list = []
         self.layer_list = []
+        self.layer_matr = []
         self.config = mctdh.controlParameters()
         self.config.initialize(self.config_file)
         self.basis = mctdh.MctdhBasis()
@@ -29,4 +30,4 @@ class ModelTree(object):
         return new_list
     def getLayerMatr(self):
         """Takes all bottom nodes and returns for each a list of the path to the top node"""
-        return [list(reversed(self.nlayer(b_))) for b_ in self.getBottomlayer()]
+        self.layer_matr = [list(reversed(self.nlayer(b_))) for b_ in self.getBottomlayer()]

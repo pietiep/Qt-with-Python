@@ -1,15 +1,21 @@
 from ModelTree import ModelTree
+from LogicalNodes import LogicalNodes
 from view import View
 
 
 class Controller(object):
     def __init__(self):
         self.model = ModelTree()
-        self.putout()
+        self.model2 = LogicalNodes()
+        self.berechne()
 
-    def putout(self):
-        print self.model.getBottomlayer()
+    def berechne(self):
+        pass
+        #processing
         self.model.getLayerMatr()
-#        print self.model.nlayer
+        self.model2.Networkx(self.model.layer_matr)
+    #    self.model.getLayerMatr()
+    #    return self.model.layer_matr
+        #output
 
 C = Controller()
