@@ -11,26 +11,14 @@ class Controller(object):
         self.model = ModelTree()
         self.model2 = LogicalNodes()
         self.view = View()
-        self.G = None
+        self.berechne()
 
     def berechne(self):
         pass
         #processing
         self.model.getLayerMatr()
         G = self.model2.Networkx(self.model.layer_matr)
-        return G
+        self.view.Display(G)
 
 
 C = Controller()
-G = C.berechne()
-print type(C.G)
-C.G = G
-print type(C.G)
-
-app = QtGui.QApplication(sys.argv)
-
-main = ApplicationWindow()
-main.G = G
-print type(main.G)
-main.show()
-sys.exit(app.exec_())
