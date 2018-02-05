@@ -4,17 +4,17 @@ from math import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class Form(QDialog):
-    def __init__(self, parent=None):
+class Form(QDialog): #heritage from QDialog
+    def __init__(self, parent=None): #has no parent therefore Form becomes top level window
         super(Form, self).__init__(parent)
-        self.browser = QTextBrowser()
-        self.lineedit = QLineEdit("Type an expression and press Enter")
+        self.browser = QTextBrowser() #widget
+        self.lineedit = QLineEdit("Type an expression and press Enter") #widget
         self.lineedit.selectAll()
-        layout = QVBoxLayout()
-        layout.addWidget(self.browser)
-        layout.addWidget(self.lineedit)
-        self.setLayout(layout)
-        self.lineedit.setFocus()
+        layout = QVBoxLayout() #layout manager
+        layout.addWidget(self.browser)# add two
+        layout.addWidget(self.lineedit)# widgets: looks good, and reparents these widgets
+        self.setLayout(layout) # layout is activated
+        self.lineedit.setFocus()# cursor starts here
         self.connect(self.lineedit, SIGNAL("returnPressed()"), self.updateUi)
         self.setWindowTitle("Calculate")
 
