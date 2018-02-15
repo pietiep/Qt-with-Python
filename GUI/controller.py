@@ -1,9 +1,11 @@
 from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
-from netw_embb_in_qt4 import ApplicationWindow
+#from netw_embb_in_qt4 import ApplicationWindow
 import sys
-from PyQt4 import QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+import ui_MainWindow
 
 
 class Controller(object):
@@ -18,7 +20,17 @@ class Controller(object):
         #processing
         self.model.getLayerMatr()
         G = self.model2.Networkx(self.model.layer_matr)
-        self.view.Display(G)
+        self.view.Display(G) #View method Display() generated .png file
 
+class MainW(QMainWindow,
+        ui_MainWindow.Ui_MCTDH):
 
-C = Controller()
+    def __init__(self, parent=None):
+        super(MainW, self).__init__(parent)
+        self.setupUi(self)
+
+app = QApplication(sys.argv)
+Form = MainW()
+Form.show()
+app.exec_()
+#C = Controller()
