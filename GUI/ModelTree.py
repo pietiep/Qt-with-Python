@@ -31,3 +31,9 @@ class ModelTree(object):
     def getLayerMatr(self):
         """Takes all bottom nodes and returns for each a list of the path to the top node"""
         self.layer_matr = [list(reversed(self.nlayer(b_))) for b_ in self.getBottomlayer()]
+
+if __name__ == '__main__':
+
+    model = ModelTree()
+    model.getLayerMatr()
+    print model.layer_matr
