@@ -38,12 +38,13 @@ class MainW(QMainWindow,
     def __init__(self, parent=None):
         super(MainW, self).__init__(parent)
         self.setupUi(self)
+
         self.setConfig = None
         self.setSystem = None
+
         self.ModelTree = None # will be object of ModelTree()
-        self.LogicalNodes = LogicalNodes() #object
-        self.View = View() #object
-        self.G = None # will be DiGraphs object
+#        self.LogicalNodes = LogicalNodes() #object
+#        self.G = None # will be DiGraphs object
 
         self.connect(self.actionLoad_Configuration, SIGNAL("activated()"), self.BrowserCon)
         self.connect(self.actionLoad_System, SIGNAL("activated()"), self.BrowserSys)
@@ -61,10 +62,12 @@ class MainW(QMainWindow,
 
             self.ModelTree = ModelTree()
 
-        self.ModelTree.getLayerMatr() #calculates list - layer_matr
-        self.G = self.LogicalNodes.Networkx(self.ModelTree.layer_matr) #connects nodes according to layer_matr
-        self.View.Display(self.G) #View method Display() generated .png file
-#        time.sleep(15)
+        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
+
+#        self.ModelTree.getLayerMatr() #calculates list - layer_matr
+#        self.G = self.LogicalNodes.Networkx(self.ModelTree.layer_matr) #connects nodes according to layer_matr
+        self.View = View(self.ModelTree.label_mode) #object
+        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
         self.ShowPng = ShowPng()
         self.ShowPng.show()
 

@@ -9,12 +9,18 @@ class ModelTree(object):
         self.layer_list = []
         self.layer_matr = []
         self.lay_matr_mode = []
+        self.label_mode = {}
+
         self.config = mctdh.controlParameters()
         self.config.initialize(self.config_file)
         self.basis = mctdh.MctdhBasis()
         self.basis.initialize(self.sys_file, self.config)
         self.node = mctdh.MctdhNode()
         self.phys = mctdh.PhysCoor()
+
+        self.getLayerMatr()
+        self.getPhysCoord()
+        self.modeToGetLayer()
 
     def getBottomlayer(self):
         """Get the bottom nodes"""
@@ -48,15 +54,20 @@ class ModelTree(object):
 
     def modeToGetLayer(self):
         """Combines layer_matr with mode_list"""
-        self.lay_matr_mode = [(l_.append(self.mode_list)) for i,l_ in enumerate(self.layer_matr)]
+        self.lay_matr_mode = [l_ + [100 + i] for i,l_ in enumerate(self.layer_matr)]
+        #concatinates two lists
+        self.label_mode = [100 + i for i in range(len(self.mode_list))]
+        self.label_mode = dict(zip(self.label_mode, self.mode_list))
+
 
 
 if __name__ == '__main__':
 
     model = ModelTree()
-    model.getLayerMatr()
-    model.getPhysCoord()
+#    model.getLayerMatr()
+#    model.getPhysCoord()
 #    model.modeToGetLayer()
     print model.mode_list
     print model.layer_matr
     print model.lay_matr_mode
+    print model.label_mode
