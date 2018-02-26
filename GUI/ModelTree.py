@@ -10,6 +10,7 @@ class ModelTree(object):
         self.layer_matr = []
         self.lay_matr_mode = []
         self.label_mode = {}
+        self.nodes_spf = {}
 
         self.config = mctdh.controlParameters()
         self.config.initialize(self.config_file)
@@ -17,10 +18,13 @@ class ModelTree(object):
         self.basis.initialize(self.sys_file, self.config)
         self.node = mctdh.MctdhNode()
         self.phys = mctdh.PhysCoor()
+        self.tdim = mctdh.Tdim()
 
         self.getLayerMatr()
         self.getPhysCoord()
         self.modeToGetLayer()
+        self.get_SPFs()
+
 
     def getBottomlayer(self):
         """Get the bottom nodes"""
@@ -59,6 +63,12 @@ class ModelTree(object):
         self.label_mode = [100 + i for i in range(len(self.mode_list))]
         self.label_mode = dict(zip(self.label_mode, self.mode_list))
 
+    def get_SPFs(self):
+        """get the SPFs of each Node"""
+        for i in range(self.basis.NmctdhNodes()):
+            self.node = self.basis.MCTDHnode(i)
+            self.tdim = self.node.t_dim()
+            self.nodes_spf[i] = self.tdim.GetnTensor()
 
 
 if __name__ == '__main__':
@@ -71,3 +81,4 @@ if __name__ == '__main__':
     print model.layer_matr
     print model.lay_matr_mode
     print model.label_mode
+    print model.nodes_spf
