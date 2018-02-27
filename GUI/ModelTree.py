@@ -59,6 +59,7 @@ class ModelTree(object):
     def modeToGetLayer(self):
         """Combines layer_matr with mode_list"""
         self.lay_matr_mode = [l_ + [100 + i] for i,l_ in enumerate(self.layer_matr)]
+        self.lay_matr_mode = [["Top"] + l_ for l_ in self.lay_matr_mode]
         #concatinates two lists
         self.label_mode = [100 + i for i in range(len(self.mode_list))]
         self.label_mode = dict(zip(self.label_mode, self.mode_list))
@@ -68,7 +69,16 @@ class ModelTree(object):
         for i in range(self.basis.NmctdhNodes()):
             self.node = self.basis.MCTDHnode(i)
             self.tdim = self.node.t_dim()
-            self.nodes_spf[i] = self.tdim.GetnTensor()
+            self.nodes_spf[i] = self.tdim.GetnTensor() #dict
+
+        mode_spf = [self.basis.MCTDHnode(i).t_dim().active(0) for i in \
+                    range(self.basis.NmctdhNodes()) if \
+                    self.basis.MCTDHnode(i).Bottomlayer() == True ]
+
+        mode_spf_dict = dict(zip(self.label_mode, mode_spf))
+        for k, i in zip(self.label_mode.keys(), mode_spf):
+            self.nodes_spf[k] = i
+
 
 
 if __name__ == '__main__':

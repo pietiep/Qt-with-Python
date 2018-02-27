@@ -66,7 +66,7 @@ class MainW(QMainWindow,
 
 #        self.ModelTree.getLayerMatr() #calculates list - layer_matr
 #        self.G = self.LogicalNodes.Networkx(self.ModelTree.layer_matr) #connects nodes according to layer_matr
-        self.View = View(self.ModelTree.label_mode) #object
+        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
         self.ShowPng = ShowPng()
         self.ShowPng.show()
