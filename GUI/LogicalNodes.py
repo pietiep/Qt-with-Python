@@ -19,7 +19,7 @@ class LogicalNodes():
                 l = len(c_)
                 for index, b_ in enumerate(c_):
                     if index < (l-1):
-                        self.G.add_edge(b_, c_[index + 1])
+                        self.G.add_edge(b_, c_[index + 1], weight=1)
 
 
 

@@ -14,7 +14,9 @@ class View(object):
         #plt.title('draw_networkx')
         top = ['Top']
         rest_nodes = [l_ for l_ in self.nodes_spf.keys() if l_ not in self.label_mode.keys()]
-        print self.label_mode.keys()
+        #print G.edges(data=True)
+        #G[2][0]['weight'] = 1
+        #G[2][1]['weight'] = 1
         pos = graphviz_layout(G, prog='dot')
         nx.draw(G, pos, with_labels=False, arrows=False, node_color='w')
         nx.draw_networkx_nodes(G, pos, nodelist=top, node_color='w', alpha=1)
