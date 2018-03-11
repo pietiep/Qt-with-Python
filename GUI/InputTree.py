@@ -1,6 +1,6 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, uic
 import sys
-from Node import Node, TransformNode, CameraNode, LightNode
+from Node import Tree, Node, TransformNode, CameraNode, LightNode
 import icons_rc
 
 class SceneGraphModel(QtCore.QAbstractItemModel):
@@ -117,23 +117,28 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         return success
 
+base, form = uic.loadUiType("mctdhTree.ui")
+
+class WndTutorial05(base, form):
+    def __init__(self, parent=None):
+        super(base,self).__init__(parent)
+        self.setupUi(self)
+
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle("plastique")
-
-    rootNode = LightNode("Hips")
-    childNode0 = LightNode("LeftPirateLeg", rootNode)
-    childNode1 = CameraNode("RightLeg", rootNode)
-    childNode2 = TransformNode("RightFoot", childNode1)
-    #print rootNode._children
-    #print childNode0._children
-    print rootNode
-
-    model = SceneGraphModel(rootNode)
-    RightLeg = model.index(1, 2, QtCore.QModelIndex())
-    model.insertRows(1, 5, RightLeg)
+    tree = Tree("36")
+    tree.addNode("child0", "19", tree._rootNode)
+    tree.addNode("child2", "9", tree._dictNodes["child0"])
+    model = SceneGraphModel(tree._rootNode0)
+#    RightLeg = model.index(1, 2, QtCore.QModelIndex())
+#    model.insertRows(1, 5, RightLeg)
     treeView = QtGui.QTreeView()
     treeView.show()
     treeView.setModel(model)
+
+    wnd =WndTutorial05()
+    wnd.show()
+
     sys.exit(app.exec_())
