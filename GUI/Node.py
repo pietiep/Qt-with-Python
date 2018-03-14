@@ -1,12 +1,94 @@
-class Tree():
+class OutPut():
+    def __init__(self, eps, integrator, hamiltonian, potential, job, parameters, tree):
+        self._eps_general = eps[0]
+        self._eps_1 = eps[1]
+        self._eps_2 = eps[2]
+        self._start = integrator[0]
+        self._end =integrator[1]
+        self._dt = integrator[2]
+        self._iteration = integrator[3]
+        self._hamiltonian = hamiltonian
+        self._potential = potential
+        self._job = job
+        self._parameters = parameters
+        self._formated = self.formatparameter()
+        self._treeData = tree._treeData
+
+
+    def formatparameter(self):
+        output = ""
+        for row_ in self._parameters:
+                for ele_ in row_:
+                    if row_[-1] == ele_:
+                        output += str(ele_) + "\n"
+                    else:
+                        output += str(ele_) + "  "
+        return output
+
+    def bringAllTogether(self):
+        output = "eps = { \n" \
+        "eps_general = " + self._eps_general + "\n" \
+        "eps_1 =" + self._eps_1 + "\n" \
+        "eps_2 =" + self._eps_2 + "\n" \
+        "} \n" \
+        "\n" \
+        "integrator = { \n" \
+        "start = " + self._start + "\n" \
+        "end = " + self._end + "\n" \
+        "dt = " + self._dt + "\n" \
+        "iteration = " + self._iteration + "\n" \
+        "} \n" \
+        "\n" \
+        "Hamiltonian = " + self._hamiltonian + "\n" \
+        "Potential = " + self._potential + "\n" \
+        "\n" \
+        "job = " + self._job + "\n" \
+        "\n" \
+        "\n" \
+        "basis = \n" \
+        "{\n" \
+        "tree = [ \n" \
+         + self._treeData + \
+        "]\n" \
+        "\n" \
+        "\n" \
+        "parameters = [\n" \
+        + self._formated + \
+        "]\n" \
+        "}"
+        return output
+
+    def __repr__(self):
+        return self.bringAllTogether()
+
+class Tree(object):
     def __init__(self, startSPF):
-        self._rootNode0 = LightNode("TOP")
-        self._rootNode = LightNode(str(startSPF), self._rootNode0)
+        self._rootNode0 = Node("TOP")
+        self._rootNode = Node(str(startSPF), self._rootNode0)
+        self._childNode0 = Node("19", self._rootNode)
+        self._childNode1 = Node("30", self._rootNode)
+        self._childNode2 = Node("9", self._childNode0)
+        self._childNode3 = Node("4", self._childNode0)
+        self._childNode4 = Node("17", self._childNode1)
+        self._childNode5 = Node("17", self._childNode1)
+        self._childNode6 = BottomNode("24", self._childNode2, "3")
+        self._childNode7 = BottomNode("12", self._childNode3, "0")
+        self._childNode8 = Node("5", self._childNode4)
+        self._childNode9 = Node("7", self._childNode4)
+        self._childNode10 = Node("5", self._childNode5)
+        self._childNode11 = Node("7", self._childNode5)
+        self._childNode13 = BottomNode("12", self._childNode8, "1")
+        self._childNode12 = BottomNode("12", self._childNode9, "4")
+        self._childNode14 = BottomNode("12", self._childNode10, "2")
+        self._childNode15 = BottomNode("12", self._childNode11, "5")
+        self._treeData = self._rootNode.log()
         self._dictNodes = {}
 
     def addNode(self, obj, SPF, parent):
         self._dictNodes[obj] = Node(SPF, parent)
 
+    def addBottomNode(self, obj, SPF, parent, physcoor):
+        self._dictNodes[obj] = BottomNode(SPF, parent, physcoor)
 
 class Node(object):
     def __init__(self, name, parent=None):
@@ -16,12 +98,6 @@ class Node(object):
 
         if parent is not None:
             parent.addChild(self)
-
-#    @classmethod
-#    def initFromList(cls, nodeList):
-#        objList = []
-#        for node in nodeList:
-
 
     def addChild(self, child):
         self._children.append(child)
@@ -112,6 +188,9 @@ class BottomNode(Node):
         super(BottomNode, self).__init__(name, parent)
         self._physcoor = physcoor
 
+    def typeInfo(self):
+        return "Bottom"
+
     def log(self, tabLevel=-1):
         output = ""
         tabLevel += 1
@@ -133,29 +212,26 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
- #   dict_nodes = {}
- #   rootNode0 = LightNode("TOP")
- #   rootNode = LightNode("36", rootNode0)
-#    node2 = Node("30", rootNode)
-#    node1 = Node("19", rootNode)
-#    node3 = Node("9", node1)
-#    childNode0 = LightNode("19", rootNode)
-#    childNode1 = Node("30", rootNode)
-#    childNode2 = Node("9", childNode0)
-#    childNode3 = Node("4", childNode0)
-#    childNode4 = Node("17", childNode1)
-#    childNode5 = Node("17", childNode1)
-#    childNode6 = BottomNode("24", childNode2, "3")
-
     tree = Tree("36")
-    tree.addNode("child0", "19", tree._rootNode)
-    tree.addNode("child2", "9", tree._dictNodes["child0"])
 
- #   def addNode(obj, SPF, parent):
- #       dict_nodes[obj] = Node(SPF, parent)
- #       return dict_nodes
-#
  #   dict_nodes = addNode("childNode0", "19", rootNode)
  #   dict_nodes = addNode("childNode2", "9",  dict_nodes["childNode0"])
+#    print tree._rootNode
 
-    print tree._rootNode
+#    output = tree._rootNode.log()
+#    print output
+
+    eps = ["1E-5", "1E-6", "1E-5"]
+    integrator = ["0", "1000", "0.1", "100"]
+    hamiltonian = "194"
+    potential = "101"
+    job = "eigenstates"
+    parameters = [[1, 2, 3, 4],
+                  [5, 6, 7, 8],
+                  [9, 10, 11, 12],
+                  [13, 14, 15, 16],
+                  [17, 18, 19, 20],
+                  [21, 22, 23, 24]]
+
+    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
+    print filedata

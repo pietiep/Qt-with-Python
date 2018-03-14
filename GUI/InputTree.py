@@ -42,8 +42,8 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         return parentNode.childcount()
 
     def columnCount(self, parent):
-        return 1
-    #    return 2
+    #    return 1
+        return 2
 
     def flags(self, index):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
@@ -53,7 +53,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
             if section == 0:
                 return "Scenegraph"
             else:
-                return "Type"
+                return "Mode"
 
     def data(self, index, role):
 
@@ -65,7 +65,9 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole: #Name is always displayed
             if index.column() == 0:
                 return node.name()
-        #    else:
+            else:
+                if node.typeInfo() == "Bottom":
+                    return node._physcoor
         #        return node.typeInfo()
 
         if role == QtCore.Qt.DecorationRole:
@@ -121,7 +123,7 @@ base, form = uic.loadUiType("mctdhTree.ui")
 
 class WndTutorial05(base, form):
     def __init__(self, parent=None):
-        super(base,self).__init__(parent)
+        super(base, self).__init__(parent)
         self.setupUi(self)
 
 if __name__ == '__main__':
@@ -129,8 +131,8 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     app.setStyle("plastique")
     tree = Tree("36")
-    tree.addNode("child0", "19", tree._rootNode)
-    tree.addNode("child2", "9", tree._dictNodes["child0"])
+#    tree.addNode("child0", "19", tree._rootNode)
+#    tree.addNode("child2", "9", tree._dictNodes["child0"])
     model = SceneGraphModel(tree._rootNode0)
 #    RightLeg = model.index(1, 2, QtCore.QModelIndex())
 #    model.insertRows(1, 5, RightLeg)
@@ -138,7 +140,7 @@ if __name__ == '__main__':
     treeView.show()
     treeView.setModel(model)
 
-    wnd =WndTutorial05()
-    wnd.show()
+#    wnd =WndTutorial05()
+#    wnd.show()
 
     sys.exit(app.exec_())
