@@ -1,5 +1,6 @@
-class OutPut():
-    def __init__(self, eps, integrator, hamiltonian, potential, job, parameters, tree):
+class OutPut(object):
+    def __init__(self, eps, integrator, hamiltonian, potential, \
+                 job, parameters, tree, filename="example.in"):
         self._eps_general = eps[0]
         self._eps_1 = eps[1]
         self._eps_2 = eps[2]
@@ -13,7 +14,11 @@ class OutPut():
         self._parameters = parameters
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
+        self.savefile(filename)
 
+    def savefile(self, filename):
+        with open(filename, "w") as text_file:
+            text_file.write("{0}".format(self.bringAllTogether()))
 
     def formatparameter(self):
         output = ""
@@ -235,3 +240,5 @@ if __name__ == '__main__':
 
     filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
     print filedata
+#    with open("example.in", "w") as text_file:
+#        text_file.write("{0}".format(filedata))

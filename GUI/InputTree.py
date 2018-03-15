@@ -1,6 +1,6 @@
 from PyQt4 import QtCore, QtGui, uic
 import sys
-from Node import Tree, Node, TransformNode, CameraNode, LightNode
+from Node import OutPut, Tree, Node, TransformNode, CameraNode, LightNode
 import icons_rc
 
 class SceneGraphModel(QtCore.QAbstractItemModel):
@@ -125,22 +125,55 @@ class WndTutorial05(base, form):
     def __init__(self, parent=None):
         super(base, self).__init__(parent)
         self.setupUi(self)
+        eps = ["1E-5", "1E-6", "1E-5"]
+        integrator = ["0", "1000", "0.1", "100"]
+        hamiltonian = "194"
+        potential = "101"
+        job = "eigenstates"
+        parameters = [[1, 2, 3, 4],
+                    [5, 6, 7, 8],
+                    [9, 10, 11, 12],
+                    [13, 14, 15, 16],
+                    [17, 18, 19, 20],
+                    [21, 22, 23, 24]]
+
+        self._eps = eps
+        self._integrator = integrator
+        self._hamiltonian = hamiltonian
+        self._potential = potential
+        self._job = job
+        self._parameters = parameters
+
+        self._tree = Tree("36")  #Delegation instead of inheritance of Tree
+        self._treeData = self._tree._treeData
+
+        model = SceneGraphModel(self._tree._rootNode0)
+
+        self.uiTree.setModel(model)
+    #    self.connect(self.uiGenerateFile, SIGNAL("activated()"), self.BrowserCon)
+        self.uiGenerateFile.clicked.connect(self.output)
+
+    def output(self):
+        outobj = OutPut(self._eps, self._integrator, self._hamiltonian, \
+                        self._potential, self._job, self._parameters, \
+                        self._tree)
+        print(outobj)
 
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
-    app.setStyle("plastique")
-    tree = Tree("36")
-#    tree.addNode("child0", "19", tree._rootNode)
-#    tree.addNode("child2", "9", tree._dictNodes["child0"])
-    model = SceneGraphModel(tree._rootNode0)
+    app.setStyle("cleanlooks")
+#    tree = Tree("36")
+#    model = SceneGraphModel(tree._rootNode0)
 #    RightLeg = model.index(1, 2, QtCore.QModelIndex())
 #    model.insertRows(1, 5, RightLeg)
-    treeView = QtGui.QTreeView()
-    treeView.show()
-    treeView.setModel(model)
 
-#    wnd =WndTutorial05()
-#    wnd.show()
+#    treeView = QtGui.QTreeView()
+#    treeView.show()
+#    treeView.setModel(model)
+
+    wnd =WndTutorial05()
+    wnd.show()
+
 
     sys.exit(app.exec_())

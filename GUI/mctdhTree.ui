@@ -6,31 +6,36 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>649</width>
-    <height>475</height>
+    <width>663</width>
+    <height>506</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="uiCentralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QPushButton" name="uiGenerateFile">
     <property name="geometry">
      <rect>
-      <x>17</x>
-      <y>20</y>
-      <width>611</width>
-      <height>431</height>
+      <x>19</x>
+      <y>454</y>
+      <width>108</width>
+      <height>27</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLineEdit" name="uiTree"/>
-     </item>
-     <item>
-      <widget class="QTreeView" name="treeView"/>
-     </item>
-    </layout>
+    <property name="text">
+     <string>Generate File</string>
+    </property>
+   </widget>
+   <widget class="QTreeView" name="uiTree">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>22</y>
+      <width>631</width>
+      <height>411</height>
+     </rect>
+    </property>
    </widget>
   </widget>
  </widget>
