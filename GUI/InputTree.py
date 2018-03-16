@@ -113,7 +113,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         self.beginRemoveRows(parent, position, position+rows-1)
 
         for row in range(rows):
-            success = parentNode.removeChild(position) # child inserted, _children grows, childcount counts one more
+            success = parentNode.removeChild(position) 
 
         self.endRemoveRows()
 
@@ -121,7 +121,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
 base, form = uic.loadUiType("mctdhTree.ui")
 
-class WndTutorial05(base, form):
+class GenerateFile(base, form):
     def __init__(self, parent=None):
         super(base, self).__init__(parent)
         self.setupUi(self)
@@ -156,8 +156,8 @@ class WndTutorial05(base, form):
     def output(self):
         outobj = OutPut(self._eps, self._integrator, self._hamiltonian, \
                         self._potential, self._job, self._parameters, \
-                        self._tree)
-        print(outobj)
+                        self._tree) #Class OutPut takes all parameters
+        # and saves them in File by creating the object of this class
 
 if __name__ == '__main__':
 
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 #    treeView.show()
 #    treeView.setModel(model)
 
-    wnd =WndTutorial05()
+    wnd =GenerateFile()
     wnd.show()
 
 
