@@ -66,7 +66,27 @@ class WidgetA(base, form):
         #func4 = lambda job="imaginary-time Propagation": self.setJob(job)
         self.fluxEigenstateRadio.toggled.connect(self.setJob4)
 
+        ###LineEdit####
+        self.uiStartTime.setText(self._integrator[0])
+        self.uiStartTime.textChanged.connect(self.change1)
+        self.uiEndTime.setText(self._integrator[1])
+        self.uiEndTime.textChanged.connect(self.change2)
+        self.uiInit.setText(self._integrator[2])
+        self.uiInit.textChanged.connect(self.change3)
+        self.uiIter.setText(self._integrator[3])
+        self.uiIter.textChanged.connect(self.change4)
+
         self.uiGenerateFile.clicked.connect(self.output)
+
+    def change1(self):
+        self._integrator[0] = self.uiStartTime.text()
+    def change2(self):
+        self._integrator[1] = self.uiEndTime.text()
+    def change3(self):
+        self._integrator[2] = self.uiInit.text()
+    def change4(self):
+        self._integrator[3] = self.uiIter.text()
+
 
     def setJob1(self):
         self._job = "real-time Propagation"

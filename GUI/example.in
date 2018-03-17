@@ -14,7 +14,7 @@ iteration = 100
 Hamiltonian = 194
 Potential = 101
 
-job = flux eigenstates
+job = real-time Propagation
 
 
 basis = 

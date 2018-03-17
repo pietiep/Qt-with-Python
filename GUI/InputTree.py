@@ -113,7 +113,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         self.beginRemoveRows(parent, position, position+rows-1)
 
         for row in range(rows):
-            success = parentNode.removeChild(position) 
+            success = parentNode.removeChild(position)
 
         self.endRemoveRows()
 
@@ -145,7 +145,8 @@ class GenerateFile(base, form):
         self._parameters = parameters
 
         self._tree = Tree("36")  #Delegation instead of inheritance of Tree
-        self._treeData = self._tree._treeData
+        self._treeData = self._tree._treeData  #Top parent node object storing
+        #all child node which also contain child node objects
 
         model = SceneGraphModel(self._tree._rootNode0)
 
