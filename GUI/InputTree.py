@@ -173,6 +173,8 @@ if __name__ == '__main__':
     treeView = QtGui.QTreeView()
     treeView.show()
     treeView.setModel(model)
+    treeView.resizeColumnToContents(0)
+
 
 #    wnd =GenerateFile()
 #    wnd.show()

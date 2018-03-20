@@ -80,8 +80,9 @@ class WidgetA(base, form):
         modelTree = SceneGraphModel(self._tree._rootNode0)
         self.uiTree.setModel(modelTree)
         #index_ = modelTree.index(0, i, QtCore.QModelIndex())
-        for i in range(2):
-            self.uiTree.setRowHidden(i, QtCore.QModelIndex(), False)
+        self.uiTree.expandAll()
+        self.uiTree.resizeColumnToContents(0)
+        self.uiTree.resizeColumnToContents(1)
 #        print index_.parent()
 #        print index_.parent()
 
