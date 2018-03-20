@@ -2,7 +2,7 @@ from PyQt4 import QtCore, QtGui, uic
 from PyQt4 import *
 import sys
 from Node import OutPut, Tree, Node, TransformNode, CameraNode, LightNode
-from InputTree import GenerateFile
+from InputTree import SceneGraphModel
 from functools import partial
 
 base, form = uic.loadUiType("widgetA.ui")
@@ -76,6 +76,16 @@ class WidgetA(base, form):
         self.uiIter.setText(self._integrator[3])
         self.uiIter.textChanged.connect(self.change4)
 
+        ####TreeView########
+        modelTree = SceneGraphModel(self._tree._rootNode0)
+        self.uiTree.setModel(modelTree)
+        #index_ = modelTree.index(0, i, QtCore.QModelIndex())
+        for i in range(2):
+            self.uiTree.setRowHidden(i, QtCore.QModelIndex(), False)
+#        print index_.parent()
+#        print index_.parent()
+
+        ####PushBottoms#####
         self.uiGenerateFile.clicked.connect(self.output)
 
     def change1(self):
@@ -101,7 +111,7 @@ class WidgetA(base, form):
     def unsetPES(self):
     #    print dir(self.model)
     #    print self.model.rowCount()
-        self.model.removeRows(0, 2, QtCore.QModelIndex())
+        self.modelPES.removeRows(0, 2, QtCore.QModelIndex())
         self._potential = "None"
 
     def setPES(self):
@@ -110,7 +120,7 @@ class WidgetA(base, form):
         for key in self._dictPES:
             item = QtGui.QStandardItem(key)
             self.modelPES.appendRow(item)
-        self.listPES.setModel(self.model)
+        self.listPES.setModel(self.modelPES)
         self.listPES.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
     #    self.on_item_select_pes = partial(self.on_item_select, self._potential,
     #                                self._dictPES)

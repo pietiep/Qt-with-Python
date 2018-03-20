@@ -151,6 +151,7 @@ class GenerateFile(base, form):
         model = SceneGraphModel(self._tree._rootNode0)
 
         self.uiTree.setModel(model)
+
     #    self.connect(self.uiGenerateFile, SIGNAL("activated()"), self.BrowserCon)
         self.uiGenerateFile.clicked.connect(self.output)
 
@@ -164,17 +165,17 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle("cleanlooks")
-#    tree = Tree("36")
-#    model = SceneGraphModel(tree._rootNode0)
-#    RightLeg = model.index(1, 2, QtCore.QModelIndex())
-#    model.insertRows(1, 5, RightLeg)
+    tree = Tree("36")
+    model = SceneGraphModel(tree._rootNode0)
+    RightLeg = model.index(0, 3, QtCore.QModelIndex())
+    model.insertRows(0,1, RightLeg)
 
-#    treeView = QtGui.QTreeView()
-#    treeView.show()
-#    treeView.setModel(model)
+    treeView = QtGui.QTreeView()
+    treeView.show()
+    treeView.setModel(model)
 
-    wnd =GenerateFile()
-    wnd.show()
+#    wnd =GenerateFile()
+#    wnd.show()
 
 
     sys.exit(app.exec_())
