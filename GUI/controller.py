@@ -8,20 +8,6 @@ from PyQt4 import QtGui
 import ui_MainWindow
 import time
 
-#class Controller(object):
-#    def __init__(self):
-#        self.model = ModelTree()
-#        self.model2 = LogicalNodes()
-#        self.view = View()
-#        self.berechne()
-#
-#    def berechne(self):
-#        pass
-#        #processing
-#        self.model.getLayerMatr()
-#        G = self.model2.Networkx(self.model.layer_matr)
-#        self.view.Display(G) #View method Display() generated .png file
-
 class ShowPng(QWidget):
     def __init__(self, parent=None):
         super(ShowPng, self).__init__(parent)

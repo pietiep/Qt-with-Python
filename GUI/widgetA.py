@@ -11,6 +11,8 @@ class WidgetA(base, form):
     def __init__(self, parent=None):
         super(WidgetA, self).__init__(parent)
         self.setupUi(self)
+
+        ####Data#####
         eps = ["1E-5", "1E-6", "1E-5"]
         integrator = ["0", "1000", "0.1", "100"]
         hamiltonian = "194"
@@ -23,6 +25,7 @@ class WidgetA(base, form):
                 [17, 18, 19, 20],
                 [21, 22, 23, 24]]
 
+        ####Attributes#####
         self._eps = eps
         self._integrator = integrator
         self._operator = None
@@ -37,12 +40,12 @@ class WidgetA(base, form):
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
 
-        #####ListModelHam#######
-        self.model = QtGui.QStandardItemModel(self.listHamilton)
+        #####ListModelHamilton#######
+        self._model = QtGui.QStandardItemModel(self.listHamilton)
         for key in self._dictHamil:
             item = QtGui.QStandardItem(key)
-            self.model.appendRow(item)
-        self.listHamilton.setModel(self.model)
+            self._model.appendRow(item)
+        self.listHamilton.setModel(self._model)
         self.listHamilton.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
     #    self.on_item_select_ha = partial(self.on_item_select, self._hamiltonian,
     #                                self._dictHamil)
@@ -53,6 +56,7 @@ class WidgetA(base, form):
         self.onRadio.toggled.connect(self.setPES)
         self.offRadio.toggled.connect(self.unsetPES)
 
+        #####ListView of PES is built###
         self.setPES()
 
         ###RadioButtonsJob####
@@ -77,17 +81,55 @@ class WidgetA(base, form):
         self.uiIter.textChanged.connect(self.change4)
 
         ####TreeView########
-        modelTree = SceneGraphModel(self._tree._rootNode0)
-        self.uiTree.setModel(modelTree)
-        #index_ = modelTree.index(0, i, QtCore.QModelIndex())
+        self.modelTree = SceneGraphModel(self._tree._rootNode0)
+        self.uiTree.setModel(self.modelTree)
         self.uiTree.expandAll()
         self.uiTree.resizeColumnToContents(0)
         self.uiTree.resizeColumnToContents(1)
-#        print index_.parent()
-#        print index_.parent()
+        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
+        self.uiTree.clicked.connect(self.changeNode)
+
+
+        ####QGraphicsView###
+        pixmap = QtGui.QPixmap('nx_test.png')
+        self.scene = QtGui.QGraphicsScene(self)
+        self.scene.addPixmap(pixmap)
+        self.uiDisplayTree.setScene(self.scene)
 
         ####PushBottoms#####
         self.uiGenerateFile.clicked.connect(self.output)
+
+        ####Networkx and MCTDH####
+        from ModelTree import ModelTree
+        from LogicalNodes import LogicalNodes
+        from View import View
+
+        self.setConfig = None
+        self.setSystem = None
+
+        self.ModelTree = None
+        self.ModelTree = ModelTree()
+
+    def Initialize(self):
+        self.ModelTree = ModelTree()
+        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
+        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
+        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
+        ####QGraphicsView###
+        pixmap = QtGui.QPixmap('nx_test.png')
+        self.scene = QtGui.QGraphicsScene(self)
+        self.scene.addPixmap(pixmap)
+        self.uiDisplayTree.setScene(self.scene)
+
+    def changeNode(self, my_index):
+        topNode = self.modelTree.getNode2(my_index).child(0)
+        self._tree.setRootNode(topNode)
+
+        ####Pic with MCTDH Code changed####
+        self.ModelTree = ModelTree()
+        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
+        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
+        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
 
     def change1(self):
         self._integrator[0] = self.uiStartTime.text()
@@ -146,10 +188,11 @@ class WidgetA(base, form):
         print self._potential
 
     def output(self):
+        """Class OutPut takes all parameters and saves them in File by creating
+     the object of this class"""
         outobj = OutPut(self._eps, self._integrator, self._hamiltonian, \
                         self._potential, self._job, self._parameters, \
-                        self._tree) #Class OutPut takes all parameters
-        # and saves them in File by creating the object of this class
+                        self._tree)
 
 if __name__ == '__main__':
 

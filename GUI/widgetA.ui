@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>845</width>
-    <height>600</height>
+    <width>528</width>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,7 +82,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>10</y>
+     <y>-10</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -255,9 +255,19 @@
    <property name="geometry">
     <rect>
      <x>380</x>
-     <y>40</y>
-     <width>431</width>
+     <y>10</y>
+     <width>421</width>
      <height>261</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QGraphicsView" name="uiDisplayTree">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>271</y>
+     <width>661</width>
+     <height>391</height>
     </rect>
    </property>
   </widget>

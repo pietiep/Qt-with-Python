@@ -9,6 +9,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         self._rootNode = root
 
 
+
     def parent(self, index):
         node = index.internalPointer()
         parentNode = node.parent()
@@ -82,7 +83,8 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         if index.isValid():
             if role == QtCore.Qt.EditRole:
                 node = index.internalPointer()
-                node.setName(value)
+                node.setName(str(value.toString()))
+                #print str(value.toString())
                 return True
         return False
 
@@ -91,6 +93,9 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
             node = index.internalPointer()
             if node:
                 return node
+        return self._rootNode
+
+    def getNode2(self, index):
         return self._rootNode
 
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):

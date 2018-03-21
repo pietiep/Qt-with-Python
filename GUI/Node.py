@@ -15,10 +15,15 @@ class OutPut(object):
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
         self.savefile(filename)
+        self.savefile2()
 
     def savefile(self, filename):
         with open(filename, "w") as text_file:
             text_file.write("{0}".format(self.bringAllTogether()))
+
+    def savefile2(self):
+        with open("CH3g1.txt", "w") as text_file:
+            text_file.write("{0}".format(self.bringTreePara()))
 
     def formatparameter(self):
         output = ""
@@ -63,6 +68,12 @@ class OutPut(object):
         "}"
         return output
 
+    def bringTreePara(self):
+        output =  self._treeData + \
+        "\n" \
+        + self._formated
+        return output
+
     def __repr__(self):
         return self.bringAllTogether()
 
@@ -88,6 +99,13 @@ class Tree(object):
         self._childNode15 = BottomNode("12", self._childNode11, "5")
         self._treeData = self._rootNode.log()
         self._dictNodes = {}
+
+    def setRootNode(self, rootNode):
+        self._rootNode = rootNode
+        self.setLog()
+
+    def setLog(self):
+        self._treeData = self._rootNode.log()
 
     def addNode(self, obj, SPF, parent):
         self._dictNodes[obj] = Node(SPF, parent)
@@ -217,7 +235,7 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
-    tree = Tree("36")
+#    tree = Tree("36")
 
  #   dict_nodes = addNode("childNode0", "19", rootNode)
  #   dict_nodes = addNode("childNode2", "9",  dict_nodes["childNode0"])
