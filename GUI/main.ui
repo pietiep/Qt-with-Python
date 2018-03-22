@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="uiNew"/>
+    <addaction name="uiLoad"/>
+   </widget>
+   <widget class="QMenu" name="menuProject">
+    <property name="title">
+     <string>Project</string>
+    </property>
+    <addaction name="uiMCTDHcalc"/>
+    <addaction name="uiMCTDHexisting"/>
+    <addaction name="uiProperties"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuProject"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="uiNew">
+   <property name="text">
+    <string>New project</string>
+   </property>
+  </action>
+  <action name="uiLoad">
+   <property name="text">
+    <string>Load project</string>
+   </property>
+  </action>
+  <action name="uiMCTDHcalc">
+   <property name="text">
+    <string>New MCTDH calculation</string>
+   </property>
+  </action>
+  <action name="uiMCTDHexisting">
+   <property name="text">
+    <string>Run MCTDH on existing job</string>
+   </property>
+  </action>
+  <action name="uiProperties">
+   <property name="text">
+    <string>Properties</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

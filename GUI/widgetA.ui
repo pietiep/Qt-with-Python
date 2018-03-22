@@ -6,26 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>590</height>
+    <width>1047</width>
+    <height>710</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>65</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>System:</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
@@ -43,13 +30,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>150</y>
-     <width>41</width>
+     <y>130</y>
+     <width>181</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>PES:</string>
+    <string>Potential Energy Surface:</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
@@ -97,7 +84,7 @@
      <x>100</x>
      <y>40</y>
      <width>211</width>
-     <height>101</height>
+     <height>81</height>
     </rect>
    </property>
   </widget>
@@ -226,6 +213,9 @@
       </property>
      </widget>
     </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QListView" name="listPES"/>
+    </item>
     <item row="0" column="1">
      <widget class="QRadioButton" name="offRadio">
       <property name="text">
@@ -233,23 +223,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QListView" name="listPES"/>
-    </item>
    </layout>
-  </widget>
-  <widget class="QPushButton" name="uiGenerateFile">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>560</y>
-     <width>97</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Generate File</string>
-   </property>
   </widget>
   <widget class="QTreeView" name="uiTree">
    <property name="geometry">
@@ -270,6 +244,61 @@
      <height>391</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>670</y>
+     <width>334</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <item>
+     <widget class="QPushButton" name="uiCancel">
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="uiSaveJob">
+      <property name="text">
+       <string>Save Job</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="uiStartCal">
+      <property name="text">
+       <string>Start calculation</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>184</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_6">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Name: </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="uiProjectName"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

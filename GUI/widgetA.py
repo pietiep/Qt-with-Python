@@ -4,11 +4,14 @@ import sys
 from Node import OutPut, Tree, Node, TransformNode, CameraNode, LightNode
 from InputTree import SceneGraphModel
 from functools import partial
+from ModelTree import ModelTree
+from LogicalNodes import LogicalNodes
+from View import View
 
 base, form = uic.loadUiType("widgetA.ui")
 
 class WidgetA(base, form):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(WidgetA, self).__init__(parent)
         self.setupUi(self)
 
@@ -39,6 +42,11 @@ class WidgetA(base, form):
 
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
+
+        self._projectName = None
+
+        #####LineEdit:Projectname#######
+        self.uiProjectName.textChanged.connect(self.change0)
 
         #####ListModelHamilton#######
         self._model = QtGui.QStandardItemModel(self.listHamilton)
@@ -97,12 +105,11 @@ class WidgetA(base, form):
         self.uiDisplayTree.setScene(self.scene)
 
         ####PushBottoms#####
-        self.uiGenerateFile.clicked.connect(self.output)
+        self.uiCancel.clicked.connect(self.esc)
+        self.uiSaveJob.clicked.connect(self.esc)
+        self.uiStartCal.clicked.connect(self.esc)
 
         ####Networkx and MCTDH####
-        from ModelTree import ModelTree
-        from LogicalNodes import LogicalNodes
-        from View import View
 
         self.setConfig = None
         self.setSystem = None
@@ -110,26 +117,30 @@ class WidgetA(base, form):
         self.ModelTree = None
         self.ModelTree = ModelTree()
 
-    def Initialize(self):
-        self.ModelTree = ModelTree()
-        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
-        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
-        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
-        ####QGraphicsView###
-        pixmap = QtGui.QPixmap('nx_test.png')
-        self.scene = QtGui.QGraphicsScene(self)
-        self.scene.addPixmap(pixmap)
-        self.uiDisplayTree.setScene(self.scene)
-
     def changeNode(self, my_index):
         topNode = self.modelTree.getNode2(my_index).child(0)
         self._tree.setRootNode(topNode)
+
+        ####Generate Outputfiles for new Pic###
+        self.output()
 
         ####Pic with MCTDH Code changed####
         self.ModelTree = ModelTree()
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
+
+        ####QGraphicsView###
+        pixmap = QtGui.QPixmap('nx_test.png')
+        self.scene = QtGui.QGraphicsScene(self)
+        self.scene.addPixmap(pixmap)
+        self.uiDisplayTree.setScene(self.scene)
+
+    def esc(self):
+        self.close()
+
+    def change0(self):
+        self._projectName = self.uiProjectName.text()
 
     def change1(self):
         self._integrator[0] = self.uiStartTime.text()
@@ -198,7 +209,7 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle("cleanlooks")
-    wnd =WidgetA()
+    wnd =WidgetA(None)
     wnd.show()
 
 

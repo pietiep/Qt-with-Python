@@ -42,5 +42,7 @@ class View(object):
 
         nx.draw_networkx_labels(G, pos_higher, self.nodes_spf, font_size=12)
         plt.savefig('nx_test.png')
+        plt.clf()
 
-        nx.get_node_attributes(G, 'color')
+
+    #    nx.get_node_attributes(G, 'color')
