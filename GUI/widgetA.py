@@ -8,7 +8,7 @@ from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
 
-base, form = uic.loadUiType("widgetA.ui")
+base, form = uic.loadUiType("dialogA.ui")
 
 class WidgetA(base, form):
     def __init__(self, parent):
@@ -106,7 +106,7 @@ class WidgetA(base, form):
 
         ####PushBottoms#####
         self.uiCancel.clicked.connect(self.esc)
-        self.uiSaveJob.clicked.connect(self.esc)
+        self.uiSaveJob.clicked.connect(self.saveProject)
         self.uiStartCal.clicked.connect(self.esc)
 
         ####Networkx and MCTDH####
@@ -136,12 +136,17 @@ class WidgetA(base, form):
         self.scene.addPixmap(pixmap)
         self.uiDisplayTree.setScene(self.scene)
 
+    def saveProject(self):
+        import os
+        if not os.path.exists(str(self._projectName)):
+            os.makedirs(str(self._projectName))
+        print self._projectName
+
     def esc(self):
         self.close()
 
     def change0(self):
         self._projectName = self.uiProjectName.text()
-
     def change1(self):
         self._integrator[0] = self.uiStartTime.text()
     def change2(self):
