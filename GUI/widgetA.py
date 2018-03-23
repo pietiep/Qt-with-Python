@@ -115,26 +115,46 @@ class WidgetA(base, form):
         self.setSystem = None
 
         self.ModelTree = None
-        self.ModelTree = ModelTree()
+
+    def showdialog(self):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Information)
+
+        msg.setText("This is a message box")
+        msg.setInformativeText("This is additional information")
+        msg.setWindowTitle("MessageBox demo")
+        msg.setDetailedText("The details are as follows:")
+        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+        msg.buttonClicked.connect(self.msgbtn)
+
+        retval = msg.exec_()
+        print "value of pressed message box button:", retval
+
+    def msgbtn(self, i):
+        print "Button pressed is:",i.text()
 
     def changeNode(self, my_index):
-        topNode = self.modelTree.getNode2(my_index).child(0)
-        self._tree.setRootNode(topNode)
+        if self._projectName == None:
+                self.showdialog()
+        else:
+            self.ModelTree = ModelTree()
+            topNode = self.modelTree.getNode2(my_index).child(0)
+            self._tree.setRootNode(topNode)
 
-        ####Generate Outputfiles for new Pic###
-        self.output()
+            ####Generate Outputfiles for new Pic###
+            self.output()
 
-        ####Pic with MCTDH Code changed####
-        self.ModelTree = ModelTree()
-        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
-        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
-        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
+            ####Pic with MCTDH Code changed####
+            self.ModelTree = ModelTree()
+            self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
+            self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
+            self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
 
-        ####QGraphicsView###
-        pixmap = QtGui.QPixmap('nx_test.png')
-        self.scene = QtGui.QGraphicsScene(self)
-        self.scene.addPixmap(pixmap)
-        self.uiDisplayTree.setScene(self.scene)
+            ####QGraphicsView###
+            pixmap = QtGui.QPixmap('nx_test.png')
+            self.scene = QtGui.QGraphicsScene(self)
+            self.scene.addPixmap(pixmap)
+            self.uiDisplayTree.setScene(self.scene)
 
     def saveProject(self):
         import os

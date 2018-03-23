@@ -13,20 +13,22 @@ class Main(base, form):
 
         self._newpath = 'Project1'
 
-        self._WidgetA = WidgetA(self)
         self._DialogB = DialogB()
         self.uiNew.triggered.connect(self.openA)
         self.uiLoad.triggered.connect(self.openB)
 
     def openA(self):
+        self._WidgetA = WidgetA(self)
         import os
+        import re
         if not os.path.exists(self._newpath):
             os.makedirs(self._newpath)
             os.chdir("./" + self._newpath)
         else:
             root, directories, filenames = os.walk(".").next()
             dir_list = [dirs for dirs in directories if "Project" in dirs]
-            num_list = [l_[-1] for l_ in dir_list]
+            num_list = [int((re.findall(r'-?\d+\.?\d*', l_))[0]) #Regex
+                        for l_ in dir_list]
             newProject = "Project" + str(int(max(num_list))+1)
             if not os.path.exists(newProject):
                 os.makedirs(newProject)
