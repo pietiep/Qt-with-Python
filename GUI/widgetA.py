@@ -43,9 +43,10 @@ class WidgetA(base, form):
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
 
-        self._projectName = None
+        self._SessionName = None
 
         #####LineEdit:Projectname#######
+#        self.uiProjectName.setText("Session1")
         self.uiProjectName.textChanged.connect(self.change0)
 
         #####ListModelHamilton#######
@@ -120,23 +121,36 @@ class WidgetA(base, form):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
 
-        msg.setText("This is a message box")
-        msg.setInformativeText("This is additional information")
-        msg.setWindowTitle("MessageBox demo")
+        msg.setText("Please give a name for the current Session")
+#        msg.setInformativeText("This is additional information")
+        msg.setWindowTitle("MessageBox")
         msg.setDetailedText("The details are as follows:")
         msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
-        msg.buttonClicked.connect(self.msgbtn)
 
-        retval = msg.exec_()
-        print "value of pressed message box button:", retval
+#        msg.buttonClicked.connect(self.msgbtn)
+#        retval = msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
+#        print "value of pressed message box button:", retval
 
-    def msgbtn(self, i):
-        print "Button pressed is:",i.text()
+#    def msgbtn(self, i):
+#        print "Button pressed is:",i.text()
 
     def changeNode(self, my_index):
-        if self._projectName == None:
+        if self._SessionName == None:
                 self.showdialog()
         else:
+            import os, shutil
+            try:
+                shutil.rmtree("tmp")
+            except Exception:
+                pass
+            os.makedirs("tmp")
+            os.chdir("./tmp")
+            print os.getcwd() # Check current working directory
+            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
+                         , str(os.getcwd()))
+            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
+                         , str(os.getcwd()))
+
             self.ModelTree = ModelTree()
             topNode = self.modelTree.getNode2(my_index).child(0)
             self._tree.setRootNode(topNode)
@@ -157,16 +171,27 @@ class WidgetA(base, form):
             self.uiDisplayTree.setScene(self.scene)
 
     def saveProject(self):
-        import os
-        if not os.path.exists(str(self._projectName)):
-            os.makedirs(str(self._projectName))
-        print self._projectName
+        import os, shutil
+        if not (os.path.exists(str(self._SessionName)) and "tmp"
+                in str(os.getcwd())):
+                pass
+#            os.makedirs(str(self._SessionName))
+        else:
+            os.chdir("../")
+#            os.makedirs(str(self._SessionName))
+        shutil.copytree(str(os.getcwd)+"/tmp", str(os.getcwd)+
+                        "/"+str(self._SessionName))
+
+        print os.getcwd() # Check current working directory
 
     def esc(self):
         self.close()
 
     def change0(self):
-        self._projectName = self.uiProjectName.text()
+        import os
+        self._SessionName = self.uiProjectName.text()
+#        os.chdir("./" + self._SessionName)  # Change dir
+        print os.getcwd() # Check current working directory
     def change1(self):
         self._integrator[0] = self.uiStartTime.text()
     def change2(self):

@@ -33,6 +33,7 @@ class Main(base, form):
             if not os.path.exists(newProject):
                 os.makedirs(newProject)
                 os.chdir("./" + newProject)  # Change dir
+                print os.getcwd() # Check current working directory
 
 
         dialog = self._WidgetA

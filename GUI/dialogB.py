@@ -31,6 +31,9 @@ class DialogB(base, form):
 
     def LoadProject(self):
         self.close()
+        print os.getcwd() # Check current working directory
+        os.chdir("./" + self._projectName)  # Change dir
+        print os.getcwd() # Check current working directory
         dialog = self._WidgetA
         if dialog.exec_() == QtGui.QDialog.Accepted:
             print 'bla'
@@ -45,7 +48,6 @@ class DialogB(base, form):
         key = item.data().toString()
         self._projectName = str(key)
         print self._projectName
-        os.chdir("./" + self._projectName)  # Change dir
 
 
 if __name__ == '__main__':
