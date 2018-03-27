@@ -7,6 +7,7 @@ from functools import partial
 from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
+import os, shutil
 
 base, form = uic.loadUiType("dialogA.ui")
 
@@ -146,26 +147,12 @@ class WidgetA(base, form):
                     , str(os.getcwd()))
         shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
                     , str(os.getcwd()))
-        print os.getcwd() # Check current working directory
 
     def changeNode(self, my_index):
         if self._SessionName == None:
                 self.showdialog()
         else:
             self.managefolder()
-            import os, shutil
-#            try:
-#                shutil.rmtree("tmp")
-#            except Exception:
-#                pass
-#            os.makedirs("tmp")
-#            os.chdir("./tmp")
-#            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
-#                         , str(os.getcwd()))
-#            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
-#                         , str(os.getcwd()))
-#
-#            print os.getcwd() # Check current working directory
 
             self.ModelTree = ModelTree()
             topNode = self.modelTree.getNode2(my_index).child(0)
@@ -190,14 +177,7 @@ class WidgetA(base, form):
             #####Leave tmp folder#####
             os.chdir("../")
 
-    def saveProject(self):
-        import os, shutil
-        if not (os.path.exists(str(self._SessionName)) and "tmp"
-                in str(os.getcwd())):
-                pass
-            #os.chdir("../")
-
-        print os.getcwd() # Check current working directory
+    def copytmp(self):
         scr = str(os.getcwd()) + "/tmp"
         dest = str(os.getcwd()) + "/" + str(self._SessionName)
         print scr, dest
@@ -207,6 +187,27 @@ class WidgetA(base, form):
             pass
         shutil.copytree(scr, dest)
 
+
+    def saveProject(self):
+        if self._SessionName == None:
+                self.showdialog()
+        else:
+            root, directories, filenames = os.walk(".").next()
+            if "tmp" in directories:
+                pass
+            else:
+                print "hello"
+                print "hello"
+                print "hello"
+                print "hello"
+                print "hello"
+                print "hello"
+                self.managefolder()
+                self.output()
+                os.chdir("../")
+
+            self.copytmp()
+
     def esc(self):
         self.close()
 
@@ -214,7 +215,7 @@ class WidgetA(base, form):
         import os
         self._SessionName = self.uiProjectName.text()
 #        os.chdir("./" + self._SessionName)  # Change dir
-        print os.getcwd() # Check current working directory
+
     def change1(self):
         self._integrator[0] = self.uiStartTime.text()
     def change2(self):
