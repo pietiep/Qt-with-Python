@@ -128,28 +128,44 @@ class WidgetA(base, form):
         msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
 
 #        msg.buttonClicked.connect(self.msgbtn)
-#        retval = msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
+        retval = msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
 #        print "value of pressed message box button:", retval
 
 #    def msgbtn(self, i):
 #        print "Button pressed is:",i.text()
 
+    def managefolder(self):
+        import os, shutil
+        try:
+            shutil.rmtree("tmp") #removes folder
+        except Exception:
+            pass
+        os.makedirs("tmp")
+        os.chdir("./tmp")
+        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
+                    , str(os.getcwd()))
+        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
+                    , str(os.getcwd()))
+        print os.getcwd() # Check current working directory
+
     def changeNode(self, my_index):
         if self._SessionName == None:
                 self.showdialog()
         else:
+            self.managefolder()
             import os, shutil
-            try:
-                shutil.rmtree("tmp")
-            except Exception:
-                pass
-            os.makedirs("tmp")
-            os.chdir("./tmp")
-            print os.getcwd() # Check current working directory
-            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
-                         , str(os.getcwd()))
-            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
-                         , str(os.getcwd()))
+#            try:
+#                shutil.rmtree("tmp")
+#            except Exception:
+#                pass
+#            os.makedirs("tmp")
+#            os.chdir("./tmp")
+#            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
+#                         , str(os.getcwd()))
+#            shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
+#                         , str(os.getcwd()))
+#
+#            print os.getcwd() # Check current working directory
 
             self.ModelTree = ModelTree()
             topNode = self.modelTree.getNode2(my_index).child(0)
@@ -158,11 +174,12 @@ class WidgetA(base, form):
             ####Generate Outputfiles for new Pic###
             self.output()
 
-            ####Pic with MCTDH Code changed####
+            ####Pic with MCTDH Code and Networkx####
             self.ModelTree = ModelTree()
             self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
             self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
             self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
+
 
             ####QGraphicsView###
             pixmap = QtGui.QPixmap('nx_test.png')
@@ -170,19 +187,25 @@ class WidgetA(base, form):
             self.scene.addPixmap(pixmap)
             self.uiDisplayTree.setScene(self.scene)
 
+            #####Leave tmp folder#####
+            os.chdir("../")
+
     def saveProject(self):
         import os, shutil
         if not (os.path.exists(str(self._SessionName)) and "tmp"
                 in str(os.getcwd())):
                 pass
-#            os.makedirs(str(self._SessionName))
-        else:
-            os.chdir("../")
-#            os.makedirs(str(self._SessionName))
-        shutil.copytree(str(os.getcwd)+"/tmp", str(os.getcwd)+
-                        "/"+str(self._SessionName))
+            #os.chdir("../")
 
         print os.getcwd() # Check current working directory
+        scr = str(os.getcwd()) + "/tmp"
+        dest = str(os.getcwd()) + "/" + str(self._SessionName)
+        print scr, dest
+        try:
+            shutil.rmtree(dest) #removes folder
+        except Exception:
+            pass
+        shutil.copytree(scr, dest)
 
     def esc(self):
         self.close()
