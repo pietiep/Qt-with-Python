@@ -12,43 +12,49 @@ class DialogB(base, form):
 
         self._WidgetA = WidgetA(self)
 
-        root, directories, filenames = os.walk(".").next()
-        self._dir_list = [dirs for dirs in directories if "Project" in dirs]
+    #    root, directories, filenames = os.walk(".").next()
+        self._dir_list = None # [dirs for dirs in directories if "Project" in dirs]
         self._projectName = None
 
         #####ListProject#######
-        self._model = QtGui.QStandardItemModel(self.uiProjectlist)
-        for key in self._dir_list:
-            item = QtGui.QStandardItem(key)
-            self._model.appendRow(item)
-        self.uiProjectlist.setModel(self._model)
-        self.uiProjectlist.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.setList()
         self.uiProjectlist.clicked.connect(self.on_item_select1)
+
 
             ####PushBottoms#####
         self.uiCancelB.clicked.connect(self.esc)
         self.uiLoadB.clicked.connect(self.LoadProject)
 
+    def setList(self):
+        self._model = QtGui.QStandardItemModel(self.uiProjectlist)
+        root, directories, filenames = os.walk(".").next() ###does not recognize new folder
+        self._dir_list = [dirs for dirs in directories if "Project" in dirs]
+    #    print sorted(self._dir_list)
+        for key in self._dir_list:
+            item = QtGui.QStandardItem(key)
+            self._model.appendRow(item)
+        self.uiProjectlist.setModel(self._model)
+        self.uiProjectlist.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+
     def LoadProject(self):
         self.close()
-        print os.getcwd() # Check current working directory
         os.chdir("./" + self._projectName)  # Change dir
-        print os.getcwd() # Check current working directory
-        dialog = self._WidgetA
-        if dialog.exec_() == QtGui.QDialog.Accepted:
-            print 'bla'
-        else:
-            print 'cancelled'
-        dialog.deleteLater()
+        print os.getcwd() + ' from B'
+    #    dialog = self._WidgetA
 
     def esc(self):
         self.close()
 
     def on_item_select1(self, item):
+        self.setList()
+    #    root, directories, filenames = os.walk(".").next()
+    #    self._dir_list = [dirs for dirs in directories if "Project" in dirs]
         key = item.data().toString()
         self._projectName = str(key)
-        print self._projectName
+        print self._projectName + ' from B'
 
+    def getnewpath(self):
+        return self._projectName
 
 if __name__ == '__main__':
 
