@@ -12,7 +12,7 @@ import os, shutil
 base, form = uic.loadUiType("dialogA.ui")
 
 class WidgetA(base, form):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(WidgetA, self).__init__(parent)
         self.setupUi(self)
 
@@ -209,6 +209,7 @@ class WidgetA(base, form):
             self.copytmp()
 
     def esc(self):
+        os.chdir("../")
         self.close()
 
     def change0(self):

@@ -16,26 +16,43 @@ class Main(base, form):
         #self._newpath = None
         self._dir_list = None
         self.getdirs()
+        self._WidgetA = WidgetA(self)
         self._DialogB = DialogB()
 
         self.uiNew.triggered.connect(self.openA)
         self.uiLoad.triggered.connect(self.openB)
         self.uiMCTDHcalc.triggered.connect(self.openC)
 
+
         self.setList()
+#        self.setPES()
     #    self.uiProjects.clicked.connect(self._DialogB.on_item_select1)
 
-        #####ListProject#######
+    def on_item_select2(self, item):
+        key = item.data().toString()
+        self._newpath = str(key)
+        print self._newpath
+
     def setList(self):
-        self._model = QtGui.QStandardItemModel(self.uiProjects)
+         #####ListModelPES#######
+        self.modelPES = QtGui.QStandardItemModel(self.uiProjects)
         for key in self._dir_list:
             item = QtGui.QStandardItem(key)
-            self._model.appendRow(item)
-        self.uiProjects.setModel(self._model)
+            self.modelPES.appendRow(item)
+        self.uiProjects.setModel(self.modelPES)
         self.uiProjects.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.uiProjects.clicked.connect(self.on_item_select1)
+        self.uiProjects.clicked.connect(self.on_item_select2)
 
-        self.uiProjects.visualRect(item.index())
+        #####ListProject#######
+#    def setList(self):
+#        self._model = QtGui.QStandardItemModel(self.uiProjects)
+#        for key in self._dir_list:
+#            item = QtGui.QStandardItem(key)
+#            self._model.appendRow(item)
+#        self.uiProjects.setModel(self._model)
+#        self.uiProjects.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+#        self.uiProjects.clicked.connect(self.on_item_select1)
+
 
     def getdirs(self):
             root, directories, filenames = os.walk(".").next()
@@ -56,30 +73,21 @@ class Main(base, form):
                 os.makedirs(self._newpath)
                 self.getdirs()
                 self.setList()
-                self._DialogB = DialogB() #update object in order to get updated list
+#                self._DialogB = DialogB() #update object in order to get updated list
 
     def openB(self):
-        #dialog = self._DialogB
-        #dialog.exec_()
-        #self._newpath = QtGui.QFileDialog.getOpenFileName(self)
-        self._newpath = QtGui.QFileDialog.getExistingDirectory(self)
-        print self._newpath
-    #    print "here is main: "+self._newpath
+        self._newpath = str(QtGui.QFileDialog.getExistingDirectory(self))
+        print self._newpath  + " from openB"
 
 
     def openC(self):
+        print self._newpath + " from openC"
+        self._newpath = self._newpath.split("/")[-1]
+        print self._newpath
         os.chdir("./" + self._newpath)  # !!!!!to uiMCTDHcalc
         print os.getcwd()
         dialog = self._WidgetA
         dialog.exec_()
-
-    def on_item_select1(self, item):
-        self.setList()
-    #    self.getdirs()
-        key = item.data().toString()
-        self._projectName = str(key)
-    #    print type(item)
-    #    print os.getcwd() + 'from main select1'
 
 if __name__ == '__main__':
 
