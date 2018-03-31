@@ -118,6 +118,10 @@ class WidgetA(base, form):
 
         self.ModelTree = None
 
+    def closeEvent(self, event):  #Overriding inherited memberfunction
+        os.chdir("../") #if dialog is closed, leave folder
+        event.accept()
+
     def showdialog(self):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)

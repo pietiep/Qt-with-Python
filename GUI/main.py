@@ -13,8 +13,8 @@ class Main(base, form):
         self.setupUi(self)
 
         self._newpath = 'Project1'
-        #self._newpath = None
         self._dir_list = None
+        self._proContent = None
         self.getdirs()
         self._WidgetA = WidgetA(self)
         self._DialogB = DialogB()
@@ -23,15 +23,33 @@ class Main(base, form):
         self.uiLoad.triggered.connect(self.openB)
         self.uiMCTDHcalc.triggered.connect(self.openC)
 
-
         self.setList()
-#        self.setPES()
-    #    self.uiProjects.clicked.connect(self._DialogB.on_item_select1)
+
+    def getContent(self):
+        print self._newpath + ' from getContent'
+        print os.getcwd()
+        if os.path.exists(self._newpath):
+            root, directories, filenames = os.walk('./'+self._newpath).next()
+            self._proContent = directories
+            print self._proContent
+        else:
+            print "path doesn't exists"
 
     def on_item_select2(self, item):
         key = item.data().toString()
         self._newpath = str(key)
         print self._newpath
+        self.getContent()
+        self.setList2()
+
+    def setList2(self):
+         #####ListModelPES#######
+        self.modelPES = QtGui.QStandardItemModel(self.uiSessions)
+        for key in self._proContent:
+            item = QtGui.QStandardItem(key)
+            self.modelPES.appendRow(item)
+        self.uiSessions.setModel(self.modelPES)
+        self.uiSessions.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
     def setList(self):
          #####ListModelPES#######
@@ -78,11 +96,14 @@ class Main(base, form):
     def openB(self):
         self._newpath = str(QtGui.QFileDialog.getExistingDirectory(self))
         print self._newpath  + " from openB"
+        self._newpath = self._newpath.split("/")[-1]
+        self.getContent()
+        self.setList2()
 
 
     def openC(self):
         print self._newpath + " from openC"
-        self._newpath = self._newpath.split("/")[-1]
+#        self._newpath = self._newpath.split("/")[-1]
         print self._newpath
         os.chdir("./" + self._newpath)  # !!!!!to uiMCTDHcalc
         print os.getcwd()
