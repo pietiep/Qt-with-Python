@@ -10,6 +10,7 @@ class View(object):
     def __init__(self, label_mode, nodes_spf):
         self.label_mode = label_mode
         self.nodes_spf = nodes_spf
+        self._G = nx.DiGraph()
     def Display(self, G):
         #plt.title('draw_networkx')
         top = ['Top']
@@ -44,5 +45,26 @@ class View(object):
         plt.savefig('nx_test.png')
         plt.clf()
 
-
+        G.nodes[1]["SPF"] = 36
+        self._G = G
+        print list(G.nodes(data=True))
+        # nx.relabel_nodes(G, self.nodes_spf, copy=True)
+#        print self.label_mode
+#        print self.nodes_spf
     #    nx.get_node_attributes(G, 'color')
+#        print G.successors('Top').next()
+
+
+    if __name__ == '__main__':
+        from ModelTree import ModelTree
+        from LogicalNodes import LogicalNodes
+        from View import View
+
+        ModelTree = ModelTree()
+        LogicalNodes = LogicalNodes(ModelTree.lay_matr_mode) #object
+        View = View(ModelTree.label_mode, ModelTree.nodes_spf) #object
+        View.Display(LogicalNodes.G) #View method Display() generated .png file
+        print View._G.node()
+    #    print View._G.node[100]
+#        for children in View._G.successors(10):
+#            print children

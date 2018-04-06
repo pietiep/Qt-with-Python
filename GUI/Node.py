@@ -81,24 +81,25 @@ class Tree(object):
     def __init__(self, startSPF):
         self._rootNode0 = Node("TOP")
         self._rootNode = Node(str(startSPF), self._rootNode0)
-        self._childNode0 = Node("19", self._rootNode)
-        self._childNode1 = Node("30", self._rootNode)
-        self._childNode2 = Node("9", self._childNode0)
-        self._childNode3 = Node("4", self._childNode0)
-        self._childNode4 = Node("17", self._childNode1)
-        self._childNode5 = Node("17", self._childNode1)
-        self._childNode6 = BottomNode("24", self._childNode2, "3")
-        self._childNode7 = BottomNode("12", self._childNode3, "0")
-        self._childNode8 = Node("5", self._childNode4)
-        self._childNode9 = Node("7", self._childNode4)
-        self._childNode10 = Node("5", self._childNode5)
-        self._childNode11 = Node("7", self._childNode5)
-        self._childNode13 = BottomNode("12", self._childNode8, "1")
-        self._childNode12 = BottomNode("12", self._childNode9, "4")
-        self._childNode14 = BottomNode("12", self._childNode10, "2")
-        self._childNode15 = BottomNode("12", self._childNode11, "5")
+#        self._childNode0 = Node("19", self._rootNode)
+#        self._childNode1 = Node("30", self._rootNode)
+#        self._childNode2 = Node("9", self._childNode0)
+#        self._childNode3 = Node("4", self._childNode0)
+#        self._childNode4 = Node("17", self._childNode1)
+#        self._childNode5 = Node("17", self._childNode1)
+#        self._childNode6 = BottomNode("24", self._childNode2, "3")
+#        self._childNode7 = BottomNode("12", self._childNode3, "0")
+#        self._childNode8 = Node("5", self._childNode4)
+#        self._childNode9 = Node("7", self._childNode4)
+#        self._childNode10 = Node("5", self._childNode5)
+#        self._childNode11 = Node("7", self._childNode5)
+#        self._childNode13 = BottomNode("12", self._childNode8, "1")
+#        self._childNode12 = BottomNode("12", self._childNode9, "4")
+#        self._childNode14 = BottomNode("12", self._childNode10, "2")
+#        self._childNode15 = BottomNode("12", self._childNode11, "5")
         self._treeData = self._rootNode.log()
-        self._dictNodes = {}
+        self._dictNodes = {"1": Node("12", self._rootNode)}
+
 
     def setRootNode(self, rootNode):
         self._rootNode = rootNode
@@ -235,11 +236,11 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
-#    tree = Tree("36")
+    tree = Tree("36")
 
- #   dict_nodes = addNode("childNode0", "19", rootNode)
- #   dict_nodes = addNode("childNode2", "9",  dict_nodes["childNode0"])
-#    print tree._rootNode
+    dict_nodes = tree.addNode("childNode0", "19", tree._rootNode)
+    dict_nodes = tree.addNode("childNode2", "9",  tree._dictNodes["childNode0"])
+    print tree._rootNode
 
 #    output = tree._rootNode.log()
 #    print output
@@ -257,6 +258,6 @@ if __name__ == '__main__':
                   [21, 22, 23, 24]]
 
     filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
-    print filedata
+#    print filedata
 #    with open("example.in", "w") as text_file:
 #        text_file.write("{0}".format(filedata))
