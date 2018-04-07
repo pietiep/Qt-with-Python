@@ -45,10 +45,12 @@ class View(object):
         plt.savefig('nx_test.png')
         plt.clf()
 
-        G.nodes[1]["SPF"] = 36
+        for key, ele_ in self.nodes_spf.items():
+            G.nodes[key]["SPF"] = ele_
+        for key, ele_ in self.label_mode.items():
+            G.nodes[key]["Mode"] = ele_
         self._G = G
         print list(G.nodes(data=True))
-        # nx.relabel_nodes(G, self.nodes_spf, copy=True)
 #        print self.label_mode
 #        print self.nodes_spf
     #    nx.get_node_attributes(G, 'color')
@@ -64,7 +66,7 @@ class View(object):
         LogicalNodes = LogicalNodes(ModelTree.lay_matr_mode) #object
         View = View(ModelTree.label_mode, ModelTree.nodes_spf) #object
         View.Display(LogicalNodes.G) #View method Display() generated .png file
-        print View._G.node()
+#        print View._G.node()
     #    print View._G.node[100]
 #        for children in View._G.successors(10):
 #            print children

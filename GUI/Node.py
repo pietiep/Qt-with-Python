@@ -1,3 +1,8 @@
+from LogicalNodes import LogicalNodes
+from ModelTree import ModelTree
+import networkx as nx
+import sys
+
 class OutPut(object):
     def __init__(self, eps, integrator, hamiltonian, potential, \
                  job, parameters, tree, filename="example.in"):
@@ -78,6 +83,7 @@ class OutPut(object):
         return self.bringAllTogether()
 
 class Tree(object):
+#    def __init__(self):
     def __init__(self, startSPF):
         self._rootNode0 = Node("TOP")
         self._rootNode = Node(str(startSPF), self._rootNode0)
@@ -98,7 +104,7 @@ class Tree(object):
 #        self._childNode14 = BottomNode("12", self._childNode10, "2")
 #        self._childNode15 = BottomNode("12", self._childNode11, "5")
         self._treeData = self._rootNode.log()
-        self._dictNodes = {"1": Node("12", self._rootNode)}
+        self._dictNodes = {}
 
 
     def setRootNode(self, rootNode):
@@ -238,9 +244,28 @@ if __name__ == '__main__':
 
     tree = Tree("36")
 
-    dict_nodes = tree.addNode("childNode0", "19", tree._rootNode)
-    dict_nodes = tree.addNode("childNode2", "9",  tree._dictNodes["childNode0"])
+    tree.addNode("childNode0", "19", tree._rootNode)
+    tree.addNode("childNode2", "9",  tree._dictNodes["childNode0"])
+
+    model = ModelTree()
+    logical = LogicalNodes(model.lay_matr_mode)
+    G = logical.G
+#    print G.nodes(data=True)
+    for ele_ in G.nodes():
+        if G.pred[ele_] == {}:
+            elder = ele_
+
+    for suc_ in nx.bfs_successors(G, elder):
+        print suc_
+        tree.addNode(str(suc_[1][0]), str(suc_[1][0]),  tree._rootNode)
+
     print tree._rootNode
+
+    def getChild(parentNode):
+        children_list = []
+        for children in G.successors(parentNode):
+            print children
+            children_list.append(children)
 
 #    output = tree._rootNode.log()
 #    print output
@@ -257,7 +282,7 @@ if __name__ == '__main__':
                   [17, 18, 19, 20],
                   [21, 22, 23, 24]]
 
-    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
+#    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
 #    print filedata
 #    with open("example.in", "w") as text_file:
 #        text_file.write("{0}".format(filedata))

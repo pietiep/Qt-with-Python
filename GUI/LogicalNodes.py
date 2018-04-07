@@ -7,8 +7,12 @@ class LogicalNodes():
     def __init__(self, layer_matr):
         self.G = nx.DiGraph()
         self.layer_matr = layer_matr
-#        self.G = nx.DiGraph()
+        self.ModelTree = ModelTree()
+        self.label_mode = self.ModelTree.label_mode
+        self.nodes_spf = self.ModelTree.nodes_spf
         self.Networkx()
+        self.augDiGraph("SPF", self.nodes_spf)
+        self.augDiGraph("Mode", self.label_mode)
 
     def Networkx(self):
         #print layer_matr
@@ -21,10 +25,10 @@ class LogicalNodes():
                     if index < (l-1):
                         self.G.add_edge(b_, c_[index + 1], weight=1)
 
+    def augDiGraph(self, str_kind, str_dict):
+        for key, ele_ in str_dict.items():
+            self.G.nodes[key][str_kind] = ele_
 
-
-
-#        return G
 
 if __name__ == '__main__':
 
