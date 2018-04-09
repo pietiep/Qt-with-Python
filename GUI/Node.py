@@ -20,7 +20,7 @@ class OutPut(object):
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
         self.savefile(filename)
-        self.savefile2()
+#        self.savefile2()
 
     def savefile(self, filename):
         with open(filename, "w") as text_file:
@@ -86,7 +86,15 @@ class Tree(object):
 #    def __init__(self):
     def __init__(self, startSPF):
         self._rootNode0 = Node("TOP")
-        self._rootNode = Node(str(startSPF), self._rootNode0)
+        self._dictNodes = {}
+        model = ModelTree()
+        logical = LogicalNodes(model.lay_matr_mode)
+        self._G = logical.G
+        self._elder = None
+        self.getElder()
+#        self._rootNode = Node(str(startSPF), self._rootNode0)
+        self.addNode(self._elder, str(self._G.nodes[self._elder]['SPF']), self._rootNode0)
+        self.readTree()
 #        self._childNode0 = Node("19", self._rootNode)
 #        self._childNode1 = Node("30", self._rootNode)
 #        self._childNode2 = Node("9", self._childNode0)
@@ -103,9 +111,24 @@ class Tree(object):
 #        self._childNode12 = BottomNode("12", self._childNode9, "4")
 #        self._childNode14 = BottomNode("12", self._childNode10, "2")
 #        self._childNode15 = BottomNode("12", self._childNode11, "5")
-        self._treeData = self._rootNode.log()
-        self._dictNodes = {}
 
+        self._rootNode = self._dictNodes[10]
+        self._treeData = self._dictNodes[10].log()
+
+    def getElder(self):
+        for ele_ in self._G.nodes():
+            if self._G.pred[ele_] == {}:
+                self._elder = ele_
+        self._elder = self._G.successors(self._elder).next()
+
+
+    def readTree(self):
+        for suc_ in nx.bfs_successors(self._G, self._elder):
+            for brothers in suc_[1]:
+                if 'Mode' in self._G.nodes[brothers].keys():
+                    self.addBottomNode(brothers, str(self._G.nodes[brothers]['SPF']), self._dictNodes[suc_[0]], str(self._G.nodes[brothers]['Mode']))
+                else:
+                    self.addNode(brothers, str(self._G.nodes[brothers]['SPF']), self._dictNodes[suc_[0]]) #Label, SPF, parent_obj
 
     def setRootNode(self, rootNode):
         self._rootNode = rootNode
@@ -244,28 +267,24 @@ if __name__ == '__main__':
 
     tree = Tree("36")
 
-    tree.addNode("childNode0", "19", tree._rootNode)
-    tree.addNode("childNode2", "9",  tree._dictNodes["childNode0"])
 
-    model = ModelTree()
-    logical = LogicalNodes(model.lay_matr_mode)
-    G = logical.G
-#    print G.nodes(data=True)
-    for ele_ in G.nodes():
-        if G.pred[ele_] == {}:
-            elder = ele_
+#    model = ModelTree()
+#    logical = LogicalNodes(model.lay_matr_mode)
+#    G = logical.G
+#
+#    for ele_ in G.nodes():
+#        if G.pred[ele_] == {}:
+#            elder = ele_
+#    elder = G.successors(elder).next()
+#
+#    for suc_ in nx.bfs_successors(G, elder):
+#        for brothers in suc_[1]:
+#            if 'Mode' in G.nodes[brothers].keys():
+#                tree.addBottomNode(brothers, str(G.nodes[brothers]['SPF']), tree._dictNodes[suc_[0]], str(G.nodes[brothers]['Mode']))
+#            else:
+#                tree.addNode(brothers, str(G.nodes[brothers]['SPF']), tree._dictNodes[suc_[0]]) #Label, SPF, parent_obj
 
-    for suc_ in nx.bfs_successors(G, elder):
-        print suc_
-        tree.addNode(str(suc_[1][0]), str(suc_[1][0]),  tree._rootNode)
-
-    print tree._rootNode
-
-    def getChild(parentNode):
-        children_list = []
-        for children in G.successors(parentNode):
-            print children
-            children_list.append(children)
+    print tree._dictNodes[tree._elder]
 
 #    output = tree._rootNode.log()
 #    print output
