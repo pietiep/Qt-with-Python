@@ -118,6 +118,7 @@ class WidgetA(base, form):
 
         self.ModelTree = None
 
+
     def closeEvent(self, event):  #Overriding inherited memberfunction
         os.chdir("../") #if dialog is closed, leave folder
         event.accept()

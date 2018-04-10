@@ -1,7 +1,64 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
 import networkx as nx
-import sys
+import sys, re
+
+class Parameters(object):
+    def __init__(self, filename="example.in"):
+        self._eps_general =  None
+        self._eps_1 = None
+        self._eps_2 = None
+        self._start = None
+        self._end = None
+        self._dt = None
+        self._iteration = None
+        self._hamiltonian = None
+        self._potential = None
+        self._job = None
+        self._parameters = None
+        self._treeData = None
+
+class InPut(Parameters):
+    def __init__(self, filename='example.in'):
+        super(InPut, self).__init__(filename)
+        self._filename = filename
+        self._paradict = {}
+        self._paralist = []
+
+    def readFile(self):
+        self.getPara("eps_general")
+        self.getPara("eps_1")
+        self.getPara("eps_2")
+        self.getPara("start")
+        self.getPara("end")
+        self.getPara("dt")
+        self.getPara("iteration")
+        self.getPara("Hamiltonian")
+        self.getPara("Potential")
+        self.getPara("job")
+        self.getPara2()
+
+    def getPara2(self):
+        with open(self._filename, "rb") as text:
+            for line in text:
+                if "parameters" in line:
+                    for i in range(10):
+                        try:
+                            para = text.next()
+                            if bool(re.search(r'\d', para)):
+                                para = para.split()     #if para contains numbers
+                                self._paralist.append(para)
+                        except StopIteration as e:
+                            pass
+#                    while bool(re.search(r'\d', line)):
+        print self._paralist
+
+    def getPara(self, para):
+        with open(self._filename, "rb") as text:
+            for line in text:
+                if para in line:
+                    pos = line.index('=')     # get Index
+                    self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
 
 class OutPut(object):
     def __init__(self, eps, integrator, hamiltonian, potential, \
@@ -20,7 +77,7 @@ class OutPut(object):
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
         self.savefile(filename)
-#        self.savefile2()
+        self.savefile2()
 
     def savefile(self, filename):
         with open(filename, "w") as text_file:
@@ -81,6 +138,7 @@ class OutPut(object):
 
     def __repr__(self):
         return self.bringAllTogether()
+
 
 class Tree(object):
 #    def __init__(self):
@@ -265,31 +323,12 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
-    tree = Tree("36")
-
-
-#    model = ModelTree()
-#    logical = LogicalNodes(model.lay_matr_mode)
-#    G = logical.G
-#
-#    for ele_ in G.nodes():
-#        if G.pred[ele_] == {}:
-#            elder = ele_
-#    elder = G.successors(elder).next()
-#
-#    for suc_ in nx.bfs_successors(G, elder):
-#        for brothers in suc_[1]:
-#            if 'Mode' in G.nodes[brothers].keys():
-#                tree.addBottomNode(brothers, str(G.nodes[brothers]['SPF']), tree._dictNodes[suc_[0]], str(G.nodes[brothers]['Mode']))
-#            else:
-#                tree.addNode(brothers, str(G.nodes[brothers]['SPF']), tree._dictNodes[suc_[0]]) #Label, SPF, parent_obj
-
-    print tree._dictNodes[tree._elder]
-
-#    output = tree._rootNode.log()
+#    tree = Tree("36")
+#    print tree._dictNodes[tree._elder]
+#    output = tree._dictNodes[tree._elder].log()
 #    print output
 
-    eps = ["1E-5", "1E-6", "1E-5"]
+    eps = ["1E-5", "1E-7", "1E-5"]
     integrator = ["0", "1000", "0.1", "100"]
     hamiltonian = "194"
     potential = "101"
@@ -300,6 +339,9 @@ if __name__ == '__main__':
                   [13, 14, 15, 16],
                   [17, 18, 19, 20],
                   [21, 22, 23, 24]]
+
+    inobj = InPut()
+    inobj.readFile()
 
 #    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
 #    print filedata
