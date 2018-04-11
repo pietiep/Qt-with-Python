@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui, uic
 from PyQt4 import *
 import sys
 from Node import OutPut, Tree, Node, TransformNode, CameraNode, LightNode
+from Node import InPut, Parameters
 from InputTree import SceneGraphModel
 from functools import partial
 from ModelTree import ModelTree
@@ -17,26 +18,45 @@ class WidgetA(base, form):
         self.setupUi(self)
 
         ####Data#####
-        eps = ["1E-5", "1E-6", "1E-5"]
-        integrator = ["0", "1000", "0.1", "100"]
-        hamiltonian = "194"
-        potential = "101"
-        job = "real-time Propagation"
-        parameters = [[1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12],
-                [13, 14, 15, 16],
-                [17, 18, 19, 20],
-                [21, 22, 23, 24]]
+#        eps = ["1E-5", "1E-6", "1E-5"]
+#        integrator = ["0", "1000", "0.1", "100"]
+#        hamiltonian = "194"
+#        potential = "101"
+#        job = "real-time Propagation"
+#        parameters = [[1, 2, 3, 4],
+#                [5, 6, 7, 8],
+#                [9, 10, 11, 12],
+#                [13, 14, 15, 16],
+#                [17, 18, 19, 20],
+#                [21, 22, 23, 24]]
 
-        ####Attributes#####
-        self._eps = eps
-        self._integrator = integrator
-        self._operator = None
-        self._hamiltonian = hamiltonian
-        self._potential = potential
-        self._job = job
-        self._parameters = parameters
+        ###get Attributes#######
+        inobj = InPut()
+        paradict = inobj._paradict
+
+        ########Attributes######
+        self._paradict = {}
+        self._eps = []
+        self._integrator = []
+        self._eps.append(paradict['eps_general'])
+        self._eps.append(paradict['eps_1'])
+        self._eps.append(paradict['eps_2'])
+        self._integrator.append(paradict['start'])
+        self._integrator.append(paradict['end'])
+        self._integrator.append(paradict['dt'])
+        self._integrator.append(paradict['iteration'])
+        self._hamiltonian = paradict['Hamiltonian']
+        self._potential = paradict['Potential']
+        self._job = paradict['job']
+        self._parameters = paradict['para']
+
+#        self._eps = eps
+#        self._integrator = integrator
+#        self._operator = None
+#        self._hamiltonian = hamiltonian
+#        self._potential = potential
+#        self._job = job
+#        self._parameters = parameters
 
         self._tree = Tree("36")  #Delegation instead of inheritance of Tree
         self._treeData = self._tree._treeData
@@ -101,10 +121,10 @@ class WidgetA(base, form):
 
 
         ####QGraphicsView###
-        pixmap = QtGui.QPixmap('nx_test.png')
-        self.scene = QtGui.QGraphicsScene(self)
-        self.scene.addPixmap(pixmap)
-        self.uiDisplayTree.setScene(self.scene)
+#        pixmap = QtGui.QPixmap('nx_test.png')
+#        self.scene = QtGui.QGraphicsScene(self)
+#        self.scene.addPixmap(pixmap)
+#        self.uiDisplayTree.setScene(self.scene)
 
         ####PushBottoms#####
         self.uiCancel.clicked.connect(self.esc)
@@ -118,10 +138,36 @@ class WidgetA(base, form):
 
         self.ModelTree = None
 
+    def makeParaDict(self):
+         self._paradict['eps_general'] = self._eps[0]
+         self._paradict['eps_1']       = self._eps[1]
+         self._paradict['eps_2']       = self._eps[2]
+         self._paradict['start']       = self._integrator[0]
+         self._paradict['end']         = self._integrator[1]
+         self._paradict['dt']          = self._integrator[2]
+         self._paradict['iteration']   = self._integrator[3]
+         self._paradict['Hamiltonian'] = self._hamiltonian
+         self._paradict['Potential']   = self._potential
+         self._paradict['job']         = self._job
+         self._paradict['para']        = self._parameters
 
     def closeEvent(self, event):  #Overriding inherited memberfunction
         os.chdir("../") #if dialog is closed, leave folder
         event.accept()
+
+    def showdialog2(self):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Overwriting temporary settings?")
+        msg.setStandardButtons(QtGui.QMessageBox.Save | QtGui.QMessageBox.Cancel)
+
+#        msg.buttonClicked.connect(self.msgbtn)
+        print type(QtGui.QMessageBox.Save)
+        retval = msg.exec_()
+
+    def msgbtn(self):
+        print 'clicked'
 
     def showdialog(self):
         msg = QtGui.QMessageBox()
@@ -129,9 +175,9 @@ class WidgetA(base, form):
 
         msg.setText("Please give a name for the current Session")
 #        msg.setInformativeText("This is additional information")
-        msg.setWindowTitle("MessageBox")
-        msg.setDetailedText("The details are as follows:")
-        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+#        msg.setWindowTitle("MessageBox")
+#        msg.setDetailedText("The details are as follows:")
+#        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
 
 #        msg.buttonClicked.connect(self.msgbtn)
         retval = msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
@@ -151,6 +197,8 @@ class WidgetA(base, form):
         shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
                     , str(os.getcwd()))
         shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
+                    , str(os.getcwd()))
+        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/example.in"""
                     , str(os.getcwd()))
 
     def changeNode(self, my_index):
@@ -199,14 +247,9 @@ class WidgetA(base, form):
         else:
             root, directories, filenames = os.walk(".").next()
             if "tmp" in directories:
-                pass
+                print "can't overwrite stuff "
+                self.showdialog2()
             else:
-                print "hello"
-                print "hello"
-                print "hello"
-                print "hello"
-                print "hello"
-                print "hello"
                 self.managefolder()
                 self.output()
                 os.chdir("../")
@@ -281,9 +324,11 @@ class WidgetA(base, form):
     def output(self):
         """Class OutPut takes all parameters and saves them in File by creating
      the object of this class"""
-        outobj = OutPut(self._eps, self._integrator, self._hamiltonian, \
-                        self._potential, self._job, self._parameters, \
-                        self._tree)
+        print os.getcwd()
+        self.makeParaDict()
+        outobj = OutPut(self._tree, self._paradict)
+        outobj.savefile()
+        outobj.savefile2()
 
 if __name__ == '__main__':
 

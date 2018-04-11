@@ -161,9 +161,7 @@ class GenerateFile(base, form):
         self.uiGenerateFile.clicked.connect(self.output)
 
     def output(self):
-        outobj = OutPut(self._eps, self._integrator, self._hamiltonian, \
-                        self._potential, self._job, self._parameters, \
-                        self._tree) #Class OutPut takes all parameters
+        outobj = OutPut(self._tree) #Class OutPut takes all parameters
         # and saves them in File by creating the object of this class
 
 if __name__ == '__main__':

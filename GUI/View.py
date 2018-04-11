@@ -50,7 +50,6 @@ class View(object):
         for key, ele_ in self.label_mode.items():
             G.nodes[key]["Mode"] = ele_
         self._G = G
-        print list(G.nodes(data=True))
 #        print self.label_mode
 #        print self.nodes_spf
     #    nx.get_node_attributes(G, 'color')

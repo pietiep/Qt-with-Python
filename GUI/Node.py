@@ -4,7 +4,7 @@ import networkx as nx
 import sys, re
 
 class Parameters(object):
-    def __init__(self, filename="example.in"):
+    def __init__(self):
         self._eps_general =  None
         self._eps_1 = None
         self._eps_2 = None
@@ -20,10 +20,11 @@ class Parameters(object):
 
 class InPut(Parameters):
     def __init__(self, filename='example.in'):
-        super(InPut, self).__init__(filename)
+        super(InPut, self).__init__()
         self._filename = filename
         self._paradict = {}
         self._paralist = []
+        self.readFile()
 
     def readFile(self):
         self.getPara("eps_general")
@@ -37,6 +38,8 @@ class InPut(Parameters):
         self.getPara("Potential")
         self.getPara("job")
         self.getPara2()
+        self._paradict['para'] = self._paralist
+
 
     def getPara2(self):
         with open(self._filename, "rb") as text:
@@ -51,7 +54,6 @@ class InPut(Parameters):
                         except StopIteration as e:
                             pass
 #                    while bool(re.search(r'\d', line)):
-        print self._paralist
 
     def getPara(self, para):
         with open(self._filename, "rb") as text:
@@ -60,27 +62,32 @@ class InPut(Parameters):
                     pos = line.index('=')     # get Index
                     self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
 
-class OutPut(object):
-    def __init__(self, eps, integrator, hamiltonian, potential, \
-                 job, parameters, tree, filename="example.in"):
-        self._eps_general = eps[0]
-        self._eps_1 = eps[1]
-        self._eps_2 = eps[2]
-        self._start = integrator[0]
-        self._end =integrator[1]
-        self._dt = integrator[2]
-        self._iteration = integrator[3]
-        self._hamiltonian = hamiltonian
-        self._potential = potential
-        self._job = job
-        self._parameters = parameters
+class OutPut(Parameters):
+    #def __init__(self, eps, integrator, hamiltonian, potential, \
+    #             job, parameters, tree, filename="example.in"):
+    def __init__(self, tree, paradict, filename="example.in"):
+#        inobj = InPut()
+#        paradict = inobj._paradict
+        print paradict['job']
+        self._eps_general = paradict['eps_general']
+        self._eps_1 = paradict['eps_1']
+        self._eps_2 = paradict['eps_2']
+        self._start = paradict['start']
+        self._end =paradict['end']
+        self._dt = paradict['dt']
+        self._iteration = paradict['iteration']
+        self._hamiltonian = paradict['Hamiltonian']
+        self._potential = paradict['Potential']
+        self._job = paradict['job']
+        self._parameters = paradict['para']
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
-        self.savefile(filename)
-        self.savefile2()
+        self._filename = filename
+#        self.savefile()
+#        self.savefile2()
 
-    def savefile(self, filename):
-        with open(filename, "w") as text_file:
+    def savefile(self):
+        with open(self._filename, "w") as text_file:
             text_file.write("{0}".format(self.bringAllTogether()))
 
     def savefile2(self):
@@ -323,25 +330,27 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
-#    tree = Tree("36")
+    tree = Tree("36")
+    inobj = InPut()
+    outobj = OutPut(tree, inobj._paradict)
+    print outobj._treeData
 #    print tree._dictNodes[tree._elder]
 #    output = tree._dictNodes[tree._elder].log()
 #    print output
 
-    eps = ["1E-5", "1E-7", "1E-5"]
-    integrator = ["0", "1000", "0.1", "100"]
-    hamiltonian = "194"
-    potential = "101"
-    job = "eigenstates"
-    parameters = [[1, 2, 3, 4],
-                  [5, 6, 7, 8],
-                  [9, 10, 11, 12],
-                  [13, 14, 15, 16],
-                  [17, 18, 19, 20],
-                  [21, 22, 23, 24]]
+#    eps = ["1E-5", "1E-7", "1E-5"]
+#    integrator = ["0", "1000", "0.1", "100"]
+#    hamiltonian = "194"
+#    potential = "101"
+#    job = "eigenstates"
+#    parameters = [[1, 2, 3, 4],
+#                  [5, 6, 7, 8],
+#                  [9, 10, 11, 12],
+#                  [13, 14, 15, 16],
+#                  [17, 18, 19, 20],
+#                  [21, 22, 23, 24]]
 
-    inobj = InPut()
-    inobj.readFile()
+#    inobj.readFile()
 
 #    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
 #    print filedata

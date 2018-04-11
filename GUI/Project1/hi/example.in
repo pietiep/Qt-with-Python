@@ -14,18 +14,13 @@ iteration = 100
 Hamiltonian = 194
 Potential = 101
 
-job = real-time Propagation
+job = eigenstates
 
 
 basis = 
 {
 tree = [ 
-21 -2
-   19 -2
-      4 -1
-         12  0   0
-      9 -1
-         24  0   3
+120 -2
    30 -2
       17 -2
          5 -1
@@ -37,6 +32,11 @@ tree = [
             12  0   1
          7 -1
             12  0   4
+   19 -2
+      9 -1
+         24  0   3
+      4 -1
+         12  0   0
 ]
 
 
