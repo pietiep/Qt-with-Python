@@ -30,6 +30,10 @@ class Main(base, form):
         print os.getcwd()
         if os.path.exists(self._newpath):
             root, directories, filenames = os.walk('./'+self._newpath).next()
+            try:
+                directories.remove('tmp')
+            except ValueError as e:
+                print 'tmp not here'
             self._proContent = directories
             print self._proContent
         else:
@@ -38,7 +42,9 @@ class Main(base, form):
     def on_item_select2(self, item):
         key = item.data().toString()
         self._newpath = str(key)
-        print self._newpath
+        self.getdirs()
+        print self._dir_list
+        self.setList()
         self.getContent()
         self.setList2()
 
@@ -59,7 +65,7 @@ class Main(base, form):
             self.modelPES.appendRow(item)
         self.uiProjects.setModel(self.modelPES)
         self.uiProjects.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.uiProjects.clicked.connect(self.on_item_select2)
+#        self.uiProjects.clicked.connect(self.on_item_select2)
 
         #####ListProject#######
 #    def setList(self):

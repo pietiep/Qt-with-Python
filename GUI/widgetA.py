@@ -66,6 +66,8 @@ class WidgetA(base, form):
 
         self._SessionName = None
 
+        self._messagebut = None
+
         #####LineEdit:Projectname#######
 #        self.uiProjectName.setText("Session1")
         self.uiProjectName.textChanged.connect(self.change0)
@@ -160,14 +162,13 @@ class WidgetA(base, form):
         msg.setIcon(QtGui.QMessageBox.Warning)
 
         msg.setText("Overwriting temporary settings?")
-        msg.setStandardButtons(QtGui.QMessageBox.Save | QtGui.QMessageBox.Cancel)
+        msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
 
-#        msg.buttonClicked.connect(self.msgbtn)
-        print type(QtGui.QMessageBox.Save)
+        msg.buttonClicked.connect(self.msgbtn)
         retval = msg.exec_()
 
-    def msgbtn(self):
-        print 'clicked'
+    def msgbtn(self, i):
+        self._messagebut = str(i.text())
 
     def showdialog(self):
         msg = QtGui.QMessageBox()
@@ -208,7 +209,7 @@ class WidgetA(base, form):
             self.managefolder()
 
             self.ModelTree = ModelTree()
-            topNode = self.modelTree.getNode2(my_index).child(0)
+            topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
 
             ####Generate Outputfiles for new Pic###
@@ -249,6 +250,13 @@ class WidgetA(base, form):
             if "tmp" in directories:
                 print "can't overwrite stuff "
                 self.showdialog2()
+                if 'Yes' in self._messagebut:
+                    self.managefolder()
+                    self.output()
+                    os.chdir("../")
+                else:
+                    pass
+                print 'bla'
             else:
                 self.managefolder()
                 self.output()
