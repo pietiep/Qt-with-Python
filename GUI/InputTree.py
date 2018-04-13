@@ -8,8 +8,6 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         super(SceneGraphModel, self).__init__(parent)
         self._rootNode = root
 
-
-
     def parent(self, index):
         node = index.internalPointer()
         parentNode = node.parent()

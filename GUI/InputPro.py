@@ -1,9 +1,9 @@
 from PyQt4 import QtCore, QtGui, uic
-import sys
+import sys, os
 
-class ListModel(QtCore.QAbstractListModel):
+class ListAbstrModel(QtCore.QAbstractListModel):
     def __init__(self, data=[], parent=None):
-        super(ListModel, self).__init__(parent)
+        super(ListAbstrModel, self).__init__(parent)
         self.__data = data
 
     def rowCount(self, parent):
@@ -23,13 +23,84 @@ class ListModel(QtCore.QAbstractListModel):
         return QtCore.Qt.ItemIsEditable |QtCore.Qt.ItemIsEnabled |QtCore.Qt.ItemIsSelectable
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-        print str(value.toString()), "from setData"
         if role == QtCore.Qt.EditRole:
             row = index.row()
-            self.__data[row] = value
+            self.__data[row] = str(value.toString())
             return True
         return False
 
+class ListModel(ListAbstrModel):
+    def __init__(self, data=[], parent=None):
+        super(ListModel, self).__init__(data, parent)
+        self.__data = data
+        self.__dataBefore = list(data)
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if value not in self.__data:
+            if role == QtCore.Qt.EditRole:
+                row = index.row()
+                self.__data[row] = str(value.toString())
+                self.getValue(row)
+                return True
+        else:
+            self.showdialog(str(value.toString()))
+            return False
+
+    def getValue(self, row):
+        matches = list(set(self.__data).intersection(self.__dataBefore))
+        new = [l_ for l_ in self.__data if l_ not in matches]
+        old = [l_ for l_ in self.__dataBefore if l_ not in matches]
+        print new, old
+        print os.getcwd()
+        self.__dataBefore = list(self.__data)
+        try:
+            os.rename(old[0], new[0])
+        except OSError as e:
+            raise
+
+    def showdialog(self, value):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Folder %s already exists!" %value)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+
+        retval = msg.exec_()
+class ListModel2(ListAbstrModel):
+    def __init__(self, project, data=[], parent=None):
+        super(ListModel2, self).__init__(data, parent)
+        self.__data = data
+        self.__dataBefore = list(data)
+        self._changePath = os.getcwd() + '/' + project
+#        print project, 'from init2'
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if role == QtCore.Qt.EditRole:
+            row = index.row()
+            self.__data[row] = str(value.toString())
+            self.getValue(row)
+            return True
+        return False
+
+    def getValue(self, row):
+        matches = list(set(self.__data).intersection(self.__dataBefore))
+        new = [l_ for l_ in self.__data if l_ not in matches]
+        old = [l_ for l_ in self.__dataBefore if l_ not in matches]
+        self.__dataBefore = list(self.__data)
+        os.chdir(self._changePath)
+        try:
+            os.rename(old[0], new[0])
+        except Exception as e:
+            self.showdialog(row)
+
+    def showdialog(self, row):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Folder %s already exists!" %self.__data[row])
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+
+        retval = msg.exec_()
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
@@ -39,4 +110,5 @@ if __name__ == '__main__':
     listView = QtGui.QListView()
     listView.show()
     listView.setModel(model)
+#    model.getValue()
     sys.exit(app.exec_())
