@@ -17,6 +17,7 @@ class ListAbstrModel(QtCore.QAbstractListModel):
         if role == QtCore.Qt.DisplayRole:
             row = index.row()
             value = self.__data[row]
+            print value
             return value
 
     def flags(self, index):
@@ -55,7 +56,7 @@ class ListModel(ListAbstrModel):
         self.__dataBefore = list(self.__data)
         try:
             os.rename(old[0], new[0])
-        except OSError as e:
+        except OSError:
             raise
 
     def showdialog(self, value):
@@ -66,7 +67,8 @@ class ListModel(ListAbstrModel):
         msg.setStandardButtons(QtGui.QMessageBox.Ok)
 
         retval = msg.exec_()
-class ListModel2(ListAbstrModel):
+        
+class ListModel2(ListModel):  #######Noch anpassen!!!!
     def __init__(self, project, data=[], parent=None):
         super(ListModel2, self).__init__(data, parent)
         self.__data = data
@@ -74,13 +76,13 @@ class ListModel2(ListAbstrModel):
         self._changePath = os.getcwd() + '/' + project
 #        print project, 'from init2'
 
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if role == QtCore.Qt.EditRole:
-            row = index.row()
-            self.__data[row] = str(value.toString())
-            self.getValue(row)
-            return True
-        return False
+#    def setData(self, index, value, role=QtCore.Qt.EditRole):
+#        if role == QtCore.Qt.EditRole:
+#            row = index.row()
+#            self.__data[row] = str(value.toString())
+#            self.getValue(row)
+#            return True
+#        return False
 
     def getValue(self, row):
         matches = list(set(self.__data).intersection(self.__dataBefore))
@@ -93,14 +95,15 @@ class ListModel2(ListAbstrModel):
         except Exception as e:
             self.showdialog(row)
 
-    def showdialog(self, row):
-        msg = QtGui.QMessageBox()
-        msg.setIcon(QtGui.QMessageBox.Warning)
+#    def showdialog(self, row):
+#        msg = QtGui.QMessageBox()
+#        msg.setIcon(QtGui.QMessageBox.Warning)
+#
+#        msg.setText("Folder %s already exists!" %self.__data[row])
+#        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+#
+#        retval = msg.exec_()
 
-        msg.setText("Folder %s already exists!" %self.__data[row])
-        msg.setStandardButtons(QtGui.QMessageBox.Ok)
-
-        retval = msg.exec_()
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
