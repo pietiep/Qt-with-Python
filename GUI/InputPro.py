@@ -17,7 +17,6 @@ class ListAbstrModel(QtCore.QAbstractListModel):
         if role == QtCore.Qt.DisplayRole:
             row = index.row()
             value = self.__data[row]
-            print value
             return value
 
     def flags(self, index):
@@ -44,7 +43,7 @@ class ListModel(ListAbstrModel):
                 self.getValue(row)
                 return True
         else:
-            self.showdialog(str(value.toString()))
+#            self.showdialog(str(value.toString()))
             return False
 
     def getValue(self, row):
@@ -59,30 +58,21 @@ class ListModel(ListAbstrModel):
         except OSError:
             raise
 
-    def showdialog(self, value):
-        msg = QtGui.QMessageBox()
-        msg.setIcon(QtGui.QMessageBox.Warning)
-
-        msg.setText("Folder %s already exists!" %value)
-        msg.setStandardButtons(QtGui.QMessageBox.Ok)
-
-        retval = msg.exec_()
+#    def showdialog(self, value):
+#        msg = QtGui.QMessageBox()
+#        msg.setIcon(QtGui.QMessageBox.Warning)
+#
+#        msg.setText("Folder %s already exists!" %value)
+#        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+#
+#        retval = msg.exec_()
         
-class ListModel2(ListModel):  #######Noch anpassen!!!!
+class ListModel2(ListModel):  
     def __init__(self, project, data=[], parent=None):
         super(ListModel2, self).__init__(data, parent)
         self.__data = data
         self.__dataBefore = list(data)
         self._changePath = os.getcwd() + '/' + project
-#        print project, 'from init2'
-
-#    def setData(self, index, value, role=QtCore.Qt.EditRole):
-#        if role == QtCore.Qt.EditRole:
-#            row = index.row()
-#            self.__data[row] = str(value.toString())
-#            self.getValue(row)
-#            return True
-#        return False
 
     def getValue(self, row):
         matches = list(set(self.__data).intersection(self.__dataBefore))
@@ -95,14 +85,6 @@ class ListModel2(ListModel):  #######Noch anpassen!!!!
         except Exception as e:
             self.showdialog(row)
 
-#    def showdialog(self, row):
-#        msg = QtGui.QMessageBox()
-#        msg.setIcon(QtGui.QMessageBox.Warning)
-#
-#        msg.setText("Folder %s already exists!" %self.__data[row])
-#        msg.setStandardButtons(QtGui.QMessageBox.Ok)
-#
-#        retval = msg.exec_()
 
 if __name__ == '__main__':
 
@@ -113,5 +95,4 @@ if __name__ == '__main__':
     listView = QtGui.QListView()
     listView.show()
     listView.setModel(model)
-#    model.getValue()
     sys.exit(app.exec_())
