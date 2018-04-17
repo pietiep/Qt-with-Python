@@ -15,6 +15,7 @@ class Main(base, form):
 
         self._startingPath = os.getcwd()
         self._newpath = 'Project1'
+        self._path2 = ''
         self._dir_list = None
         self._proContent = None
 
@@ -29,10 +30,19 @@ class Main(base, form):
         self.uiMCTDHcalc.triggered.connect(self.openC)
         self.uiPlusBu.clicked.connect(self.openA)
         self.uiPlusBu2.clicked.connect(self.open0)
+        self.uiPlusBu.clicked.connect(self.removeA)
+        self.uiPlusBu2.clicked.connect(self.remove0)
 
         self.setList()
 
+    def remove0(self):
+        pass
+
+    def removeA(self):
+        pass        
+
     def getContent(self):
+        print self._newpath, 'from getContent'
         if os.path.exists(self._newpath):
             root, directories, filenames = os.walk('./'+self._newpath).next()
             try:
@@ -45,16 +55,13 @@ class Main(base, form):
 
     def on_item_select2(self, item):
         key = item.data().toString()
-        print key
         newDir = str(key)
         os.chdir("/" + newDir)
         self.setList2()
 
     def on_item_select(self, item):
         os.chdir(self._startingPath)
-        print  'from ListModel2', os.getcwd()
         key = item.data().toString()
-        print key
         self._newpath = str(key)
         self.getdirs()
         self.getContent()
@@ -75,17 +82,18 @@ class Main(base, form):
             root, directories, filenames = os.walk(".").next()
             self._dir_list = [dirs for dirs in directories]
 
-    def open0(self, warnings=''):
-        #get key from getlist1()
-        path = '/' + self._newpath
-        print path, 'from open0'
+    def open0(self, warn):
+        if warn == False:
+            warn = ''
         dialogC = DialogC()
-        dialogC.setWarning(str(warnings))
+        print warn, 'from open0'
+        dialogC.setWarning(str(warn))
         dialogC.exec_()
-        self._newpath = str(dialogC._FolderName)
+        self._path2 = str(dialogC._FolderName)
 
-        if self._newpath != 'Cancel':
-            path = os.getcwd() + '/' + self._newpath + 'path'
+        if self._path2 != 'Cancel':
+            path = os.getcwd() + '/' + self._newpath + '/' + self._path2
+            print path, 'from open0'
             if not os.path.exists(path):
                 try:
                     os.makedirs(path)
@@ -97,7 +105,9 @@ class Main(base, form):
                 print 'Folder already exists!'
                 self.open0('Folder already exists!')
 
-    def openA(self, warnings=''):
+    def openA(self, warnings):
+        if warnings == False:
+            warnings = ''
         dialogC = DialogC()
         dialogC.setWarning(str(warnings))
         dialogC.exec_()

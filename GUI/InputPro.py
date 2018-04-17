@@ -34,19 +34,20 @@ class ListModel(ListAbstrModel):
         super(ListModel, self).__init__(data, parent)
         self.__data = data
         self.__dataBefore = list(data)
+        self._messageBu = False
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if value not in self.__data:
             if role == QtCore.Qt.EditRole:
                 row = index.row()
                 self.__data[row] = str(value.toString())
-                self.getValue(row)
+                self.getValue()
                 return True
         else:
 #            self.showdialog(str(value.toString()))
             return False
 
-    def getValue(self, row):
+    def getValue(self):
         matches = list(set(self.__data).intersection(self.__dataBefore))
         new = [l_ for l_ in self.__data if l_ not in matches]
         old = [l_ for l_ in self.__dataBefore if l_ not in matches]
@@ -58,14 +59,44 @@ class ListModel(ListAbstrModel):
         except OSError:
             raise
 
-#    def showdialog(self, value):
-#        msg = QtGui.QMessageBox()
-#        msg.setIcon(QtGui.QMessageBox.Warning)
+    def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
+        self.beginRemoveRows(parent, position, position+rows-1)
+            
+        value = self.__data[position]
+        self.showdialog(value)
+        if self._messageBu == 'OK':
+            self.__data.remove(value)
+            
+            self.endRemoveRows()
+            return True
+        else:
+            self.endRemoveRows()
+            return False
+            
+    
+
+#    def removeRow(self, position):
+#        self.__data = self.__data[:position] + self.__data[position+1:]
+#        self.getDelValue()
+    
+#    def getDelValue(self):
+#        matches = list(set(self.__data).intersection(self.__dataBefore))
+#        old = [l_ for l_ in self.__dataBefore if l_ not in matches]
+#        self.showdialog(old)
+#        self.Data()
 #
-#        msg.setText("Folder %s already exists!" %value)
-#        msg.setStandardButtons(QtGui.QMessageBox.Ok)
-#
-#        retval = msg.exec_()
+    def showdialog(self, value):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Are sure you want to delete Folder %s?" %value)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok| QtGui.QMessageBox.Cancel)
+
+        msg.buttonClicked.connect(self.msgbtn)
+        msg.exec_()
+
+    def msgbtn(self, i):
+        self._messageBu = str(i.text())
         
 class ListModel2(ListModel):  
     def __init__(self, project, data=[], parent=None):
@@ -95,4 +126,5 @@ if __name__ == '__main__':
     listView = QtGui.QListView()
     listView.show()
     listView.setModel(model)
+    model.removeRows(0,1)
     sys.exit(app.exec_())

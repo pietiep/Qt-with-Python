@@ -20,6 +20,7 @@ class DialogC(base, form):
         self.uiCancelBu.clicked.connect(self.esc)
     
     def setWarning(self, warningUi):
+        print warningUi
         self.uiWarning.setText(warningUi)
 
     def save(self):
