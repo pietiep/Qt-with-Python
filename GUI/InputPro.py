@@ -1,7 +1,7 @@
-from PyQt4 import QtCore, QtGui, uic
+from PyQt4 import QtCore, QtGui
 import sys, os
 
-class ListAbstrModel(QtCore.QAbstractListModel):
+class ListAbstrModel(QtGui.QStringListModel):  #changed from QtCore.QAbstractListModel
     def __init__(self, data=[], parent=None):
         super(ListAbstrModel, self).__init__(parent)
         self.__data = data

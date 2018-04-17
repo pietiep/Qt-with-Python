@@ -1,6 +1,5 @@
-from PyQt4 import QtCore, QtGui, uic
-from PyQt4 import *
-import sys, os, re
+from PyQt4 import QtGui, uic, QtCore
+import sys, os, shutil
 from widgetA import WidgetA
 from InputPro import ListModel, ListModel2
 from dialogC import DialogC
@@ -21,25 +20,39 @@ class Main(base, form):
 
         self._model1 = None
         self._model2 = None
+        self._itemIndex1 = None
+        self._itemIndex2 = None
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
 
+        self.setList()
         self.uiNew.triggered.connect(self.openA)
         self.uiLoad.triggered.connect(self.openB)
         self.uiMCTDHcalc.triggered.connect(self.openC)
         self.uiPlusBu.clicked.connect(self.openA)
         self.uiPlusBu2.clicked.connect(self.open0)
-        self.uiPlusBu.clicked.connect(self.removeA)
-        self.uiPlusBu2.clicked.connect(self.remove0)
+        self.uiMinusBu.clicked.connect(self.removeA)
+        self.uiMinusBu2.clicked.connect(self.remove0)
 
         self.setList()
 
     def remove0(self):
-        pass
+        print self._newpath
+        rowNum = self._itemIndex2.row()
+        key = str(self._itemIndex2.data().toString())
+        self._model2.removeRows(rowNum,0)
+        if self._model2._messageBu == 'OK':
+            print 'delete %s' %key        
+            shutil.rmtree(self._startingPath+'/'+self._newpath+'/'+key)
 
     def removeA(self):
-        pass        
+        rowNum = self._itemIndex1.row()
+        key = str(self._itemIndex1.data().toString())
+        self._model1.removeRows(rowNum,0)
+        if self._model1._messageBu == 'OK':
+            print 'delete %s' %key        
+            shutil.rmtree(self._startingPath+'/'+key)
 
     def getContent(self):
         print self._newpath, 'from getContent'
@@ -53,13 +66,15 @@ class Main(base, form):
         else:
             print "path doesn't exists"
 
-    def on_item_select2(self, item):
-        key = item.data().toString()
-        newDir = str(key)
-        os.chdir("/" + newDir)
-        self.setList2()
+#    def on_item_select2(self, item):
+#        self._itemIndex2 = item
+#        key = item.data().toString()
+#        newDir = str(key)
+#        os.chdir("/" + newDir)
+#        self.setList2()
 
     def on_item_select(self, item):
+        self._itemIndex1 = item
         os.chdir(self._startingPath)
         key = item.data().toString()
         self._newpath = str(key)
@@ -71,11 +86,21 @@ class Main(base, form):
          #####ListModelPES#######
         self._model2 = ListModel2(self._newpath, self._proContent)
         self.uiSessions.setModel(self._model2)
+        indices = self.uiSessions.selectionModel().selectedIndexes()
+        if not indices:
+            index = self._model2.index(0,0)
+            self._itemIndex2 = index
+            self.uiSessions.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
 
     def setList(self):
          #####ListModelPES#######
         self._model1 = ListModel(self._dir_list)
         self.uiProjects.setModel(self._model1)
+        indices = self.uiProjects.selectionModel().selectedIndexes()
+        if not indices:
+            index = self._model1.index(0,0)
+            self._itemIndex1 = index
+            self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
         self.uiProjects.clicked.connect(self.on_item_select)
 
     def getdirs(self):
