@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 import sys, os
 
-class ListAbstrModel(QtCore.QAbstractListModel):  #changed from QtCore.QAbstractListModel
+class ListAbstrModel(QtCore.QAbstractListModel): 
     def __init__(self, data=[], parent=None):
         super(ListAbstrModel, self).__init__(parent)
         self.__data = data
@@ -121,10 +121,13 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle("cleanlooks")
-    listmy = ['bla1', 'bla2', 'bla3']
+    listmy = ['bla1', 'bla2', 'bla3', 'bla4']
     model = ListModel(listmy)
+    proxy = QtGui.QSortFilterProxyModel()
+    proxy.setSourceModel(model)
+    proxy.sort(0, QtCore.Qt.AscendingOrder)
     listView = QtGui.QListView()
+    listView.setModel(proxy)
     listView.show()
-    listView.setModel(model)
     model.removeRows(0,1)
     sys.exit(app.exec_())

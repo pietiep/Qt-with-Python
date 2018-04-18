@@ -24,6 +24,8 @@ class Main(base, form):
         self._modelProxy2 = QtGui.QSortFilterProxyModel()
         self._itemIndex1 = None
         self._itemIndex2 = None
+        self._itemProxyIndex1 = None
+        self._itemProxyIndex2 = None
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
@@ -40,7 +42,6 @@ class Main(base, form):
         self.setList()
 
     def remove0(self):
-        print self._newpath
         rowNum = self._itemIndex2.row()
         key = str(self._itemIndex2.data().toString())
         self._model2.removeRows(rowNum,0)
@@ -50,18 +51,19 @@ class Main(base, form):
 
     def removeA(self):
         rowNum = self._itemIndex1.row()
-        print rowNum
+        rowNumProxy = self._itemProxyIndex1.row()
+        print rowNum, 'data', rowNumProxy, 'proxy'
         key = str(self._itemIndex1.data().toString())
         startingpath2 = self._startingPath + '/'
         delFolder = startingpath2 + key
-        print delFolder, 'delFolder'
-        print os.getcwd()
         self._model1.removeRows(rowNum,0)
         if self._model1._messageBu == 'OK' and delFolder != self._startingPath and delFolder != startingpath2:
+#            selIndexes = self.uiProjects.selectedIndexes()
+
             print 'delete %s' %key
             shutil.rmtree(self._startingPath+'/'+key)
-        else:
-            print 'test'
+            self.getdirs()
+            self.setList()
 
     def getContent(self):
         print self._newpath, 'from getContent'
@@ -75,15 +77,10 @@ class Main(base, form):
         else:
             print "path doesn't exists"
 
-#    def on_item_select2(self, item):
-#        self._itemIndex2 = item
-#        key = item.data().toString()
-#        newDir = str(key)
-#        os.chdir("/" + newDir)
-#        self.setList2()
 
     def on_item_select(self, index):
-        model = index.model()
+        self._itemProxyIndex1 = index   #index from Proxy
+        model = index.model()          # model = ProxyModel
         if hasattr(model, 'mapToSource'):
             index = model.mapToSource(index)
         self._itemIndex1 = index
@@ -107,13 +104,14 @@ class Main(base, form):
          #####ListModelPES#######
         self._model1 = ListModel(self._dir_list)
         self._modelProxy1.setSourceModel(self._model1)
+        self._modelProxy1.setDynamicSortFilter(True)
         self.uiProjects.setModel(self._modelProxy1)
         self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
-#        self.uiProjects.setModel(self._model1)
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
             index = self._model1.index(0,0)
             self._itemIndex1 = index
+            self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
         self.uiProjects.clicked.connect(self.on_item_select)
 
