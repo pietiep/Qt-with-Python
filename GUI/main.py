@@ -20,6 +20,8 @@ class Main(base, form):
 
         self._model1 = None
         self._model2 = None
+        self._modelProxy1 = QtGui.QSortFilterProxyModel()
+        self._modelProxy2 = QtGui.QSortFilterProxyModel()
         self._itemIndex1 = None
         self._itemIndex2 = None
 
@@ -48,11 +50,18 @@ class Main(base, form):
 
     def removeA(self):
         rowNum = self._itemIndex1.row()
+        print rowNum
         key = str(self._itemIndex1.data().toString())
+        startingpath2 = self._startingPath + '/'
+        delFolder = startingpath2 + key
+        print delFolder, 'delFolder'
+        print os.getcwd()
         self._model1.removeRows(rowNum,0)
-        if self._model1._messageBu == 'OK':
-            print 'delete %s' %key        
+        if self._model1._messageBu == 'OK' and delFolder != self._startingPath and delFolder != startingpath2:
+            print 'delete %s' %key
             shutil.rmtree(self._startingPath+'/'+key)
+        else:
+            print 'test'
 
     def getContent(self):
         print self._newpath, 'from getContent'
@@ -60,7 +69,7 @@ class Main(base, form):
             root, directories, filenames = os.walk('./'+self._newpath).next()
             try:
                 directories.remove('tmp')  #removes 'tmp' from list
-            except ValueError as e:
+            except ValueError:
                 pass
             self._proContent = directories
         else:
@@ -73,11 +82,13 @@ class Main(base, form):
 #        os.chdir("/" + newDir)
 #        self.setList2()
 
-    def on_item_select(self, item):
-        self._itemIndex1 = item
+    def on_item_select(self, index):
+        model = index.model()
+        if hasattr(model, 'mapToSource'):
+            index = model.mapToSource(index)
+        self._itemIndex1 = index
         os.chdir(self._startingPath)
-        key = item.data().toString()
-        self._newpath = str(key)
+        self._newpath = str(index.data().toString())
         self.getdirs()
         self.getContent()
         self.setList2()
@@ -95,7 +106,10 @@ class Main(base, form):
     def setList(self):
          #####ListModelPES#######
         self._model1 = ListModel(self._dir_list)
-        self.uiProjects.setModel(self._model1)
+        self._modelProxy1.setSourceModel(self._model1)
+        self.uiProjects.setModel(self._modelProxy1)
+        self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
+#        self.uiProjects.setModel(self._model1)
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
             index = self._model1.index(0,0)
