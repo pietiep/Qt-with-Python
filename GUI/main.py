@@ -66,7 +66,7 @@ class Main(base, form):
                 directories.remove('tmp')  #removes 'tmp' from list
             except ValueError:
                 pass
-            self._proContent = directories
+            self._proContent = sorted(directories)
         else:
             print "path doesn't exists"
 
@@ -109,6 +109,7 @@ class Main(base, form):
     def getdirs(self):
             root, directories, filenames = os.walk(".").next()
             self._dir_list = [dirs for dirs in directories]
+            self._dir_list = sorted(self._dir_list)
 
     def open0(self, warn):
         if warn == False:
