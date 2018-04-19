@@ -60,12 +60,13 @@ class ListModel(ListAbstrModel):
 
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
         self.beginRemoveRows(parent, position, position+rows-1)
-            
+
         value = self.__data[position]
         self.showdialog(value)
         if self._messageBu == 'OK':
-            self.__data.remove(value)
-            
+            for i in range(rows):    
+                value = self.__data[position]   
+                self.__data.remove(value)
             self.endRemoveRows()
             return True
         else:
@@ -103,6 +104,20 @@ class ListModel2(ListModel):
         except Exception as e:
             self.showdialog(row)
 
+    def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
+        self.beginRemoveRows(parent, position, position+rows-1)
+
+        value = self.__data[position]
+#        self.showdialog(value)
+#        if self._messageBu == 'OK':
+        for i in range(rows):    
+            value = self.__data[position]   
+            self.__data.remove(value)
+        self.endRemoveRows()
+        return True
+ #       else:
+ #           self.endRemoveRows()
+ #           return False
 
 if __name__ == '__main__':
 

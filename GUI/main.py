@@ -37,12 +37,17 @@ class Main(base, form):
 
         self.setList()
         self.setList2()
+        self.uiProjects.doubleClicked.connect(self.openC)
+
+        self._messageBu = None
 
     def remove0(self):
         rowNum = self._itemIndex2.row()
         key = str(self._itemIndex2.data().toString())
-        self._model2.removeRows(rowNum,0, self._itemIndex2)
-        if self._model2._messageBu == 'OK':
+        self.showdialog(key)
+        print self._messageBu
+        if 'OK' in self._messageBu:
+            self._model2.removeRows(rowNum,1, self._itemIndex2)
             print 'delete %s' %key        
             shutil.rmtree(self._startingPath+'/'+self._newpath+'/'+key)
 
@@ -52,12 +57,28 @@ class Main(base, form):
         startingpath2 = self._startingPath + '/'
         delFolder = startingpath2 + key
 
-        self._model1.removeRows(rowNum,0, self._itemIndex1)
+        self._model1.removeRows(rowNum,1, self._itemIndex1)
         if self._model1._messageBu == 'OK' and delFolder != self._startingPath and delFolder != startingpath2:
 #            selIndexes = self.uiProjects.selectedIndexes()
             print 'delete %s' %key
             shutil.rmtree(self._startingPath+'/'+key)
-            self.setList()
+
+            maxRow = self._model2.rowCount(self._itemIndex2)
+            if maxRow != 0:
+                self._model2.removeRows(0, maxRow)
+
+    def showdialog(self, value):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Are sure you want to delete Folder %s?" %value)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok| QtGui.QMessageBox.Cancel)
+
+        msg.buttonClicked.connect(self.msgbtn)
+        msg.exec_()
+
+    def msgbtn(self, i):
+        self._messageBu = str(i.text())
 
     def getContent(self):
         if os.path.exists(self._newpath):
