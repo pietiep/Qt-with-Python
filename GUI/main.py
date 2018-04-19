@@ -20,12 +20,8 @@ class Main(base, form):
 
         self._model1 = None
         self._model2 = None
-        self._modelProxy1 = QtGui.QSortFilterProxyModel()
-        self._modelProxy2 = QtGui.QSortFilterProxyModel()
         self._itemIndex1 = None
         self._itemIndex2 = None
-        self._itemProxyIndex1 = None
-        self._itemProxyIndex2 = None
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
@@ -40,33 +36,30 @@ class Main(base, form):
         self.uiMinusBu2.clicked.connect(self.remove0)
 
         self.setList()
+        self.setList2()
 
     def remove0(self):
         rowNum = self._itemIndex2.row()
         key = str(self._itemIndex2.data().toString())
-        self._model2.removeRows(rowNum,0)
+        self._model2.removeRows(rowNum,0, self._itemIndex2)
         if self._model2._messageBu == 'OK':
             print 'delete %s' %key        
             shutil.rmtree(self._startingPath+'/'+self._newpath+'/'+key)
 
     def removeA(self):
         rowNum = self._itemIndex1.row()
-        rowNumProxy = self._itemProxyIndex1.row()
-        print rowNum, 'data', rowNumProxy, 'proxy'
         key = str(self._itemIndex1.data().toString())
         startingpath2 = self._startingPath + '/'
         delFolder = startingpath2 + key
-        self._model1.removeRows(rowNum,0)
+
+        self._model1.removeRows(rowNum,0, self._itemIndex1)
         if self._model1._messageBu == 'OK' and delFolder != self._startingPath and delFolder != startingpath2:
 #            selIndexes = self.uiProjects.selectedIndexes()
-
             print 'delete %s' %key
             shutil.rmtree(self._startingPath+'/'+key)
-            self.getdirs()
             self.setList()
 
     def getContent(self):
-        print self._newpath, 'from getContent'
         if os.path.exists(self._newpath):
             root, directories, filenames = os.walk('./'+self._newpath).next()
             try:
@@ -77,21 +70,17 @@ class Main(base, form):
         else:
             print "path doesn't exists"
 
-
     def on_item_select(self, index):
-        self._itemProxyIndex1 = index   #index from Proxy
-        model = index.model()          # model = ProxyModel
-        if hasattr(model, 'mapToSource'):
-            index = model.mapToSource(index)
         self._itemIndex1 = index
+        print index.row()
         os.chdir(self._startingPath)
         self._newpath = str(index.data().toString())
         self.getdirs()
-        self.getContent()
         self.setList2()
 
     def setList2(self):
          #####ListModelPES#######
+        self.getContent()
         self._model2 = ListModel2(self._newpath, self._proContent)
         self.uiSessions.setModel(self._model2)
         indices = self.uiSessions.selectionModel().selectedIndexes()
@@ -102,14 +91,16 @@ class Main(base, form):
 
     def setList(self):
          #####ListModelPES#######
+        self.getdirs() #updates self._dir_list 
         self._model1 = ListModel(self._dir_list)
-        self._modelProxy1.setSourceModel(self._model1)
-        self._modelProxy1.setDynamicSortFilter(True)
-        self.uiProjects.setModel(self._modelProxy1)
-        self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
+ #       self._modelProxy1.setSourceModel(self._model1)
+#        self.uiProjects.setModel(self._modelProxy1)
+        self.uiProjects.setModel(self._model1)
+#        self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
             index = self._model1.index(0,0)
+            self._newpath = str(index.data().toString())
             self._itemIndex1 = index
             self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
@@ -158,7 +149,7 @@ class Main(base, form):
                     os.makedirs(path)
                 except IOError as identifier:
                     print identifier
-                self.getdirs()
+#                self.getdirs()
                 self.setList()
             else:
                 print 'Folder already exists!'

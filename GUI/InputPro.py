@@ -44,7 +44,6 @@ class ListModel(ListAbstrModel):
                 self.getValue()
                 return True
         else:
-#            self.showdialog(str(value.toString()))
             return False
 
     def getValue(self):
@@ -73,18 +72,6 @@ class ListModel(ListAbstrModel):
             self.endRemoveRows()
             return False
             
-    
-
-#    def removeRow(self, position):
-#        self.__data = self.__data[:position] + self.__data[position+1:]
-#        self.getDelValue()
-    
-#    def getDelValue(self):
-#        matches = list(set(self.__data).intersection(self.__dataBefore))
-#        old = [l_ for l_ in self.__dataBefore if l_ not in matches]
-#        self.showdialog(old)
-#        self.Data()
-#
     def showdialog(self, value):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
