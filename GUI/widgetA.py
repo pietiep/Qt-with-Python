@@ -1,10 +1,9 @@
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4 import *
 import sys
-from Node import OutPut, Tree, Node, TransformNode, CameraNode, LightNode
-from Node import InPut, Parameters
+from Node import OutPut, Tree
+from Node import InPut
 from InputTree import SceneGraphModel
-from functools import partial
 from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View

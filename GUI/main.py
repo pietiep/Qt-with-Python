@@ -69,7 +69,9 @@ class Main(base, form):
         self.showdialog(key)
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
-            shutil.rmtree(self._startingPath+'/'+self._newpath+'/'+key)
+            print os.getcwd(), 'before rmtree'
+            self._newpath
+            shutil.rmtree(self._newpath)
 
     def removeA(self):
         """Removes Rows from ListModel()"""
@@ -86,6 +88,8 @@ class Main(base, form):
             maxRow = self._model2.rowCount(self._itemIndex2)
             if maxRow != 0:
                 self._model2.removeRows(0, maxRow)
+#            index = self._model1.index(0,0)
+#           self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
 
     def showdialog(self, value):
         msg = QtGui.QMessageBox()
@@ -122,8 +126,10 @@ class Main(base, form):
         print self._newpath
 
         os.chdir(self._newpath)
+        self._WidgetA.editSession(sessionFolder)
         self.openC()
-        os.chdir(self._startingPath)
+        os.chdir('./')
+        print os.getcwd(), 'after OC'
 
     def on_item_select(self, index):
         """clicked Event on Items belonging to ListModel()"""
@@ -161,7 +167,8 @@ class Main(base, form):
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
 
     def getdirs(self):
-            root, directories, filenames = os.walk(".").next()
+            path = self._startingPath
+            root, directories, filenames = os.walk(self._startingPath).next()
             self._dir_list = [dirs for dirs in directories]
             self._dir_list = sorted(self._dir_list)
 
@@ -195,7 +202,9 @@ class Main(base, form):
         self._newpath = str(dialogC._FolderName)
 
         if self._newpath != 'Cancel':
-            path = os.getcwd() + '/' + self._newpath
+#            path = os.getcwd() + '/' + self._newpath
+            path = self._startingPath + '/' + self._newpath
+            print path, 'before path.exists'
             if not os.path.exists(path):
                 try:
 
@@ -218,7 +227,9 @@ class Main(base, form):
     def openC(self):
 #        print self._newpath + " from openC"
 #        os.chdir("./" + self._newpath) 
+        print os.getcwd(), 'before WA'
         dialog = self._WidgetA
+        print os.getcwd(), 'after WA'
         dialog.exec_()
 
 if __name__ == '__main__':
