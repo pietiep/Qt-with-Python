@@ -21,6 +21,7 @@ class ListAbstrModel(QtCore.QAbstractListModel):
 
     def flags(self, index):
         return QtCore.Qt.ItemIsEditable |QtCore.Qt.ItemIsEnabled |QtCore.Qt.ItemIsSelectable
+#        return QtCore.Qt.ItemIsEnabled |QtCore.Qt.ItemIsSelectable
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if role == QtCore.Qt.EditRole:
@@ -92,6 +93,16 @@ class ListModel2(ListModel):
         self.__data = data
         self.__dataBefore = list(data)
         self._changePath = os.getcwd() + '/' + project
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if value not in self.__data:
+            if role == QtCore.Qt.EditRole:
+                row = index.row()
+                self.__data[row] = str(value.toString())
+                self.getValue(row)
+                return True
+        else:
+            return False
 
     def getValue(self, row):
         matches = list(set(self.__data).intersection(self.__dataBefore))

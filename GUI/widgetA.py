@@ -17,18 +17,6 @@ class WidgetA(base, form):
         super(WidgetA, self).__init__(parent)
         self.setupUi(self)
 
-        ####Data#####
-#        eps = ["1E-5", "1E-6", "1E-5"]
-#        integrator = ["0", "1000", "0.1", "100"]
-#        hamiltonian = "194"
-#        potential = "101"
-#        job = "real-time Propagation"
-#        parameters = [[1, 2, 3, 4],
-#                [5, 6, 7, 8],
-#                [9, 10, 11, 12],
-#                [13, 14, 15, 16],
-#                [17, 18, 19, 20],
-#                [21, 22, 23, 24]]
 
         ###get Attributes#######
         inobj = InPut()
@@ -50,14 +38,6 @@ class WidgetA(base, form):
         self._job = paradict['job']
         self._parameters = paradict['para']
 
-#        self._eps = eps
-#        self._integrator = integrator
-#        self._operator = None
-#        self._hamiltonian = hamiltonian
-#        self._potential = potential
-#        self._job = job
-#        self._parameters = parameters
-
         self._tree = Tree("36")  #Delegation instead of inheritance of Tree
         self._treeData = self._tree._treeData
 
@@ -65,11 +45,9 @@ class WidgetA(base, form):
         self._dictPES = {'CH3': '100', 'NO3': '101'}
 
         self._SessionName = None
-
         self._messagebut = None
 
         #####LineEdit:Projectname#######
-#        self.uiProjectName.setText("Session1")
         self.uiProjectName.textChanged.connect(self.change0)
 
         #####ListModelHamilton#######
@@ -79,8 +57,6 @@ class WidgetA(base, form):
             self._model.appendRow(item)
         self.listHamilton.setModel(self._model)
         self.listHamilton.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-    #    self.on_item_select_ha = partial(self.on_item_select, self._hamiltonian,
-    #                                self._dictHamil)
         self.listHamilton.clicked.connect(self.on_item_select1)
 
         #####RadioButtonsPES#####
@@ -134,11 +110,13 @@ class WidgetA(base, form):
         self.uiStartCal.clicked.connect(self.esc)
 
         ####Networkx and MCTDH####
-
         self.setConfig = None
         self.setSystem = None
 
         self.ModelTree = None
+
+    def editSession(self, name):
+        self.uiProjectName.setText(str(name))
 
     def makeParaDict(self):
          self._paradict['eps_general'] = self._eps[0]

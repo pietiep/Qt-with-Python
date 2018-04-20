@@ -25,6 +25,7 @@ class Main(base, form):
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
+        print os.getcwd()
 
         self.setList()
         self.uiNew.triggered.connect(self.openA)
@@ -36,31 +37,50 @@ class Main(base, form):
         self.uiMinusBu2.clicked.connect(self.remove0)
 
         self.setList()
+        self.uiProjects.clicked.connect(self.on_item_select)
+        self.uiProjects.customContextMenuRequested.connect(self.openMenu)
+
         self.setList2()
-        self.uiProjects.doubleClicked.connect(self.openC)
+        self.uiSessions.clicked.connect(self.on_item_select0)
+        self.uiSessions.customContextMenuRequested.connect(self.openMenu0)
 
         self._messageBu = None
 
+    def openMenu0(self, position):
+        """Context menu"""
+        menu = QtGui.QMenu()
+        renameAction = menu.addAction("Rename")
+        action = menu.exec_(self.uiSessions.mapToGlobal(position))
+        if action == renameAction:
+            self.uiSessions.edit(self._itemIndex2)
+
+    def openMenu(self, position):
+        """Context menu"""
+        menu = QtGui.QMenu()
+        renameAction = menu.addAction("Rename")
+        action = menu.exec_(self.uiProjects.mapToGlobal(position))
+        if action == renameAction:
+            self.uiProjects.edit(self._itemIndex1)
+
     def remove0(self):
+        """Removes Rows from ListModel2()"""
         rowNum = self._itemIndex2.row()
         key = str(self._itemIndex2.data().toString())
         self.showdialog(key)
-        print self._messageBu
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
-            print 'delete %s' %key        
             shutil.rmtree(self._startingPath+'/'+self._newpath+'/'+key)
 
     def removeA(self):
+        """Removes Rows from ListModel()"""
         rowNum = self._itemIndex1.row()
         key = str(self._itemIndex1.data().toString())
         startingpath2 = self._startingPath + '/'
         delFolder = startingpath2 + key
 
         self._model1.removeRows(rowNum,1, self._itemIndex1)
+
         if self._model1._messageBu == 'OK' and delFolder != self._startingPath and delFolder != startingpath2:
-#            selIndexes = self.uiProjects.selectedIndexes()
-            print 'delete %s' %key
             shutil.rmtree(self._startingPath+'/'+key)
 
             maxRow = self._model2.rowCount(self._itemIndex2)
@@ -91,10 +111,23 @@ class Main(base, form):
         else:
             print "path doesn't exists"
 
-    def on_item_select(self, index):
-        self._itemIndex1 = index
-        print index.row()
+    def on_item_select0(self, index):
+        """clicked Event on Items belonging to ListModel2()"""
         os.chdir(self._startingPath)
+        projectFolder = str(self._itemIndex1.data().toString())
+        sessionFolder = str(index.data().toString())
+        print projectFolder, sessionFolder
+        self._itemIndex2 = index
+        self._newpath = self._startingPath + '/' + projectFolder + '/' + sessionFolder
+        print self._newpath
+
+        os.chdir(self._newpath)
+        self.openC()
+        os.chdir(self._startingPath)
+
+    def on_item_select(self, index):
+        """clicked Event on Items belonging to ListModel()"""
+        self._itemIndex1 = index
         self._newpath = str(index.data().toString())
         self.getdirs()
         self.setList2()
@@ -117,6 +150,7 @@ class Main(base, form):
  #       self._modelProxy1.setSourceModel(self._model1)
 #        self.uiProjects.setModel(self._modelProxy1)
         self.uiProjects.setModel(self._model1)
+#        self.uiProjects.clicked.connect(self.on_item_select)
 #        self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
@@ -125,7 +159,6 @@ class Main(base, form):
             self._itemIndex1 = index
             self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
-        self.uiProjects.clicked.connect(self.on_item_select)
 
     def getdirs(self):
             root, directories, filenames = os.walk(".").next()
@@ -136,14 +169,12 @@ class Main(base, form):
         if warn == False:
             warn = ''
         dialogC = DialogC()
-        print warn, 'from open0'
         dialogC.setWarning(str(warn))
         dialogC.exec_()
         self._path2 = str(dialogC._FolderName)
 
         if self._path2 != 'Cancel':
             path = os.getcwd() + '/' + self._newpath + '/' + self._path2
-            print path, 'from open0'
             if not os.path.exists(path):
                 try:
                     os.makedirs(path)
@@ -185,8 +216,8 @@ class Main(base, form):
         self.setList2()
 
     def openC(self):
-        print self._newpath + " from openC"
-        os.chdir("./" + self._newpath) 
+#        print self._newpath + " from openC"
+#        os.chdir("./" + self._newpath) 
         dialog = self._WidgetA
         dialog.exec_()
 
