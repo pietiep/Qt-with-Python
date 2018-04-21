@@ -25,7 +25,7 @@ class Main(base, form):
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
-        print os.getcwd()
+        self._WidgetA._startingPath = self._startingPath
 
         self.setList()
         self.uiNew.triggered.connect(self.openA)
@@ -105,6 +105,7 @@ class Main(base, form):
         self._messageBu = str(i.text())
 
     def getContent(self):
+        os.chdir(self._startingPath)
         if os.path.exists(self._newpath):
             root, directories, filenames = os.walk('./'+self._newpath).next()
             try:
@@ -120,21 +121,23 @@ class Main(base, form):
         os.chdir(self._startingPath)
         projectFolder = str(self._itemIndex1.data().toString())
         sessionFolder = str(index.data().toString())
-        print projectFolder, sessionFolder
+#        print projectFolder, sessionFolder
         self._itemIndex2 = index
         self._newpath = self._startingPath + '/' + projectFolder + '/' + sessionFolder
-        print self._newpath
+#        print self._newpath
 
         os.chdir(self._newpath)
+        self._WidgetA._ProjectName = projectFolder
         self._WidgetA.editSession(sessionFolder)
         self.openC()
         os.chdir('./')
-        print os.getcwd(), 'after OC'
+#        print os.getcwd(), 'after OC'
 
     def on_item_select(self, index):
         """clicked Event on Items belonging to ListModel()"""
         self._itemIndex1 = index
         self._newpath = str(index.data().toString())
+        self._WidgetA._ProjectName = self._newpath
         self.getdirs()
         self.setList2()
 
@@ -204,7 +207,7 @@ class Main(base, form):
         if self._newpath != 'Cancel':
 #            path = os.getcwd() + '/' + self._newpath
             path = self._startingPath + '/' + self._newpath
-            print path, 'before path.exists'
+#            print path, 'before path.exists'
             if not os.path.exists(path):
                 try:
 
@@ -227,9 +230,9 @@ class Main(base, form):
     def openC(self):
 #        print self._newpath + " from openC"
 #        os.chdir("./" + self._newpath) 
-        print os.getcwd(), 'before WA'
+#        print os.getcwd(), 'before WA'
         dialog = self._WidgetA
-        print os.getcwd(), 'after WA'
+#        print os.getcwd(), 'after WA'
         dialog.exec_()
 
 if __name__ == '__main__':

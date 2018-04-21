@@ -43,6 +43,8 @@ class WidgetA(base, form):
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
 
+        self._startingPath = None
+        self._ProjectName = None
         self._SessionName = None
         self._messagebut = None
 
@@ -166,6 +168,9 @@ class WidgetA(base, form):
 
     def managefolder(self):
         import os, shutil
+        print self._ProjectName
+        os.chdir(self._startingPath+"/"+self._ProjectName) 
+        print os.getcwd()   
         try:
             shutil.rmtree("tmp") #removes folder
         except Exception:
@@ -209,8 +214,10 @@ class WidgetA(base, form):
             os.chdir("../")
 
     def copytmp(self):
+#        print self._startingPath
+#        print self._ProjectName
         scr = str(os.getcwd()) + "/tmp"
-        dest = str(os.getcwd()) + "/" + str(self._SessionName)
+        dest = self._startingPath+ "/" + self._ProjectName + "/" + str(self._SessionName)
         print scr, dest
         try:
             shutil.rmtree(dest) #removes folder
@@ -222,19 +229,20 @@ class WidgetA(base, form):
     def saveProject(self):
         if self._SessionName == None:
                 self.showdialog()
+                sys.exit()
         else:
             root, directories, filenames = os.walk(".").next()
-            if "tmp" in directories:
-                print "can't overwrite stuff "
+            if self._SessionName in directories:
+                print "overwrite stuff?"
                 self.showdialog2()
                 if 'Yes' in self._messagebut:
                     self.managefolder()
                     self.output()
                     os.chdir("../")
                 else:
-                    pass
-                print 'bla'
-            else:
+                    print 'out savePro'
+                    
+            else:                         #Session Folder doesn't exists!
                 self.managefolder()
                 self.output()
                 os.chdir("../")
