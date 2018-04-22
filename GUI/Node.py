@@ -1,7 +1,7 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
 import networkx as nx
-import sys, re
+import re
 
 class Parameters(object):
     def __init__(self):
@@ -65,7 +65,7 @@ class InPut(Parameters):
 class OutPut(Parameters):
     #def __init__(self, eps, integrator, hamiltonian, potential, \
     #             job, parameters, tree, filename="example.in"):
-    def __init__(self, tree, paradict, filename="example.in"):
+    def __init__(self, tree, paradict, filename="example1.in"):
 #        inobj = InPut()
 #        paradict = inobj._paradict
         print paradict['job']

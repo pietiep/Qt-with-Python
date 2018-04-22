@@ -18,26 +18,14 @@ class WidgetA(base, form):
 
         self._HamiltonianDir = None
 
-#    def getAttributes(self):
-        ###get Attributes#######
-        inobj = InPut() #complete path?
-        paradict = inobj._paradict
 
         ########Attributes######
         self._paradict = {}
         self._eps = []
         self._integrator = []
-        self._eps.append(paradict['eps_general'])
-        self._eps.append(paradict['eps_1'])
-        self._eps.append(paradict['eps_2'])
-        self._integrator.append(paradict['start'])
-        self._integrator.append(paradict['end'])
-        self._integrator.append(paradict['dt'])
-        self._integrator.append(paradict['iteration'])
-        self._hamiltonian = paradict['Hamiltonian']
-        self._potential = paradict['Potential']
-        self._job = paradict['job']
-        self._parameters = paradict['para']
+
+#        self.getInput()
+
 
         self._tree = Tree("36")  #Delegation instead of inheritance of Tree
         self._treeData = self._tree._treeData
@@ -83,15 +71,6 @@ class WidgetA(base, form):
         #func4 = lambda job="imaginary-time Propagation": self.setJob(job)
         self.fluxEigenstateRadio.toggled.connect(self.setJob4)
 
-        ###LineEdit####
-        self.uiStartTime.setText(self._integrator[0])
-        self.uiStartTime.textChanged.connect(self.change1)
-        self.uiEndTime.setText(self._integrator[1])
-        self.uiEndTime.textChanged.connect(self.change2)
-        self.uiInit.setText(self._integrator[2])
-        self.uiInit.textChanged.connect(self.change3)
-        self.uiIter.setText(self._integrator[3])
-        self.uiIter.textChanged.connect(self.change4)
 
         ####TreeView########
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
@@ -119,6 +98,38 @@ class WidgetA(base, form):
         self.setSystem = None
 
         self.ModelTree = None
+        
+    def getInput(self, key):
+        ###get Attributes#######
+        inputFile = self._HamiltonianDir + '/' + key + '/' + 'example.in' 
+    
+        inobj = InPut(inputFile) #complete path?
+        paradict = inobj._paradict
+
+        self._eps.append(paradict['eps_general'])
+        self._eps.append(paradict['eps_1'])
+        self._eps.append(paradict['eps_2'])
+        self._integrator.append(paradict['start'])
+        self._integrator.append(paradict['end'])
+        self._integrator.append(paradict['dt'])
+        self._integrator.append(paradict['iteration'])
+        self._hamiltonian = paradict['Hamiltonian']
+        self._potential = paradict['Potential']
+        self._job = paradict['job']
+        self._parameters = paradict['para']
+        
+        ###LineEdit####
+        self.uiStartTime.setText(self._integrator[0])
+        self.uiStartTime.textChanged.connect(self.change1)
+        self.uiEndTime.setText(self._integrator[1])
+        self.uiEndTime.textChanged.connect(self.change2)
+        self.uiInit.setText(self._integrator[2])
+        self.uiInit.textChanged.connect(self.change3)
+        self.uiIter.setText(self._integrator[3])
+        self.uiIter.textChanged.connect(self.change4)
+
+    def copyFromHam(self):
+        pass
 
     def editSession(self, name):
         self.uiProjectName.setText(str(name))
@@ -314,6 +325,7 @@ class WidgetA(base, form):
 
     def on_item_select1(self, item):
         key = item.data().toString()
+        self.getInput(key)
         self._hamiltonian = self._dictHamil[str(key)]
         print self._hamiltonian
 
