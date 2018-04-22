@@ -16,9 +16,11 @@ class WidgetA(base, form):
         super(WidgetA, self).__init__(parent)
         self.setupUi(self)
 
+        self._HamiltonianDir = None
 
+#    def getAttributes(self):
         ###get Attributes#######
-        inobj = InPut()
+        inobj = InPut() #complete path?
         paradict = inobj._paradict
 
         ########Attributes######
@@ -42,6 +44,8 @@ class WidgetA(base, form):
 
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
+        self._mctdhConfig = 'mctdh.config'
+        self._sysTreeFile = 'CH3g1.txt'
 
         self._startingPath = None
         self._ProjectName = None
@@ -180,12 +184,13 @@ class WidgetA(base, form):
             pass
         os.makedirs("tmp")
         os.chdir("./tmp")
-        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/mctdh.config"""
-                    , str(os.getcwd()))
-        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/CH3g1.txt"""
-                    , str(os.getcwd()))
-        shutil.copy2("""/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/example.in"""
-                    , str(os.getcwd()))
+        scr_mctdhConfig = self._startingPath + '/' + self._mctdhConfig
+        scr_sysTree = self._startingPath + '/' + self._sysTreeFile
+        print scr_mctdhConfig, scr_sysTree 
+        scr_example = self._startingPath + '/' + 'example.in'
+        shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
+        shutil.copy2(scr_sysTree, str(os.getcwd()))
+        shutil.copy2(scr_example, str(os.getcwd()))
 
     def changeNode(self, my_index):
         if self._SessionName == None:

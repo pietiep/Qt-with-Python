@@ -12,11 +12,13 @@ class Main(base, form):
         super(base, self).__init__(parent)
         self.setupUi(self)
 
+        self._HamiltonianDir = os.getcwd() + '/' + 'Hamiltonians'
+        os.chdir('Projects')
         self._startingPath = os.getcwd()
         self._newpath = 'Project1'
         self._path2 = ''
         self._dir_list = None
-        self._proContent = None
+        self._proContent = []
 
         self._model1 = None
         self._model2 = None
@@ -25,6 +27,7 @@ class Main(base, form):
 
         self.getdirs()
         self._WidgetA = WidgetA(self)
+        self._WidgetA._HamiltonianDir = self._HamiltonianDir
         self._WidgetA._startingPath = self._startingPath
 
         self.setList()
