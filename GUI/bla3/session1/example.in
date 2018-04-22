@@ -12,9 +12,9 @@ iteration = 100
 } 
 
 Hamiltonian = 194
-Potential = 101
+Potential = None
 
-job = eigenstates
+job = real-time Propagation
 
 
 basis = 

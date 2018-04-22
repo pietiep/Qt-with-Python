@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtGui, uic
-from PyQt4 import *
+#from PyQt4 import *
 import sys
 from Node import OutPut, Tree
 from Node import InPut
@@ -95,7 +95,7 @@ class WidgetA(base, form):
         self.uiTree.expandAll()
         self.uiTree.resizeColumnToContents(0)
         self.uiTree.resizeColumnToContents(1)
-        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
+#        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
         self.uiTree.clicked.connect(self.changeNode)
 
 
@@ -119,18 +119,21 @@ class WidgetA(base, form):
     def editSession(self, name):
         self.uiProjectName.setText(str(name))
 
+    def clearSession(self):
+        self.uiProjectName.clear()
+
     def makeParaDict(self):
-         self._paradict['eps_general'] = self._eps[0]
-         self._paradict['eps_1']       = self._eps[1]
-         self._paradict['eps_2']       = self._eps[2]
-         self._paradict['start']       = self._integrator[0]
-         self._paradict['end']         = self._integrator[1]
-         self._paradict['dt']          = self._integrator[2]
-         self._paradict['iteration']   = self._integrator[3]
-         self._paradict['Hamiltonian'] = self._hamiltonian
-         self._paradict['Potential']   = self._potential
-         self._paradict['job']         = self._job
-         self._paradict['para']        = self._parameters
+        self._paradict['eps_general'] = self._eps[0]
+        self._paradict['eps_1']       = self._eps[1]
+        self._paradict['eps_2']       = self._eps[2]
+        self._paradict['start']       = self._integrator[0]
+        self._paradict['end']         = self._integrator[1]
+        self._paradict['dt']          = self._integrator[2]
+        self._paradict['iteration']   = self._integrator[3]
+        self._paradict['Hamiltonian'] = self._hamiltonian
+        self._paradict['Potential']   = self._potential
+        self._paradict['job']         = self._job
+        self._paradict['para']        = self._parameters
 
     def closeEvent(self, event):  #Overriding inherited memberfunction
         os.chdir("../") #if dialog is closed, leave folder
@@ -144,7 +147,7 @@ class WidgetA(base, form):
         msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
 
         msg.buttonClicked.connect(self.msgbtn)
-        retval = msg.exec_()
+        msg.exec_()
 
     def msgbtn(self, i):
         self._messagebut = str(i.text())
@@ -160,7 +163,7 @@ class WidgetA(base, form):
 #        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
 
 #        msg.buttonClicked.connect(self.msgbtn)
-        retval = msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
+        msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
 #        print "value of pressed message box button:", retval
 
 #    def msgbtn(self, i):

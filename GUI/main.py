@@ -138,6 +138,8 @@ class Main(base, form):
         self._itemIndex1 = index
         self._newpath = str(index.data().toString())
         self._WidgetA._ProjectName = self._newpath
+        self._WidgetA._SessionName = None
+        self._WidgetA.clearSession()
         self.getdirs()
         self.setList2()
 
