@@ -1,0 +1,5 @@
+!   nstat:   number of electronic states
+!   qn:      number of coordinates
+      integer nstat, qn
+      parameter (nstat=5, qn=7)
+

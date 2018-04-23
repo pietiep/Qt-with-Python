@@ -1,0 +1,13 @@
+      double precision pa(8,mx), pb(8,mx)
+
+      common /acoord/ pa,pb
+
+      double precision va(6,mx), vb(6,mx)
+      double precision wa(9,mx), wb(9,mx), za(9,mx), zb(9,mx)
+
+      common /vjt/ va, vb, wa, wb, za, zb
+
+      double precision vee(28,mx),  wee(49,mx), zee(49,mx)
+
+      common /vee/ vee,  wee, zee
+

@@ -1,0 +1,5 @@
+! parameters for tmc transformation:
+       integer npoly(2)
+       double precision a(2,20)
+       common /tmc/a,npoly
+

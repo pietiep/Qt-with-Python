@@ -1,0 +1,8 @@
+!*** mx:         max. number of data points                                 ***
+!*** nx:         max. number of parameter sets                              ***
+!*** px:         max. number of parameters                                  ***
+!*** sx:         max. number of data sets                                   ***
+
+      integer mx, nx, px, sx
+      parameter (mx=1000,px=2000,sx=3000)
+

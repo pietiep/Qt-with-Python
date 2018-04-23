@@ -1,0 +1,14 @@
+!..   parn:    number of parameters
+!..   pst:     starting addresses and lengths of parameter blocks
+      integer npar, pst(2,200)
+
+      common /parnum/ npar, pst
+
+!..   qref:	cartesian reference geometry
+!..   mode:	cartesian normal modes
+!..   rm:	reduced masses
+!..   omega:	vibrational frequencies
+!..   dl:	factors for dimension-less coordinates
+      real*8 qref(12), mode(12,6), rm(6), omega(6), dl(6)
+
+      common /geometry/ qref, mode, omega, rm, dl
