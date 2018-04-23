@@ -27,13 +27,15 @@ class WidgetA(base, form):
 #        self.getInput()
 
 
-        self._tree = Tree("36")  #Delegation instead of inheritance of Tree
-        self._treeData = self._tree._treeData
+        self._tree = None
+#        self._tree = Tree("36")  #Delegation instead of inheritance of Tree
+#        self._treeData = self._tree._treeData
 
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
         self._mctdhConfig = 'mctdh.config'
         self._sysTreeFile = 'CH3g1.txt'
+        self._inputFile = 'example.in'
 
         self._startingPath = None
         self._ProjectName = None
@@ -72,15 +74,6 @@ class WidgetA(base, form):
         self.fluxEigenstateRadio.toggled.connect(self.setJob4)
 
 
-        ####TreeView########
-        self.modelTree = SceneGraphModel(self._tree._rootNode0)
-        self.uiTree.setModel(self.modelTree)
-        self.uiTree.expandAll()
-        self.uiTree.resizeColumnToContents(0)
-        self.uiTree.resizeColumnToContents(1)
-#        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
-        self.uiTree.clicked.connect(self.changeNode)
-
 
         ####QGraphicsView###
 #        pixmap = QtGui.QPixmap('nx_test.png')
@@ -102,7 +95,18 @@ class WidgetA(base, form):
     def getInput(self, key):
         ###get Attributes#######
         inputFile = self._HamiltonianDir + '/' + key + '/' + 'example.in' 
+        self._inputFile = inputFile
+        
+        filenames = os.walk(self._HamiltonianDir+'/'+str(key)).next()[2]
+        for val in filenames:
+            if 'txt' in val:
+                self._sysTreeFile = val
     
+        self._mctdhConfig = self._HamiltonianDir + '/' + key + '/' + self._mctdhConfig
+        self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + self._sysTreeFile
+#        print self._mctdhConfig
+#        print self._sysTreeFile
+
         inobj = InPut(inputFile) #complete path?
         paradict = inobj._paradict
 
@@ -186,22 +190,26 @@ class WidgetA(base, form):
 
     def managefolder(self):
         import os, shutil
-        print self._ProjectName
+#        print self._ProjectName
         os.chdir(self._startingPath+"/"+self._ProjectName) 
-        print os.getcwd()   
+#        print os.getcwd()   
         try:
             shutil.rmtree("tmp") #removes folder
         except Exception:
             pass
         os.makedirs("tmp")
         os.chdir("./tmp")
-        scr_mctdhConfig = self._startingPath + '/' + self._mctdhConfig
-        scr_sysTree = self._startingPath + '/' + self._sysTreeFile
-        print scr_mctdhConfig, scr_sysTree 
-        scr_example = self._startingPath + '/' + 'example.in'
-        shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
-        shutil.copy2(scr_sysTree, str(os.getcwd()))
-        shutil.copy2(scr_example, str(os.getcwd()))
+        #scr_mctdhConfig = self._startingPath + '/' + self._mctdhConfig
+        #scr_sysTree = self._startingPath + '/' + self._sysTreeFile
+        #print scr_mctdhConfig, scr_sysTree 
+        #scr_example = self._startingPath + '/' + 'example.in'
+        shutil.copy2(self._mctdhConfig, str(os.getcwd()))
+        shutil.copy2(self._sysTreeFile, str(os.getcwd()))
+        shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
+
+        #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
+        #shutil.copy2(scr_sysTree, str(os.getcwd()))
+        #shutil.copy2(scr_example, str(os.getcwd()))
 
     def changeNode(self, my_index):
         if self._SessionName == None:
@@ -209,7 +217,7 @@ class WidgetA(base, form):
         else:
             self.managefolder()
 
-            self.ModelTree = ModelTree()
+            self.ModelTree = ModelTree(self._mctdhConfig, self._sysTreeFile)
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
 
@@ -217,7 +225,7 @@ class WidgetA(base, form):
             self.output()
 
             ####Pic with MCTDH Code and Networkx####
-            self.ModelTree = ModelTree()
+            self.ModelTree = ModelTree(self._mctdhConfig, self._sysTreeFile)
             self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
             self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
             self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
@@ -237,7 +245,7 @@ class WidgetA(base, form):
 #        print self._ProjectName
         scr = str(os.getcwd()) + "/tmp"
         dest = self._startingPath+ "/" + self._ProjectName + "/" + str(self._SessionName)
-        print scr, dest
+        #print scr, dest
         try:
             shutil.rmtree(dest) #removes folder
         except Exception:
@@ -248,11 +256,10 @@ class WidgetA(base, form):
     def saveProject(self):
         if self._SessionName == None:
                 self.showdialog()
-                sys.exit()
         else:
             root, directories, filenames = os.walk(".").next()
             if self._SessionName in directories:
-                print "overwrite stuff?"
+                #print "overwrite stuff?"
                 self.showdialog2()
                 if 'Yes' in self._messagebut:
                     self.managefolder()
@@ -324,20 +331,30 @@ class WidgetA(base, form):
 
 
     def on_item_select1(self, item):
-        key = item.data().toString()
+        key = str(item.data().toString())
         self.getInput(key)
         self._hamiltonian = self._dictHamil[str(key)]
-        print self._hamiltonian
+        #print self._hamiltonian
+        
+        ####TreeView########
+        self._tree = Tree(self._mctdhConfig, self._sysTreeFile)
+        self.modelTree = SceneGraphModel(self._tree._rootNode0)
+        self.uiTree.setModel(self.modelTree)
+        self.uiTree.expandAll()
+        self.uiTree.resizeColumnToContents(0)
+        self.uiTree.resizeColumnToContents(1)
+#        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
+        self.uiTree.clicked.connect(self.changeNode)
 
     def on_item_select2(self, item):
         key = item.data().toString()
         self._potential = self._dictPES[str(key)]
-        print self._potential
+        #print self._potential
 
     def output(self):
         """Class OutPut takes all parameters and saves them in File by creating
      the object of this class"""
-        print os.getcwd()
+       # print os.getcwd()
         self.makeParaDict()
         outobj = OutPut(self._tree, self._paradict)
         outobj.savefile()

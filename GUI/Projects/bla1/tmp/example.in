@@ -5,8 +5,8 @@ eps_2 =1E-5
 }
 
 integrator = {
-start = 0
-end = 1000
+start = 234
+end = 129
 dt = 0.1
 iteration = 100
 }
@@ -20,7 +20,7 @@ job = eigenstates
 basis =
 {
 tree = [
-110 -2
+67 -2
    19 -2
       9 -1
          24  0   3

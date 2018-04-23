@@ -1,7 +1,7 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
 import networkx as nx
-import re
+import re, sys
 
 class Parameters(object):
     def __init__(self):
@@ -149,33 +149,16 @@ class OutPut(Parameters):
 
 class Tree(object):
 #    def __init__(self):
-    def __init__(self, startSPF):
+    def __init__(self, mctdhConfig, sys_file):
         self._rootNode0 = Node("TOP")
         self._dictNodes = {}
-        model = ModelTree()
+        model = ModelTree(mctdhConfig, sys_file)
         logical = LogicalNodes(model.lay_matr_mode)
         self._G = logical.G
         self._elder = None
         self.getElder()
-#        self._rootNode = Node(str(startSPF), self._rootNode0)
         self.addNode(self._elder, str(self._G.nodes[self._elder]['SPF']), self._rootNode0)
         self.readTree()
-#        self._childNode0 = Node("19", self._rootNode)
-#        self._childNode1 = Node("30", self._rootNode)
-#        self._childNode2 = Node("9", self._childNode0)
-#        self._childNode3 = Node("4", self._childNode0)
-#        self._childNode4 = Node("17", self._childNode1)
-#        self._childNode5 = Node("17", self._childNode1)
-#        self._childNode6 = BottomNode("24", self._childNode2, "3")
-#        self._childNode7 = BottomNode("12", self._childNode3, "0")
-#        self._childNode8 = Node("5", self._childNode4)
-#        self._childNode9 = Node("7", self._childNode4)
-#        self._childNode10 = Node("5", self._childNode5)
-#        self._childNode11 = Node("7", self._childNode5)
-#        self._childNode13 = BottomNode("12", self._childNode8, "1")
-#        self._childNode12 = BottomNode("12", self._childNode9, "4")
-#        self._childNode14 = BottomNode("12", self._childNode10, "2")
-#        self._childNode15 = BottomNode("12", self._childNode11, "5")
 
         self._rootNode = self._dictNodes[10]
         self._treeData = self._dictNodes[10].log()

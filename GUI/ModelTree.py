@@ -1,4 +1,5 @@
 import mctdh
+import sys
 
 class ModelTree(object):
     def __init__(self, config_file='mctdh.config', sys_file='CH3g1.txt'):
@@ -13,6 +14,7 @@ class ModelTree(object):
         self.nodes_spf = {}
 
         self.config = mctdh.controlParameters()
+        print self.config_file, 'from ModelTree'
         self.config.initialize(self.config_file)
         self.basis = mctdh.MctdhBasis()
         self.basis.initialize(self.sys_file, self.config)

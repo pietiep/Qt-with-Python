@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, uic, QtCore
 import sys, os, shutil
 from widgetA import WidgetA
+from Node import Tree
 from InputPro import ListModel, ListModel2
 from dialogC import DialogC
 
@@ -72,7 +73,7 @@ class Main(base, form):
         self.showdialog(key)
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
-            print os.getcwd(), 'before rmtree'
+            #print os.getcwd(), 'before rmtree'
             self._newpath
             shutil.rmtree(self._newpath)
 
