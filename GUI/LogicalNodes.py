@@ -4,10 +4,10 @@ from networkx.drawing.nx_agraph import write_dot, graphviz_layout
 import matplotlib.pyplot as plt
 
 class LogicalNodes():
-    def __init__(self, layer_matr):
+    def __init__(self, layer_matr, config_file, sys_file):
         self.G = nx.DiGraph()
         self.layer_matr = layer_matr
-        self.ModelTree = ModelTree()
+        self.ModelTree = ModelTree(config_file, sys_file)
         self.label_mode = self.ModelTree.label_mode
         self.nodes_spf = self.ModelTree.nodes_spf
         self.Networkx()

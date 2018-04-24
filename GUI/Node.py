@@ -65,7 +65,7 @@ class InPut(Parameters):
 class OutPut(Parameters):
     #def __init__(self, eps, integrator, hamiltonian, potential, \
     #             job, parameters, tree, filename="example.in"):
-    def __init__(self, tree, paradict, filename="example1.in"):
+    def __init__(self, tree, paradict, filename="example.in"):
 #        inobj = InPut()
 #        paradict = inobj._paradict
         print paradict['job']
@@ -152,8 +152,12 @@ class Tree(object):
     def __init__(self, mctdhConfig, sys_file):
         self._rootNode0 = Node("TOP")
         self._dictNodes = {}
+
+        print mctdhConfig, 'from Tree'
+        print sys_file, 'from Tree'
+
         model = ModelTree(mctdhConfig, sys_file)
-        logical = LogicalNodes(model.lay_matr_mode)
+        logical = LogicalNodes(model.lay_matr_mode, mctdhConfig, sys_file)
         self._G = logical.G
         self._elder = None
         self.getElder()

@@ -13,8 +13,9 @@ class ModelTree(object):
         self.label_mode = {}
         self.nodes_spf = {}
 
-        self.config = mctdh.controlParameters()
         print self.config_file, 'from ModelTree'
+        print self.sys_file, 'from ModelTree'
+        self.config = mctdh.controlParameters()
         self.config.initialize(self.config_file)
         self.basis = mctdh.MctdhBasis()
         self.basis.initialize(self.sys_file, self.config)

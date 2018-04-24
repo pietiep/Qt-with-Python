@@ -33,9 +33,16 @@ class WidgetA(base, form):
 
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
-        self._mctdhConfig = 'mctdh.config'
-        self._sysTreeFile = 'CH3g1.txt'
-        self._inputFile = 'example.in'
+        self._mctdhConfig = None 
+        self._sysTreeFile = None
+        self._inputFile = None
+        self._TMPmctdhConfig = None
+        self._TMPsysTreeFile = None
+        self._TMPinputFile = None
+        self._SESmctdhConfig = None
+        self._SESsysTreeFile = None
+        self._SESinputFile = None
+
 
         self._startingPath = None
         self._ProjectName = None
@@ -100,10 +107,27 @@ class WidgetA(base, form):
         filenames = os.walk(self._HamiltonianDir+'/'+str(key)).next()[2]
         for val in filenames:
             if 'txt' in val:
-                self._sysTreeFile = val
+                sysTreeFile = val
     
-        self._mctdhConfig = self._HamiltonianDir + '/' + key + '/' + self._mctdhConfig
-        self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + self._sysTreeFile
+        self._mctdhConfig = self._HamiltonianDir + '/' + key + '/' + 'mctdh.config'
+        self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + sysTreeFile
+
+        if self._ProjectName != None:
+            self._TMPmctdhConfig = self._startingPath + '/' + self._ProjectName +'/tmp/' + 'mctdh.config'
+            self._TMPsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/tmp/' + sysTreeFile
+            self._TMPinputFile = self._startingPath + '/' + self._ProjectName + '/tmp/' + 'example.in'
+
+
+
+            if self._SessionName != None:
+                self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
+                self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
+                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
+                print self._SessionName, 'from getInput'
+                print self._SESmctdhConfig
+                print self._SESsysTreeFile
+        print self._SessionName, 'from getInput, outside if clause'
+
 #        print self._mctdhConfig
 #        print self._sysTreeFile
 
@@ -203,9 +227,21 @@ class WidgetA(base, form):
         #scr_sysTree = self._startingPath + '/' + self._sysTreeFile
         #print scr_mctdhConfig, scr_sysTree 
         #scr_example = self._startingPath + '/' + 'example.in'
+
+        sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
+        
+        if sessionContent:
+            print sessionContent, 'yes'
+            shutil.copy2(str(self._SESmctdhConfig), str(os.getcwd()))
+            shutil.copy2(str(self._SESsysTreeFile), str(os.getcwd()))
+            shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
+        else:
+            print sessionContent, 'no'
+
         shutil.copy2(self._mctdhConfig, str(os.getcwd()))
         shutil.copy2(self._sysTreeFile, str(os.getcwd()))
         shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
+
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
         #shutil.copy2(scr_sysTree, str(os.getcwd()))
@@ -220,25 +256,29 @@ class WidgetA(base, form):
             self.ModelTree = ModelTree(self._mctdhConfig, self._sysTreeFile)
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
+            self.PicGenerate()
 
-            ####Generate Outputfiles for new Pic###
-            self.output()
+    def PicGenerate(self):
+        ####Generate Outputfiles for new Pic###
+        self.output()
 
-            ####Pic with MCTDH Code and Networkx####
-            self.ModelTree = ModelTree(self._mctdhConfig, self._sysTreeFile)
-            self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode) #object
-            self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
-            self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
+        ####Pic with MCTDH Code and Networkx####
+        print self._TMPmctdhConfig, 'from change Node'
+        print self._TMPsysTreeFile, 'from change Node'
 
+        self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
+        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._mctdhConfig, self._sysTreeFile) #object
+        self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
+        self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
 
-            ####QGraphicsView###
-            pixmap = QtGui.QPixmap('nx_test.png')
-            self.scene = QtGui.QGraphicsScene(self)
-            self.scene.addPixmap(pixmap)
-            self.uiDisplayTree.setScene(self.scene)
+        ####QGraphicsView###
+        pixmap = QtGui.QPixmap('nx_test.png')
+        self.scene = QtGui.QGraphicsScene(self)
+        self.scene.addPixmap(pixmap)
+        self.uiDisplayTree.setScene(self.scene)
 
-            #####Leave tmp folder#####
-            os.chdir("../")
+        #####Leave tmp folder#####
+        os.chdir("../")
 
     def copytmp(self):
 #        print self._startingPath
@@ -345,6 +385,12 @@ class WidgetA(base, form):
         self.uiTree.resizeColumnToContents(1)
 #        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
         self.uiTree.clicked.connect(self.changeNode)
+
+        #####make tmp######
+        self.managefolder()
+
+        #####make Pic from tmp###
+        self.PicGenerate()
 
     def on_item_select2(self, item):
         key = item.data().toString()
