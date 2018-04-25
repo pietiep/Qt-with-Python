@@ -7,7 +7,6 @@ from InputTree import SceneGraphModel
 from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
-from functools import partial, update_wrapper
 import os, shutil
 
 base, form = uic.loadUiType("dialogA.ui")
@@ -37,9 +36,9 @@ class WidgetA(base, form):
         self._mctdhConfig = None 
         self._sysTreeFile = None
         self._inputFile = None
-        self._TMPmctdhConfig = None
-        self._TMPsysTreeFile = None
-        self._TMPinputFile = None
+        # self._TMPmctdhConfig = None
+        # self._TMPsysTreeFile = None
+        # self._TMPinputFile = None
         self._SESmctdhConfig = None
         self._SESsysTreeFile = None
         self._SESinputFile = None
@@ -117,11 +116,9 @@ class WidgetA(base, form):
         self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + sysTreeFile
 
         if self._ProjectName != None:
-            self._TMPmctdhConfig = self._startingPath + '/' + self._ProjectName +'/tmp/' + 'mctdh.config'
-            self._TMPsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/tmp/' + sysTreeFile
-            self._TMPinputFile = self._startingPath + '/' + self._ProjectName + '/tmp/' + 'example.in'
-
-
+            # self._TMPmctdhConfig = self._startingPath + '/' + self._ProjectName +'/tmp/' + 'mctdh.config'
+            # self._TMPsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/tmp/' + sysTreeFile
+            # self._TMPinputFile = self._startingPath + '/' + self._ProjectName + '/tmp/' + 'example.in'
 
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
@@ -215,22 +212,16 @@ class WidgetA(base, form):
 #        print "Button pressed is:",i.text()
 
     def managefolder(self):
-        print self._startingPath
-        print self._ProjectName
-        os.chdir(self._startingPath+"/"+self._ProjectName) 
+        # os.chdir(self._startingPath+"/"+self._ProjectName) 
 #        print os.getcwd()   
-        try:
-            shutil.rmtree("tmp") #removes folder
-        except Exception:
-            pass
-        os.makedirs("tmp")
-        os.chdir("./tmp")
-        #scr_mctdhConfig = self._startingPath + '/' + self._mctdhConfig
-        #scr_sysTree = self._startingPath + '/' + self._sysTreeFile
-        #print scr_mctdhConfig, scr_sysTree 
-        #scr_example = self._startingPath + '/' + 'example.in'
+        # try:
+        #     shutil.rmtree("tmp") #removes folder
+        # except Exception:
+        #     pass
+        # os.makedirs("tmp")
+        # os.chdir("./tmp")
 
-        sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
+        # sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
         
         # if sessionContent:
             # print sessionContent, 'yes: from session'
@@ -239,10 +230,9 @@ class WidgetA(base, form):
             # shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
         # else:
             # print sessionContent, 'no: from Hamilton'
-
-        shutil.copy2(self._mctdhConfig, str(os.getcwd()))
-        shutil.copy2(self._sysTreeFile, str(os.getcwd()))
-        shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
+        shutil.copy2(self._mctdhConfig, self._SESmctdhConfig)
+        shutil.copy2(self._sysTreeFile, self._SESsysTreeFile)
+        shutil.copy2(self._inputFile, self._SESinputFile)
 
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
@@ -265,10 +255,10 @@ class WidgetA(base, form):
         self.output()
 
         ####Pic with MCTDH Code and Networkx####
-        print self._TMPmctdhConfig, 'from change Node'
-        print self._TMPsysTreeFile, 'from change Node'
+        print self._SESmctdhConfig, 'from change Node'
+        print self._SESsysTreeFile, 'from change Node'
 
-        self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
+        self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._mctdhConfig, self._sysTreeFile) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
@@ -323,7 +313,7 @@ class WidgetA(base, form):
         self.close()
 
     def change0(self):
-        self._SessionName = self.uiProjectName.text()
+        self._SessionName = str(self.uiProjectName.text())
 #        os.chdir("./" + self._SessionName)  # Change dir
 
     def change1(self):
@@ -382,7 +372,7 @@ class WidgetA(base, form):
         self.managefolder()
 
         ####TreeView########
-        self._tree = Tree(self._TMPmctdhConfig, self._TMPsysTreeFile)
+        self._tree = Tree(self._SESmctdhConfig, self._SESsysTreeFile)
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
         self.uiTree.setModel(self.modelTree)
         self.uiTree.expandAll()

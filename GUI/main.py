@@ -47,8 +47,6 @@ class Main(base, form):
         self.uiSessions.clicked.connect(self.on_item_select0)
         self.uiSessions.customContextMenuRequested.connect(self.openMenu0)
 
-#        self._WidgetA._ProjectName = self._ProjectName
-#        self._WidgetA.wrappe_item()
 
         self._messageBu = None
 
