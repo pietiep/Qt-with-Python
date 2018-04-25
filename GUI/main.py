@@ -1,7 +1,6 @@
-from PyQt4 import QtGui, uic, QtCore
+from PyQt4 import QtGui, uic
 import sys, os, shutil
 from widgetA import WidgetA
-from Node import Tree
 from InputPro import ListModel, ListModel2
 from dialogC import DialogC
 
@@ -16,7 +15,7 @@ class Main(base, form):
         self._HamiltonianDir = os.getcwd() + '/' + 'Hamiltonians'
         os.chdir('Projects')
         self._startingPath = os.getcwd()
-        self._newpath = 'Project1'
+        self._ProjectName = None
         self._path2 = None
         self._dir_list = None
         self._proContent = []
@@ -40,13 +39,16 @@ class Main(base, form):
         self.uiMinusBu.clicked.connect(self.removeA)
         self.uiMinusBu2.clicked.connect(self.remove0)
 
-        self.setList()
+        # self.setList()
         self.uiProjects.clicked.connect(self.on_item_select)
         self.uiProjects.customContextMenuRequested.connect(self.openMenu)
 
         self.setList2()
         self.uiSessions.clicked.connect(self.on_item_select0)
         self.uiSessions.customContextMenuRequested.connect(self.openMenu0)
+
+#        self._WidgetA._ProjectName = self._ProjectName
+#        self._WidgetA.wrappe_item()
 
         self._messageBu = None
 
@@ -69,14 +71,11 @@ class Main(base, form):
     def remove0(self):
         """Removes Rows from ListModel2()"""
         rowNum = self._itemIndex2.row()
-        key = str(self._itemIndex2.data().toString())
-        self.showdialog(key)
+        session = str(self._itemIndex2.data().toString())
+        self.showdialog(session)
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
-            #print os.getcwd(), 'before rmtree'
-            print self._newpath
-            print self._newpath
-            # shutil.rmtree(self._newpath+'/'+self._path2)
+            shutil.rmtree(self._ProjectName+'/'+session)
 
     def removeA(self):
         """Removes Rows from ListModel()"""
@@ -111,8 +110,8 @@ class Main(base, form):
 
     def getContent(self):
         os.chdir(self._startingPath)
-        if os.path.exists(self._newpath):
-            root, directories, filenames = os.walk('./'+self._newpath).next()
+        if os.path.exists(self._ProjectName):
+            directories = os.walk('./'+self._ProjectName).next()[1]
             try:
                 directories.remove('tmp')  #removes 'tmp' from list
             except ValueError:
@@ -128,10 +127,9 @@ class Main(base, form):
         sessionFolder = str(index.data().toString())
 #        print projectFolder, sessionFolder
         self._itemIndex2 = index
-        self._newpath = self._startingPath + '/' + projectFolder + '/' + sessionFolder
-#        print self._newpath
+        self._ProjectName = projectFolder
 
-        os.chdir(self._newpath)
+        os.chdir(self._ProjectName)
         self._WidgetA._ProjectName = projectFolder
         self._WidgetA.editSession(sessionFolder)
         self.openC()
@@ -141,17 +139,17 @@ class Main(base, form):
     def on_item_select(self, index):
         """clicked Event on Items belonging to ListModel()"""
         self._itemIndex1 = index
-        self._newpath = str(index.data().toString())
-        self._WidgetA._ProjectName = self._newpath
+        self._ProjectName = str(index.data().toString())
+        self._WidgetA._ProjectName = self._ProjectName
         self._WidgetA._SessionName = None
         self._WidgetA.clearSession()
         self.getdirs()
         self.setList2()
 
     def setList2(self):
-         #####ListModelPES#######
+    #####ListModelPES#######
         self.getContent()
-        self._model2 = ListModel2(self._newpath, self._proContent)
+        self._model2 = ListModel2(self._ProjectName, self._proContent)
         self.uiSessions.setModel(self._model2)
         indices = self.uiSessions.selectionModel().selectedIndexes()
         if not indices:
@@ -161,10 +159,10 @@ class Main(base, form):
             self._path2 = str(self._itemIndex2.data().toString())
 
     def setList(self):
-         #####ListModelPES#######
+    #####ListModelPES#######
         self.getdirs() #updates self._dir_list 
         self._model1 = ListModel(self._dir_list)
- #       self._modelProxy1.setSourceModel(self._model1)
+#       self._modelProxy1.setSourceModel(self._model1)
 #        self.uiProjects.setModel(self._modelProxy1)
         self.uiProjects.setModel(self._model1)
 #        self.uiProjects.clicked.connect(self.on_item_select)
@@ -172,15 +170,13 @@ class Main(base, form):
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
             index = self._model1.index(0,0)
-            self._newpath = str(index.data().toString())
-            print self._newpath, 'setList'
+            self._ProjectName = str(index.data().toString())
             self._itemIndex1 = index
             self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
 
     def getdirs(self):
-            path = self._startingPath
-            root, directories, filenames = os.walk(self._startingPath).next()
+            directories = os.walk(self._startingPath).next()[1]
             self._dir_list = [dirs for dirs in directories]
             self._dir_list = sorted(self._dir_list)
 
@@ -193,10 +189,10 @@ class Main(base, form):
         self._path2 = str(dialogC._FolderName)
 
         if self._path2 != 'Cancel':
-            path = self._startingPath + '/' + self._newpath + '/' + self._path2
+            path = self._startingPath + '/' + self._ProjectName + '/' + self._path2
             if not os.path.exists(path):
                 try:
-                    os.chdir(self._startingPath+'/'+self._newpath)
+                    os.chdir(self._startingPath+'/'+self._ProjectName)
                     os.makedirs(self._path2)
                     os.chdir(self._startingPath)
                 except IOError as identifier:
@@ -213,11 +209,10 @@ class Main(base, form):
         dialogC = DialogC()
         dialogC.setWarning(str(warnings))
         dialogC.exec_()
-        self._newpath = str(dialogC._FolderName)
+        self._ProjectName = str(dialogC._FolderName)
 
-        if self._newpath != 'Cancel':
-#            path = os.getcwd() + '/' + self._newpath
-            path = self._startingPath + '/' + self._newpath
+        if self._ProjectName != 'Cancel':
+            path = self._startingPath + '/' + self._ProjectName
 #            print path, 'before path.exists'
             if not os.path.exists(path):
                 try:
@@ -232,18 +227,13 @@ class Main(base, form):
                 self.openA('Folder already exists!')
 
     def openB(self):
-        self._newpath = str(QtGui.QFileDialog.getExistingDirectory(self))
-        print self._newpath  + " from openB"
-        self._newpath = self._newpath.split("/")[-1]
+        self._ProjectName = str(QtGui.QFileDialog.getExistingDirectory(self))
+        self._ProjectName = self._ProjectName.split("/")[-1]
         self.getContent()
         self.setList2()
 
     def openC(self):
-#        print self._newpath + " from openC"
-#        os.chdir("./" + self._newpath) 
-#        print os.getcwd(), 'before WA'
         dialog = self._WidgetA
-#        print os.getcwd(), 'after WA'
         dialog.exec_()
 
 if __name__ == '__main__':

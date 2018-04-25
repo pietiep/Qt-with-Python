@@ -7,6 +7,7 @@ from InputTree import SceneGraphModel
 from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
+from functools import partial, update_wrapper
 import os, shutil
 
 base, form = uic.loadUiType("dialogA.ui")
@@ -98,9 +99,12 @@ class WidgetA(base, form):
         self.setSystem = None
 
         self.ModelTree = None
-        
+
+        # self.wrappe_item()
+
     def getInput(self, key):
         ###get Attributes#######
+        print self._HamiltonianDir
         inputFile = self._HamiltonianDir + '/' + key + '/' + 'example.in' 
         self._inputFile = inputFile
         
@@ -126,6 +130,7 @@ class WidgetA(base, form):
                 print self._SessionName, 'from getInput'
                 print self._SESmctdhConfig
                 print self._SESsysTreeFile
+
         print self._SessionName, 'from getInput, outside if clause'
 
 #        print self._mctdhConfig
@@ -155,9 +160,6 @@ class WidgetA(base, form):
         self.uiInit.textChanged.connect(self.change3)
         self.uiIter.setText(self._integrator[3])
         self.uiIter.textChanged.connect(self.change4)
-
-    def copyFromHam(self):
-        pass
 
     def editSession(self, name):
         self.uiProjectName.setText(str(name))
@@ -213,7 +215,8 @@ class WidgetA(base, form):
 #        print "Button pressed is:",i.text()
 
     def managefolder(self):
-#        print self._ProjectName
+        print self._startingPath
+        print self._ProjectName
         os.chdir(self._startingPath+"/"+self._ProjectName) 
 #        print os.getcwd()   
         try:
@@ -229,17 +232,17 @@ class WidgetA(base, form):
 
         sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
         
-        if sessionContent:
-            print sessionContent, 'yes: from session'
-            shutil.copy2(str(self._SESmctdhConfig), str(os.getcwd()))
-            shutil.copy2(str(self._SESsysTreeFile), str(os.getcwd()))
-            shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
-        else:
-            print sessionContent, 'no: from Hamilton'
+        # if sessionContent:
+            # print sessionContent, 'yes: from session'
+            # shutil.copy2(str(self._SESmctdhConfig), str(os.getcwd()))
+            # shutil.copy2(str(self._SESsysTreeFile), str(os.getcwd()))
+            # shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
+        # else:
+            # print sessionContent, 'no: from Hamilton'
 
-            shutil.copy2(self._mctdhConfig, str(os.getcwd()))
-            shutil.copy2(self._sysTreeFile, str(os.getcwd()))
-            shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
+        shutil.copy2(self._mctdhConfig, str(os.getcwd()))
+        shutil.copy2(self._sysTreeFile, str(os.getcwd()))
+        shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
 
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
@@ -313,6 +316,7 @@ class WidgetA(base, form):
 #                os.chdir("../")
 
             self.copytmp()
+            self.esc()
 
     def esc(self):
         os.chdir("../")
@@ -390,6 +394,11 @@ class WidgetA(base, form):
 
         #####make Pic from tmp###
         self.PicGenerate()
+
+    def wrappe_item(self):
+        item =self._model.index(0,0)
+
+        self.on_item_select1(item)
 
     def on_item_select2(self, item):
         key = item.data().toString()

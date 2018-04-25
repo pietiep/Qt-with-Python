@@ -112,7 +112,7 @@ class ListModel2(ListModel):
         os.chdir(self._changePath)
         try:
             os.rename(old[0], new[0])
-        except Exception as e:
+        except Exception:
             self.showdialog(row)
 
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
@@ -126,9 +126,9 @@ class ListModel2(ListModel):
             self.__data.remove(value)
         self.endRemoveRows()
         return True
- #       else:
- #           self.endRemoveRows()
- #           return False
+#       else:
+#           self.endRemoveRows()
+#           return False
 
 if __name__ == '__main__':
 
