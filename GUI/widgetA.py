@@ -213,7 +213,6 @@ class WidgetA(base, form):
 #        print "Button pressed is:",i.text()
 
     def managefolder(self):
-        import os, shutil
 #        print self._ProjectName
         os.chdir(self._startingPath+"/"+self._ProjectName) 
 #        print os.getcwd()   
@@ -231,16 +230,16 @@ class WidgetA(base, form):
         sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
         
         if sessionContent:
-            print sessionContent, 'yes'
+            print sessionContent, 'yes: from session'
             shutil.copy2(str(self._SESmctdhConfig), str(os.getcwd()))
             shutil.copy2(str(self._SESsysTreeFile), str(os.getcwd()))
             shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
         else:
-            print sessionContent, 'no'
+            print sessionContent, 'no: from Hamilton'
 
-        shutil.copy2(self._mctdhConfig, str(os.getcwd()))
-        shutil.copy2(self._sysTreeFile, str(os.getcwd()))
-        shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
+            shutil.copy2(self._mctdhConfig, str(os.getcwd()))
+            shutil.copy2(self._sysTreeFile, str(os.getcwd()))
+            shutil.copy2(self._inputFile, str(os.getcwd())) #!!!!!!!!!
 
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
@@ -297,8 +296,8 @@ class WidgetA(base, form):
         if self._SessionName == None:
                 self.showdialog()
         else:
-            root, directories, filenames = os.walk(".").next()
-            if self._SessionName in directories:
+            files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+str(self._SessionName)).next()[2]
+            if files:
                 #print "overwrite stuff?"
                 self.showdialog2()
                 if 'Yes' in self._messagebut:
@@ -308,10 +307,10 @@ class WidgetA(base, form):
                 else:
                     print 'out savePro'
                     
-            else:                         #Session Folder doesn't exists!
-                self.managefolder()
-                self.output()
-                os.chdir("../")
+#            else:                         #Session Folder doesn't exists!
+#                self.managefolder()
+#                self.output()
+#                os.chdir("../")
 
             self.copytmp()
 
@@ -320,7 +319,6 @@ class WidgetA(base, form):
         self.close()
 
     def change0(self):
-        import os
         self._SessionName = self.uiProjectName.text()
 #        os.chdir("./" + self._SessionName)  # Change dir
 
@@ -351,7 +349,7 @@ class WidgetA(base, form):
         self._potential = "None"
 
     def setPES(self):
-         #####ListModelPES#######
+        #####ListModelPES#######
         self.modelPES = QtGui.QStandardItemModel(self.listPES)
         for key in self._dictPES:
             item = QtGui.QStandardItem(key)
@@ -376,8 +374,11 @@ class WidgetA(base, form):
         self._hamiltonian = self._dictHamil[str(key)]
         #print self._hamiltonian
         
+        #####make tmp######
+        self.managefolder()
+
         ####TreeView########
-        self._tree = Tree(self._mctdhConfig, self._sysTreeFile)
+        self._tree = Tree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
         self.uiTree.setModel(self.modelTree)
         self.uiTree.expandAll()
@@ -386,8 +387,6 @@ class WidgetA(base, form):
 #        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
         self.uiTree.clicked.connect(self.changeNode)
 
-        #####make tmp######
-        self.managefolder()
 
         #####make Pic from tmp###
         self.PicGenerate()
@@ -400,7 +399,7 @@ class WidgetA(base, form):
     def output(self):
         """Class OutPut takes all parameters and saves them in File by creating
      the object of this class"""
-       # print os.getcwd()
+        # print os.getcwd()
         self.makeParaDict()
         outobj = OutPut(self._tree, self._paradict)
         outobj.savefile()

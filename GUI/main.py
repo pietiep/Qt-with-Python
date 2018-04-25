@@ -17,7 +17,7 @@ class Main(base, form):
         os.chdir('Projects')
         self._startingPath = os.getcwd()
         self._newpath = 'Project1'
-        self._path2 = ''
+        self._path2 = None
         self._dir_list = None
         self._proContent = []
 
@@ -74,8 +74,9 @@ class Main(base, form):
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
             #print os.getcwd(), 'before rmtree'
-            self._newpath
-            shutil.rmtree(self._newpath)
+            print self._newpath
+            print self._newpath
+            # shutil.rmtree(self._newpath+'/'+self._path2)
 
     def removeA(self):
         """Removes Rows from ListModel()"""
@@ -157,6 +158,7 @@ class Main(base, form):
             index = self._model2.index(0,0)
             self._itemIndex2 = index
             self.uiSessions.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
+            self._path2 = str(self._itemIndex2.data().toString())
 
     def setList(self):
          #####ListModelPES#######
@@ -171,6 +173,7 @@ class Main(base, form):
         if not indices:
             index = self._model1.index(0,0)
             self._newpath = str(index.data().toString())
+            print self._newpath, 'setList'
             self._itemIndex1 = index
             self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)
@@ -190,12 +193,14 @@ class Main(base, form):
         self._path2 = str(dialogC._FolderName)
 
         if self._path2 != 'Cancel':
-            path = os.getcwd() + '/' + self._newpath + '/' + self._path2
+            path = self._startingPath + '/' + self._newpath + '/' + self._path2
             if not os.path.exists(path):
                 try:
-                    os.makedirs(path)
+                    os.chdir(self._startingPath+'/'+self._newpath)
+                    os.makedirs(self._path2)
+                    os.chdir(self._startingPath)
                 except IOError as identifier:
-                    print identifier
+                    print dir(identifier)
                 self.getContent()
                 self.setList2()
             else:
