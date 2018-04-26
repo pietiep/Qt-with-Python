@@ -1,15 +1,15 @@
-eps = {
+eps = { 
 eps_general = 1E-5
 eps_1 =1E-6
 eps_2 =1E-5
-}
+} 
 
-integrator = {
+integrator = { 
 start = 9999
 end = 1099
 dt = 0.1
 iteration = 100
-}
+} 
 
 Hamiltonian = 194
 Potential = 101
@@ -17,16 +17,11 @@ Potential = 101
 job = eigenstates
 
 
-basis =
+basis = 
 {
-tree = [
-110 -2
-   19 -2
-      9 -1
-         24  0   3
-      4 -1
-         12  0   0
-   30 -2
+tree = [ 
+12 -2
+   31 -2
       17 -2
          5 -1
             12  0   1
@@ -37,6 +32,11 @@ tree = [
             12  0   2
          7 -1
             12  0   5
+   19 -2
+      4 -1
+         12  0   0
+      9 -1
+         24  0   3
 ]
 
 

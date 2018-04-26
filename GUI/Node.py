@@ -63,11 +63,7 @@ class InPut(Parameters):
                     self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
 
 class OutPut(Parameters):
-    #def __init__(self, eps, integrator, hamiltonian, potential, \
-    #             job, parameters, tree, filename="example.in"):
-    def __init__(self, tree, paradict, filename="example.in"):
-#        inobj = InPut()
-#        paradict = inobj._paradict
+    def __init__(self, tree, paradict, sysFile, filename="example.in"):
         print paradict['job']
         self._eps_general = paradict['eps_general']
         self._eps_1 = paradict['eps_1']
@@ -83,6 +79,8 @@ class OutPut(Parameters):
         self._formated = self.formatparameter()
         self._treeData = tree._treeData
         self._filename = filename
+        self._sysFile = sysFile
+        print filename, sysFile
 #        self.savefile()
 #        self.savefile2()
 
@@ -91,7 +89,7 @@ class OutPut(Parameters):
             text_file.write("{0}".format(self.bringAllTogether()))
 
     def savefile2(self):
-        with open("CH3g1.txt", "w") as text_file:
+        with open(self._sysFile, "w") as text_file:
             text_file.write("{0}".format(self.bringTreePara()))
 
     def formatparameter(self):
@@ -319,27 +317,3 @@ if __name__ == '__main__':
 
     tree = Tree("36")
     inobj = InPut()
-    outobj = OutPut(tree, inobj._paradict)
-    print outobj._treeData
-#    print tree._dictNodes[tree._elder]
-#    output = tree._dictNodes[tree._elder].log()
-#    print output
-
-#    eps = ["1E-5", "1E-7", "1E-5"]
-#    integrator = ["0", "1000", "0.1", "100"]
-#    hamiltonian = "194"
-#    potential = "101"
-#    job = "eigenstates"
-#    parameters = [[1, 2, 3, 4],
-#                  [5, 6, 7, 8],
-#                  [9, 10, 11, 12],
-#                  [13, 14, 15, 16],
-#                  [17, 18, 19, 20],
-#                  [21, 22, 23, 24]]
-
-#    inobj.readFile()
-
-#    filedata = OutPut(eps, integrator, hamiltonian, potential, job, parameters, tree)
-#    print filedata
-#    with open("example.in", "w") as text_file:
-#        text_file.write("{0}".format(filedata))

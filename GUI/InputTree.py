@@ -158,9 +158,6 @@ base, form = uic.loadUiType("mctdhTree.ui")
 #    #    self.connect(self.uiGenerateFile, SIGNAL("activated()"), self.BrowserCon)
 #        self.uiGenerateFile.clicked.connect(self.output)
 #
-#    def output(self):
-#        outobj = OutPut(self._tree) #Class OutPut takes all parameters
-        # and saves them in File by creating the object of this class
 
 if __name__ == '__main__':
 

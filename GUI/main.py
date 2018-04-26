@@ -130,6 +130,7 @@ class Main(base, form):
         os.chdir(self._ProjectName)
         self._WidgetA._ProjectName = projectFolder
         self._WidgetA.editSession(sessionFolder)
+        self._WidgetA.start()
         self.openC()
         os.chdir('./')
 #        print os.getcwd(), 'after OC'
@@ -169,6 +170,7 @@ class Main(base, form):
         if not indices:
             index = self._model1.index(0,0)
             self._ProjectName = str(index.data().toString())
+            self._WidgetA._ProjectName = self._ProjectName
             self._itemIndex1 = index
             self._itemProxyIndex1 = index
             self.uiProjects.selectionModel().select(index, QtGui.QItemSelectionModel.Select)

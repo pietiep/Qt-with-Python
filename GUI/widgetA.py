@@ -47,6 +47,7 @@ class WidgetA(base, form):
         self._startingPath = None
         self._ProjectName = None
         self._SessionName = None
+        self._temporarySES = None
         self._messagebut = None
 
         #####LineEdit:Projectname#######
@@ -99,7 +100,23 @@ class WidgetA(base, form):
 
         self.ModelTree = None
 
-        # self.wrappe_item()
+    def genereInput(self, inputFile):
+        ####Get all Parameters from example.in#####
+        inobj = InPut(inputFile) 
+        paradict = inobj._paradict
+
+        self._eps.append(paradict['eps_general'])
+        self._eps.append(paradict['eps_1'])
+        self._eps.append(paradict['eps_2'])
+        self._integrator.append(paradict['start'])
+        self._integrator.append(paradict['end'])
+        self._integrator.append(paradict['dt'])
+        self._integrator.append(paradict['iteration'])
+        self._hamiltonian = paradict['Hamiltonian']
+        self._potential = paradict['Potential']
+        self._job = paradict['job']
+        self._parameters = paradict['para']
+        
 
     def getInput(self, key):
         ###get Attributes#######
@@ -120,6 +137,7 @@ class WidgetA(base, form):
             # self._TMPsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/tmp/' + sysTreeFile
             # self._TMPinputFile = self._startingPath + '/' + self._ProjectName + '/tmp/' + 'example.in'
 
+
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
@@ -130,23 +148,7 @@ class WidgetA(base, form):
 
         print self._SessionName, 'from getInput, outside if clause'
 
-#        print self._mctdhConfig
-#        print self._sysTreeFile
-
-        inobj = InPut(inputFile) #complete path?
-        paradict = inobj._paradict
-
-        self._eps.append(paradict['eps_general'])
-        self._eps.append(paradict['eps_1'])
-        self._eps.append(paradict['eps_2'])
-        self._integrator.append(paradict['start'])
-        self._integrator.append(paradict['end'])
-        self._integrator.append(paradict['dt'])
-        self._integrator.append(paradict['iteration'])
-        self._hamiltonian = paradict['Hamiltonian']
-        self._potential = paradict['Potential']
-        self._job = paradict['job']
-        self._parameters = paradict['para']
+        self.genereInput(inputFile)
         
         ###LineEdit####
         self.uiStartTime.setText(self._integrator[0])
@@ -181,11 +183,11 @@ class WidgetA(base, form):
         os.chdir("../") #if dialog is closed, leave folder
         event.accept()
 
-    def showdialog2(self):
+    def showdialog2(self, Stringmes):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
 
-        msg.setText("Overwriting temporary settings?")
+        msg.setText(Stringmes)
         msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
 
         msg.buttonClicked.connect(self.msgbtn)
@@ -194,11 +196,11 @@ class WidgetA(base, form):
     def msgbtn(self, i):
         self._messagebut = str(i.text())
 
-    def showdialog(self):
+    def showdialog(self, stringMes):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
 
-        msg.setText("Please give a name for the current Session")
+        msg.setText(stringMes)
 #        msg.setInformativeText("This is additional information")
 #        msg.setWindowTitle("MessageBox")
 #        msg.setDetailedText("The details are as follows:")
@@ -234,14 +236,13 @@ class WidgetA(base, form):
         shutil.copy2(self._sysTreeFile, self._SESsysTreeFile)
         shutil.copy2(self._inputFile, self._SESinputFile)
 
-
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
         #shutil.copy2(scr_sysTree, str(os.getcwd()))
         #shutil.copy2(scr_example, str(os.getcwd()))
 
     def changeNode(self, my_index):
         if self._SessionName == None:
-                self.showdialog()
+                self.showdialog('Please give Session name!')
         else:
             self.managefolder()
 
@@ -259,7 +260,7 @@ class WidgetA(base, form):
         print self._SESsysTreeFile, 'from change Node'
 
         self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
-        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._mctdhConfig, self._sysTreeFile) #object
+        self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._SESmctdhConfig, self._SESsysTreeFile) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
 
@@ -270,7 +271,7 @@ class WidgetA(base, form):
         self.uiDisplayTree.setScene(self.scene)
 
         #####Leave tmp folder#####
-        os.chdir("../")
+        # os.chdir("../")
 
     def copytmp(self):
 #        print self._startingPath
@@ -287,7 +288,7 @@ class WidgetA(base, form):
 
     def saveProject(self):
         if self._SessionName == None:
-                self.showdialog()
+                self.showdialog('Please give Session name')
         else:
             files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+str(self._SessionName)).next()[2]
             if files:
@@ -305,7 +306,7 @@ class WidgetA(base, form):
 #                self.output()
 #                os.chdir("../")
 
-            self.copytmp()
+            # self.copytmp()
             self.esc()
 
     def esc(self):
@@ -361,16 +362,25 @@ class WidgetA(base, form):
 #        operator = dictOp[str(key)]
 #        print operator
 
+    def start(self):
+        if self._SessionName != None:
+            filenames = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
+            print filenames       
+            for val in filenames:
+                if 'txt' in val:
+                    sysTreeFile = val
 
-    def on_item_select1(self, item):
-        key = str(item.data().toString())
-        self.getInput(key)
-        self._hamiltonian = self._dictHamil[str(key)]
-        #print self._hamiltonian
-        
-        #####make tmp######
-        self.managefolder()
+            self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
+            self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
+            self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
 
+            self.genereInput(self._SESinputFile)
+            self.TreeOnly()
+        else:
+            print 'Error in start'
+            sys.exit()
+            
+    def TreeOnly(self):
         ####TreeView########
         self._tree = Tree(self._SESmctdhConfig, self._SESsysTreeFile)
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
@@ -381,14 +391,44 @@ class WidgetA(base, form):
 #        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
         self.uiTree.clicked.connect(self.changeNode)
 
-
         #####make Pic from tmp###
         self.PicGenerate()
 
-    def wrappe_item(self):
-        item =self._model.index(0,0)
+    def generateTree(self, item):
+        key = str(item.data().toString())
+        self.getInput(key)
+        self._hamiltonian = self._dictHamil[str(key)]
 
-        self.on_item_select1(item)
+        #####make tmp######
+        self.managefolder()
+
+        #####generates Tree###
+        self.TreeOnly()        
+
+    def on_item_select1(self, item):
+        if self._SessionName != None:
+            sessionpath = self._startingPath+'/'+self._ProjectName+'/'+self._SessionName
+            try:
+                SESfiles = os.walk(sessionpath).next()[2]
+            except StopIteration:
+                os.chdir(self._startingPath+'/'+self._ProjectName)
+                os.makedirs(self._SessionName)
+                self._temporarySES = self._SessionName
+                os.chdir(self._startingPath)
+                SESfiles = []
+                self.on_item_select1(item)
+            print SESfiles
+            if SESfiles:
+                self.showdialog2("Overwriting session's basis?")
+                if 'Yes' in self._messagebut:
+                    print 'Yes'
+                    self.generateTree(item)
+                else:
+                    print self._messagebut
+            else:
+                self.generateTree(item)
+        else:
+            self.showdialog('Please give Session name!')
 
     def on_item_select2(self, item):
         key = item.data().toString()
@@ -400,7 +440,9 @@ class WidgetA(base, form):
      the object of this class"""
         # print os.getcwd()
         self.makeParaDict()
-        outobj = OutPut(self._tree, self._paradict)
+        print self._SESinputFile
+        print self._SESsysTreeFile
+        outobj = OutPut(self._tree, self._paradict, self._SESsysTreeFile, self._SESinputFile)
         outobj.savefile()
         outobj.savefile2()
 
