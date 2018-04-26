@@ -94,6 +94,12 @@ class WidgetA(base, form):
         self.uiSaveJob.clicked.connect(self.saveProject)
         self.uiStartCal.clicked.connect(self.esc)
 
+        ####Line Edits#####
+        self.uiStartTime.textChanged.connect(self.change1)
+        self.uiEndTime.textChanged.connect(self.change2)
+        self.uiInit.textChanged.connect(self.change3)
+        self.uiIter.textChanged.connect(self.change4)
+
         ####Networkx and MCTDH####
         self.setConfig = None
         self.setSystem = None
@@ -104,6 +110,9 @@ class WidgetA(base, form):
         ####Get all Parameters from example.in#####
         inobj = InPut(inputFile) 
         paradict = inobj._paradict
+
+        self._integrator = []
+        self._eps = []
 
         self._eps.append(paradict['eps_general'])
         self._eps.append(paradict['eps_1'])
@@ -116,7 +125,15 @@ class WidgetA(base, form):
         self._potential = paradict['Potential']
         self._job = paradict['job']
         self._parameters = paradict['para']
-        
+
+        ###LineEdit####
+        print self._integrator
+        print self._eps
+        print 'from where the integrator is set'
+        self.uiStartTime.setText(self._integrator[0])
+        self.uiEndTime.setText(self._integrator[1])
+        self.uiInit.setText(self._integrator[2])
+        self.uiIter.setText(self._integrator[3])
 
     def getInput(self, key):
         ###get Attributes#######
@@ -133,32 +150,15 @@ class WidgetA(base, form):
         self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + sysTreeFile
 
         if self._ProjectName != None:
-            # self._TMPmctdhConfig = self._startingPath + '/' + self._ProjectName +'/tmp/' + 'mctdh.config'
-            # self._TMPsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/tmp/' + sysTreeFile
-            # self._TMPinputFile = self._startingPath + '/' + self._ProjectName + '/tmp/' + 'example.in'
-
-
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
                 self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
-                print self._SessionName, 'from getInput'
-                print self._SESmctdhConfig
-                print self._SESsysTreeFile
 
         print self._SessionName, 'from getInput, outside if clause'
 
         self.genereInput(inputFile)
         
-        ###LineEdit####
-        self.uiStartTime.setText(self._integrator[0])
-        self.uiStartTime.textChanged.connect(self.change1)
-        self.uiEndTime.setText(self._integrator[1])
-        self.uiEndTime.textChanged.connect(self.change2)
-        self.uiInit.setText(self._integrator[2])
-        self.uiInit.textChanged.connect(self.change3)
-        self.uiIter.setText(self._integrator[3])
-        self.uiIter.textChanged.connect(self.change4)
 
     def editSession(self, name):
         self.uiProjectName.setText(str(name))
@@ -232,9 +232,21 @@ class WidgetA(base, form):
             # shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
         # else:
             # print sessionContent, 'no: from Hamilton'
-        shutil.copy2(self._mctdhConfig, self._SESmctdhConfig)
-        shutil.copy2(self._sysTreeFile, self._SESsysTreeFile)
-        shutil.copy2(self._inputFile, self._SESinputFile)
+        print self._inputFile    
+        print self._SESinputFile    
+        print self._sysTreeFile
+        print self._SESsysTreeFile
+        print self._mctdhConfig        
+        print self._SESmctdhConfig
+
+        if self._inputFile != None or self._sysTreeFile != None or self._mctdhConfig != None:
+
+            shutil.copy2(self._mctdhConfig, self._SESmctdhConfig)
+            shutil.copy2(self._sysTreeFile, self._SESsysTreeFile)
+            shutil.copy2(self._inputFile, self._SESinputFile)
+        else:
+            shutil.copy2(self._inputFile, self._SESinputFile)
+                        
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
         #shutil.copy2(scr_sysTree, str(os.getcwd()))
@@ -293,9 +305,10 @@ class WidgetA(base, form):
             files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+str(self._SessionName)).next()[2]
             if files:
                 #print "overwrite stuff?"
-                self.showdialog2()
+                self.showdialog2('Overwriting?')
                 if 'Yes' in self._messagebut:
-                    self.managefolder()
+                    
+                    # self.managefolder()
                     self.output()
                     os.chdir("../")
                 else:
@@ -315,16 +328,16 @@ class WidgetA(base, form):
 
     def change0(self):
         self._SessionName = str(self.uiProjectName.text())
-#        os.chdir("./" + self._SessionName)  # Change dir
+        self.start()
 
     def change1(self):
-        self._integrator[0] = self.uiStartTime.text()
+        self._integrator[0] = str(self.uiStartTime.text())
     def change2(self):
-        self._integrator[1] = self.uiEndTime.text()
+        self._integrator[1] = str(self.uiEndTime.text())
     def change3(self):
-        self._integrator[2] = self.uiInit.text()
+        self._integrator[2] = str(self.uiInit.text())
     def change4(self):
-        self._integrator[3] = self.uiIter.text()
+        self._integrator[3] = str(self.uiIter.text())
 
 
     def setJob1(self):
@@ -363,19 +376,22 @@ class WidgetA(base, form):
 #        print operator
 
     def start(self):
-        if self._SessionName != None:
-            filenames = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
-            print filenames       
-            for val in filenames:
-                if 'txt' in val:
-                    sysTreeFile = val
+        if self._SessionName != None or self._SessionName == '':
+            try:
+                filenames = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
+                print filenames       
+                for val in filenames:
+                    if 'txt' in val:
+                        sysTreeFile = val
 
-            self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
-            self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
-            self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
+                self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
+                self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
+                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
 
-            self.genereInput(self._SESinputFile)
-            self.TreeOnly()
+                self.genereInput(self._SESinputFile)
+                self.TreeOnly()
+            except (StopIteration, UnboundLocalError):
+                pass
         else:
             print 'Error in start'
             sys.exit()

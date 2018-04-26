@@ -5,8 +5,8 @@ eps_2 =1E-5
 }
 
 integrator = {
-start = 234
-end = 129
+start = 0
+end = 10
 dt = 0.1
 iteration = 100
 }
