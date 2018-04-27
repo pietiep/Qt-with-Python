@@ -229,9 +229,13 @@ class Node(object):
         if position < 0 or position > len(self._children):
             return False
 
-        self._children.pop(position)
-        child._parent = None
-        return True
+        try:
+            child = self._children.pop(position)
+            child._parent = None
+            return True
+        except IndexError as e:
+            print e.message, 'from Node:237'
+            return False
 
     def name(self):
         return self._name

@@ -71,17 +71,17 @@ class WidgetA(base, form):
         self.setPES()
 
         ###RadioButtonsJob####
-        self.RealRadio.setChecked(True)
-        #func1 = lambda job="real-time Propagation": self.setJob(job)
         self.RealRadio.toggled.connect(self.setJob1)
-        #self.func2 = lambda job="imaginary-time Propagation": self.setJob(job)
+        self.RealRadio.setChecked(False)
         self.ImaginaryRadio.toggled.connect(self.setJob2)
-        #func3 = lambda job="imaginary-time Propagation": self.setJob(job)
         self.EigenstateRadio.toggled.connect(self.setJob3)
-        #func4 = lambda job="imaginary-time Propagation": self.setJob(job)
         self.fluxEigenstateRadio.toggled.connect(self.setJob4)
 
-
+        self._job = None
+        self._dictJob = {'real-time Propagation': self.RealRadio,
+        'imaginary-time Propagation': self.ImaginaryRadio,
+        'eigenstates': self.EigenstateRadio,
+        'flux eigenstates': self.fluxEigenstateRadio}
 
         ####QGraphicsView###
 #        pixmap = QtGui.QPixmap('nx_test.png')
@@ -104,7 +104,8 @@ class WidgetA(base, form):
         self.setConfig = None
         self.setSystem = None
 
-        self.ModelTree = None
+        self.modelTree = None
+        self.scene = None
 
     def genereInput(self, inputFile):
         ####Get all Parameters from example.in#####
@@ -134,6 +135,9 @@ class WidgetA(base, form):
         self.uiEndTime.setText(self._integrator[1])
         self.uiInit.setText(self._integrator[2])
         self.uiIter.setText(self._integrator[3])
+
+        self._dictJob[self._job].setChecked(True)
+
 
     def getInput(self, key):
         ###get Attributes#######
@@ -245,7 +249,8 @@ class WidgetA(base, form):
             shutil.copy2(self._sysTreeFile, self._SESsysTreeFile)
             shutil.copy2(self._inputFile, self._SESinputFile)
         else:
-            shutil.copy2(self._inputFile, self._SESinputFile)
+            pass
+            #shutil.copy2(self._inputFile, self._SESinputFile)
                         
 
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
@@ -258,9 +263,10 @@ class WidgetA(base, form):
         else:
             self.managefolder()
 
-            self.ModelTree = ModelTree(self._mctdhConfig, self._sysTreeFile)
+            self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
+            
             self.PicGenerate()
 
     def PicGenerate(self):
@@ -376,6 +382,7 @@ class WidgetA(base, form):
 #        print operator
 
     def start(self):
+        self.clearTree()
         if self._SessionName != None or self._SessionName == '':
             try:
                 filenames = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
@@ -390,11 +397,21 @@ class WidgetA(base, form):
 
                 self.genereInput(self._SESinputFile)
                 self.TreeOnly()
+
             except (StopIteration, UnboundLocalError):
-                pass
+                self.clearTree()
         else:
             print 'Error in start'
             sys.exit()
+    
+    def clearTree(self):
+                try:
+                    self.scene.clear()
+                    self.uiDisplayTree.setScene(self.scene)
+                    self.modelTree.removeRow(0)
+                    print self.modelTree._rootNode._children
+                except (IndexError, AttributeError) as e:
+                    print e.message, 'start'
             
     def TreeOnly(self):
         ####TreeView########

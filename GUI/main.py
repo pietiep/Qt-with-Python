@@ -161,11 +161,7 @@ class Main(base, form):
     #####ListModelPES#######
         self.getdirs() #updates self._dir_list 
         self._model1 = ListModel(self._dir_list)
-#       self._modelProxy1.setSourceModel(self._model1)
-#        self.uiProjects.setModel(self._modelProxy1)
         self.uiProjects.setModel(self._model1)
-#        self.uiProjects.clicked.connect(self.on_item_select)
-#        self._modelProxy1.sort(0, QtCore.Qt.AscendingOrder)
         indices = self.uiProjects.selectionModel().selectedIndexes()
         if not indices:
             index = self._model1.index(0,0)
