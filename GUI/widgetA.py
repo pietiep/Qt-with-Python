@@ -264,6 +264,10 @@ class WidgetA(base, form):
             self.managefolder()
 
             self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
+            with open(self._SESsysTreeFile, "rb") as text:
+                data = text.readlines()
+                # QtGui.QTextEdit().setText
+                self.uiTreeText.setText(data)
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
             
