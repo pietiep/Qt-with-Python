@@ -42,6 +42,10 @@ class WidgetA(base, form):
         self._SESmctdhConfig = None
         self._SESsysTreeFile = None
         self._SESinputFile = None
+        self._TMPmctdhConfig = None
+        self._TMPsysTreeFile = None
+        self._TMPinputFile = None
+        self._dest = None
 
 
         self._startingPath = None
@@ -93,7 +97,7 @@ class WidgetA(base, form):
 #        self.uiDisplayTree.setScene(self.scene)
 
         ####PushBottoms#####
-        self.uiCancel.clicked.connect(self.esc)
+        self.uiCancel.clicked.connect(self.cancelFunc)
         self.uiSaveJob.clicked.connect(self.saveProject)
         self.uiStartCal.clicked.connect(self.esc)
 
@@ -131,9 +135,6 @@ class WidgetA(base, form):
         self._parameters = paradict['para']
 
         ###LineEdit####
-        print self._integrator
-        print self._eps
-        print 'from where the integrator is set'
         self.uiStartTime.setText(self._integrator[0])
         self.uiEndTime.setText(self._integrator[1])
         self.uiInit.setText(self._integrator[2])
@@ -306,17 +307,18 @@ class WidgetA(base, form):
         #####Leave tmp folder#####
         # os.chdir("../")
 
-    def copytmp(self):
-#        print self._startingPath
-#        print self._ProjectName
-        scr = str(os.getcwd()) + "/tmp"
-        dest = self._startingPath+ "/" + self._ProjectName + "/" + str(self._SessionName)
-        #print scr, dest
-        try:
-            shutil.rmtree(dest) #removes folder
-        except Exception:
-            pass
-        shutil.copytree(scr, dest)
+    def backUp(self):
+        print self._startingPath
+        print self._ProjectName
+        if self._SessionName != None:
+            scr = self._startingPath+ "/" + self._ProjectName + "/" + str(self._SessionName)
+            self._dest = scr + '/tmp'
+            try:
+                shutil.rmtree(self._dest) #removes folder
+            except Exception as e:
+                print e.message, 'No tmp: copytmp; widgetA.py'
+
+            shutil.copytree(scr, self._dest)
 
 
     def saveProject(self):
@@ -328,10 +330,9 @@ class WidgetA(base, form):
                 #print "overwrite stuff?"
                 self.showdialog2('Overwriting?')
                 if 'Yes' in self._messagebut:
-                    
-                    # self.managefolder()
                     self.output()
                     os.chdir("../")
+                    self.esc()
                 else:
                     print 'out savePro'
                     
@@ -341,7 +342,36 @@ class WidgetA(base, form):
 #                os.chdir("../")
 
             # self.copytmp()
-            self.esc()
+
+    def cancelFunc(self):    
+        try:
+            files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
+            print files
+        except Exception:
+            raise
+        if files:
+            self.showdialog2("Warning if you proceed, your changes will irreversible lost? Do you want to proceed?")
+            if 'Yes' in self._messagebut:
+                print 'Yes'
+                self._TMPmctdhConfig = self._SESmctdhConfig + '/tmp'
+                self._TMPsysTreeFile = self._SESsysTreeFile + '/tmp'
+                self._TMPinputFile = self._SESinputFile + '/tmp'
+
+                try:
+                    shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig)
+                    shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
+                    shutil.copy2(self._TMPinputFile, self._SESinputFile)
+                except Exception:
+                    print' Hello Error'
+                    raise
+                try:
+                    self.start()
+                except Exception:
+                    raise
+            else:
+                pass
+        else:
+            pass
 
     def esc(self):
         os.chdir("../")
@@ -350,6 +380,7 @@ class WidgetA(base, form):
     def change0(self):
         self._SessionName = str(self.uiProjectName.text())
         self.start()
+        self.backUp()
 
     def change1(self):
         self._integrator[0] = str(self.uiStartTime.text())
@@ -409,6 +440,7 @@ class WidgetA(base, form):
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
                 self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
+                
 
                 self.genereInput(self._SESinputFile)
                 self.TreeText()
@@ -422,6 +454,7 @@ class WidgetA(base, form):
     
     def clearTree(self):
                 try:
+                    self.uiTreeText.clear()
                     self.scene.clear()
                     self.uiDisplayTree.setScene(self.scene)
                     self.modelTree.removeRow(0)

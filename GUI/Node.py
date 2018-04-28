@@ -1,7 +1,7 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
 import networkx as nx
-import re, sys
+import re
 
 class Parameters(object):
     def __init__(self):
@@ -63,7 +63,7 @@ class InPut(Parameters):
                             if bool(re.search(r'\d', para)):
                                 para = para.split()     #if para contains numbers
                                 self._paralist.append(para)
-                        except StopIteration as e:
+                        except StopIteration:
                             pass
 #                    while bool(re.search(r'\d', line)):
 
@@ -234,7 +234,7 @@ class Node(object):
             child._parent = None
             return True
         except IndexError as e:
-            print e.message, 'from Node:237'
+            print e.message, ': from Node, 237'
             return False
 
     def name(self):

@@ -131,6 +131,7 @@ class Main(base, form):
         self._WidgetA._ProjectName = projectFolder
         self._WidgetA.editSession(sessionFolder)
         self._WidgetA.start()
+        self._WidgetA.backUp()
         self.openC()
         os.chdir('./')
 #        print os.getcwd(), 'after OC'
