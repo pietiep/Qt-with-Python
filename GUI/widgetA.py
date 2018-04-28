@@ -53,6 +53,9 @@ class WidgetA(base, form):
         #####LineEdit:Projectname#######
         self.uiProjectName.textChanged.connect(self.change0)
 
+        #####TextEdit:TreeFile#######
+        self.uiTreeText.setReadOnly(True)
+
         #####ListModelHamilton#######
         self._model = QtGui.QStandardItemModel(self.listHamilton)
         for key in self._dictHamil:
@@ -256,6 +259,16 @@ class WidgetA(base, form):
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
         #shutil.copy2(scr_sysTree, str(os.getcwd()))
         #shutil.copy2(scr_example, str(os.getcwd()))
+    def TreeText(self):
+        with open(self._SESsysTreeFile, "rb") as text:
+            dataAll = text.readlines()
+            lineNum = max([i for i, l_ in enumerate(dataAll) if l_ == '\n'])
+            data = dataAll[:lineNum]
+            data = ''.join(data)
+            # QtGui.QTextEdit().setText
+        self.uiTreeText.setText(data)
+        
+        
 
     def changeNode(self, my_index):
         if self._SessionName == None:
@@ -264,14 +277,12 @@ class WidgetA(base, form):
             self.managefolder()
 
             self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
-            with open(self._SESsysTreeFile, "rb") as text:
-                data = text.readlines()
-                # QtGui.QTextEdit().setText
-                self.uiTreeText.setText(data)
+                
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
             
             self.PicGenerate()
+            self.TreeText()
 
     def PicGenerate(self):
         ####Generate Outputfiles for new Pic###
@@ -400,6 +411,7 @@ class WidgetA(base, form):
                 self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
 
                 self.genereInput(self._SESinputFile)
+                self.TreeText()
                 self.TreeOnly()
 
             except (StopIteration, UnboundLocalError):
