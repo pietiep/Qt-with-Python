@@ -1,7 +1,6 @@
 from PyQt4 import QtCore, QtGui, uic
 import sys
-from Node import Node
-import icons_rc
+from Node import Node, Tree
 
 class SceneGraphModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
@@ -44,8 +43,11 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     #    return 1
         return 2
 
+    
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | \
+            QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled | \
+            QtCore.Qt.ItemIsDropEnabled
 
     def headerData(self, section, orientation, role):
         if role == QtCore.Qt.DisplayRole:
@@ -81,9 +83,14 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         if index.isValid():
             if role == QtCore.Qt.EditRole:
                 node = index.internalPointer()
-                node.setName(str(value.toString()))
-                #print str(value.toString())
-                return True
+                # print str(value.toString())
+                # print index.column()
+                if index.column() == 0:
+                    node.setName(str(value.toString()))
+                    return True
+                elif index.column() == 1:
+                    node.setPhyscoor(str(value.toString()))
+                    return True
         return False
 
     def getNode(self, index):
@@ -122,6 +129,45 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         return success
 
+#####Drag and Drop######
+
+    def supportedDropActions(self):
+        return QtCore.Qt.CopyAction | QtCore.Qt.MoveAction
+
+    def mimeTypes(self):
+        types = QtCore.QStringList()
+        types.append('text/plain')
+        return types
+
+    def mimeData(self, index):     #index is list with len=2; SPFs and (for bottom) mode
+        rc = ''
+        # print index[0].data().toString()
+        # print index[1].data().toString()
+        myIndex = index[0]
+        print myIndex.row()
+        print myIndex.column()
+        while myIndex.isValid():
+            rc = rc + str(myIndex.row()) + ';' + str(myIndex.column())
+            myIndex = myIndex.parent()
+            if myIndex.isValid:
+                rc = rc + ','
+        print 'mimeData', rc
+        mimeData = QtCore.QMimeData()
+        mimeData.setText(rc)
+        return mimeData
+
+    def dropMimeData(self, data, action, row, column, parentIndex):
+        if action == QtCore.Qt.IgnoreAction:
+            return True
+
+        if data.hasText():
+            print data.text()
+        sys.exit()
+    
+    
+    
+    
+    
 base, form = uic.loadUiType("mctdhTree.ui")
 
 #class GenerateFile(base, form):
@@ -163,15 +209,18 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle("cleanlooks")
-    tree = Tree("36")
+    tree = Tree('mctdh.config', 'CH3g1.txt')
     model = SceneGraphModel(tree._rootNode0)
-    RightLeg = model.index(0, 3, QtCore.QModelIndex())
-    model.insertRows(0,1, RightLeg)
+    # RightLeg = model.index(0, 3, QtCore.QModelIndex())
+    # model.insertRows(0,1, RightLeg)
 
     treeView = QtGui.QTreeView()
     treeView.show()
     treeView.setModel(model)
+    treeView.expandAll()
     treeView.resizeColumnToContents(0)
+    treeView.resizeColumnToContents(1)
+    treeView.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
 
 
 #    wnd =GenerateFile()

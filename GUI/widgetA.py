@@ -350,12 +350,25 @@ class WidgetA(base, form):
         except Exception:
             raise
         if files:
+            print files
             self.showdialog2("Warning if you proceed, your changes will irreversible lost? Do you want to proceed?")
             if 'Yes' in self._messagebut:
                 print 'Yes'
-                self._TMPmctdhConfig = self._SESmctdhConfig + '/tmp'
-                self._TMPsysTreeFile = self._SESsysTreeFile + '/tmp'
-                self._TMPinputFile = self._SESinputFile + '/tmp'
+                for file_ in files:
+                    if 'txt' in file_:
+                        sysFile = file_
+
+                self._TMPmctdhConfig = self._startingPath + '/' \
+                + self._ProjectName + '/' + self._SessionName + \
+                '/tmp/mctdh.config'
+
+                self._TMPsysTreeFile = self._startingPath + '/' \
+                + self._ProjectName + '/' + self._SessionName + \
+                '/tmp/' + sysFile
+
+                self._TMPinputFile =  self._startingPath  + '/' \
+                + self._ProjectName  + '/' + self._SessionName +\
+                '/tmp/example.in'
 
                 try:
                     shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig)
@@ -426,6 +439,7 @@ class WidgetA(base, form):
 #        key = item.data().toString()
 #        operator = dictOp[str(key)]
 #        print operator
+
 
     def start(self):
         self.clearTree()

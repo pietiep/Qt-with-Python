@@ -310,6 +310,9 @@ class BottomNode(Node):
     def typeInfo(self):
         return "Bottom"
 
+    def setPhyscoor(self, physcoor):
+        self._physcoor = physcoor
+
     def log(self, tabLevel=-1):
         output = ""
         tabLevel += 1
