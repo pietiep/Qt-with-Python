@@ -107,6 +107,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
         child = self.getNode(self._childIndex)
+        print parentNode.name()
 
         self.beginInsertRows(parent, position, position+rows-1)
 
@@ -151,36 +152,41 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def dropMimeData(self, data, action, row, column, parentIndex):
         if action == QtCore.Qt.IgnoreAction:
             return True
-        self.insertRows(0, 1, parentIndex)
-        dummy = self._childIndex
-        print dummy.internalPointer().name
-        self._childIndex = dummy.child(1,0)
-        print self._childIndex.internalPointer().name #here is the bug!!!!!!
-        self.insertRows(0, 1, dummy)
 
+        self.insertRows(0,1, parentIndex)
+        new = parentIndex.child(1, 0)
+        old = self._childIndex
+        self._childIndex = new
+        self.insertRows(0,1, old)
+        # print parentIndex.internalPointer().childcount()
         # self.InsertViaDrop(self._childIndex, parentIndex)
+        # self.getIndex(parentIndex)
         return True
-    
-    def InsertViaDrop(self, childIndex, parentIndex):
-        print parentIndex.internalPointer().name()
-        self.insertRows(0, 1, parentIndex)
-        dummyChild = childIndex
 
-        childcount = dummyChild.internalPointer().childcount()
-
-        if dummyChild.internalPointer().childAll():                #if has got children
-            for i in range(childcount):
-                self._childIndex = dummyChild.child(i,0)
-                self.InsertViaDrop(self._childIndex, parentIndex)
-
-    def getIndex(self, parentIndex):
+    def getIndex(self, parentIndex, j=0):
         childcount = parentIndex.internalPointer().childcount()
-        print parentIndex.internalPointer().name()
+        # print parentIndex.internalPointer().name()
+        # print parentIndex.row()
+        j += 1
 
         if parentIndex.internalPointer().childAll():
             for i in range(childcount):
                 childIndex = parentIndex.child(i,0)
-                self.getIndex(childIndex)
+                self.createIndex(i, j, childIndex.internalPointer())
+                self.getIndex(childIndex, j)
+    
+    # def InsertViaDrop(self, childIndex, parentIndex):
+    #     print parentIndex.internalPointer().name()
+    #     self.insertRows(0, 1, parentIndex)
+    #     dummyChild = childIndex
+
+    #     childcount = dummyChild.internalPointer().childcount()
+
+    #     if dummyChild.internalPointer().childAll():                #if has got children
+    #         for i in range(childcount):
+    #             self._childIndex = dummyChild.child(i,0)
+    #             self.InsertViaDrop(self._childIndex, parentIndex)
+
 
     
 base, form = uic.loadUiType("mctdhTree.ui")
