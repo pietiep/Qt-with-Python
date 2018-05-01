@@ -246,6 +246,9 @@ class Node(object):
     def child(self, row):
         return self._children[row]
 
+    def childAll(self):
+        return self._children
+
     def childcount(self):
         return len(self._children)
 

@@ -6,6 +6,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
         super(SceneGraphModel, self).__init__(parent)
         self._rootNode = root
+        self._childIndex = QtCore.QModelIndex()
 
     def parent(self, index):
         node = index.internalPointer()
@@ -105,12 +106,13 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
+        child = self.getNode(self._childIndex)
 
         self.beginInsertRows(parent, position, position+rows-1)
 
         for row in range(rows):
-            childcount = parentNode.childcount()
-            childNode = Node("untitled" + str(childcount))
+            # childcount = parentNode.childcount()
+            childNode = Node(child.name())
             success = parentNode.insertChild(position, childNode) # child inserted, _children grows, childcount counts one more
 
         self.endInsertRows()
@@ -139,19 +141,9 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         types.append('text/plain')
         return types
 
-    def mimeData(self, index):     #index is list with len=2; SPFs and (for bottom) mode
+    def mimeData(self, index):   #index is list with len=2; SPFs and (for bottom) mode
         rc = ''
-        # print index[0].data().toString()
-        # print index[1].data().toString()
-        myIndex = index[0]
-        print myIndex.row()
-        print myIndex.column()
-        while myIndex.isValid():
-            rc = rc + str(myIndex.row()) + ';' + str(myIndex.column())
-            myIndex = myIndex.parent()
-            if myIndex.isValid:
-                rc = rc + ','
-        print 'mimeData', rc
+        self._childIndex = index[0]
         mimeData = QtCore.QMimeData()
         mimeData.setText(rc)
         return mimeData
@@ -159,14 +151,37 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def dropMimeData(self, data, action, row, column, parentIndex):
         if action == QtCore.Qt.IgnoreAction:
             return True
+        self.insertRows(0, 1, parentIndex)
+        dummy = self._childIndex
+        print dummy.internalPointer().name
+        self._childIndex = dummy.child(1,0)
+        print self._childIndex.internalPointer().name #here is the bug!!!!!!
+        self.insertRows(0, 1, dummy)
 
-        if data.hasText():
-            print data.text()
-        sys.exit()
+        # self.InsertViaDrop(self._childIndex, parentIndex)
+        return True
     
-    
-    
-    
+    def InsertViaDrop(self, childIndex, parentIndex):
+        print parentIndex.internalPointer().name()
+        self.insertRows(0, 1, parentIndex)
+        dummyChild = childIndex
+
+        childcount = dummyChild.internalPointer().childcount()
+
+        if dummyChild.internalPointer().childAll():                #if has got children
+            for i in range(childcount):
+                self._childIndex = dummyChild.child(i,0)
+                self.InsertViaDrop(self._childIndex, parentIndex)
+
+    def getIndex(self, parentIndex):
+        childcount = parentIndex.internalPointer().childcount()
+        print parentIndex.internalPointer().name()
+
+        if parentIndex.internalPointer().childAll():
+            for i in range(childcount):
+                childIndex = parentIndex.child(i,0)
+                self.getIndex(childIndex)
+
     
 base, form = uic.loadUiType("mctdhTree.ui")
 
@@ -212,7 +227,6 @@ if __name__ == '__main__':
     tree = Tree('mctdh.config', 'CH3g1.txt')
     model = SceneGraphModel(tree._rootNode0)
     # RightLeg = model.index(0, 3, QtCore.QModelIndex())
-    # model.insertRows(0,1, RightLeg)
 
     treeView = QtGui.QTreeView()
     treeView.show()
