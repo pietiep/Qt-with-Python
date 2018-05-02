@@ -1,12 +1,14 @@
 from PyQt4 import QtCore, QtGui, uic
 import sys
-from Node import Node, Tree
+from Node import Node, BottomNode, Tree
 
 class SceneGraphModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
         super(SceneGraphModel, self).__init__(parent)
         self._rootNode = root
+        self._child = None
         self._childIndex = QtCore.QModelIndex()
+        self._dictNodes = {}
 
     def parent(self, index):
         node = index.internalPointer()
@@ -106,15 +108,17 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
-        child = self.getNode(self._childIndex)
-        print parentNode.name()
+        oldNode = self._child
+        if oldNode.typeInfo() == 'NODE':
+            self.addNode(oldNode.name(), oldNode.name(), None)    
+        if oldNode.typeInfo() == 'Bottom':
+            self.addBottomNode(oldNode.name(), oldNode.name(), None, oldNode.physcoor())
+        self.copyNode(self._child)
 
         self.beginInsertRows(parent, position, position+rows-1)
 
         for row in range(rows):
-            # childcount = parentNode.childcount()
-            childNode = Node(child.name())
-            success = parentNode.insertChild(position, childNode) # child inserted, _children grows, childcount counts one more
+            success = parentNode.insertChild(position, self._dictNodes[oldNode.name()]) # child inserted, _children grows, childcount counts one more
 
         self.endInsertRows()
 
@@ -122,11 +126,17 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
-
+        grandfather = parentNode.parent()
+        # fathers = grandfather.childAll()
+        # pos = fathers.index(parentNode)
+                
         self.beginRemoveRows(parent, position, position+rows-1)
 
         for row in range(rows):
-            success = parentNode.removeChild(position)
+            # success = grandfather.removeChild(0)
+            print type(grandfather)
+            
+            success = grandfather.removeChild(position)
 
         self.endRemoveRows()
 
@@ -144,6 +154,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
     def mimeData(self, index):   #index is list with len=2; SPFs and (for bottom) mode
         rc = ''
+        self._child = index[0].internalPointer()
         self._childIndex = index[0]
         mimeData = QtCore.QMimeData()
         mimeData.setText(rc)
@@ -152,79 +163,35 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def dropMimeData(self, data, action, row, column, parentIndex):
         if action == QtCore.Qt.IgnoreAction:
             return True
-
+        
         self.insertRows(0,1, parentIndex)
-        new = parentIndex.child(1, 0)
-        old = self._childIndex
-        self._childIndex = new
-        self.insertRows(0,1, old)
-        # print parentIndex.internalPointer().childcount()
-        # self.InsertViaDrop(self._childIndex, parentIndex)
-        # self.getIndex(parentIndex)
+        index = self._childIndex
+        self.removeRows(0,1, index)
+        print self._rootNode.child(0)
         return True
 
-    def getIndex(self, parentIndex, j=0):
-        childcount = parentIndex.internalPointer().childcount()
-        # print parentIndex.internalPointer().name()
-        # print parentIndex.row()
-        j += 1
-
-        if parentIndex.internalPointer().childAll():
-            for i in range(childcount):
-                childIndex = parentIndex.child(i,0)
-                self.createIndex(i, j, childIndex.internalPointer())
-                self.getIndex(childIndex, j)
+    def copyNode(self, oldNode):
+        children = oldNode.childAll()
+        if children:
+            for oldchild in children:
+                if oldchild.typeInfo() == "NODE":
+                    self.addNode(oldchild.name(), oldchild.name(), self._dictNodes[oldNode.name()])
+                if oldchild.typeInfo() == "Bottom":
+                    self.addBottomNode(oldchild.name(), oldchild.name(), self._dictNodes[oldNode.name()], oldchild.physcoor())
+                self.copyNode(oldchild)
     
-    # def InsertViaDrop(self, childIndex, parentIndex):
-    #     print parentIndex.internalPointer().name()
-    #     self.insertRows(0, 1, parentIndex)
-    #     dummyChild = childIndex
+    def addNode(self, obj, SPF, parent):
+        self._dictNodes[obj] = Node(SPF, parent)
 
-    #     childcount = dummyChild.internalPointer().childcount()
-
-    #     if dummyChild.internalPointer().childAll():                #if has got children
-    #         for i in range(childcount):
-    #             self._childIndex = dummyChild.child(i,0)
-    #             self.InsertViaDrop(self._childIndex, parentIndex)
+    def addBottomNode(self, obj, SPF, parent, physcoor):
+        self._dictNodes[obj] = BottomNode(SPF, parent, physcoor)
+                
+        
 
 
     
 base, form = uic.loadUiType("mctdhTree.ui")
 
-#class GenerateFile(base, form):
-#    def __init__(self, parent=None):
-#        super(base, self).__init__(parent)
-#        self.setupUi(self)
-#        eps = ["1E-5", "1E-6", "1E-5"]
-#        integrator = ["0", "1000", "0.1", "100"]
-#        hamiltonian = "194"
-#        potential = "101"
-#        job = "eigenstates"
-#        parameters = [[1, 2, 3, 4],
-#                    [5, 6, 7, 8],
-#                    [9, 10, 11, 12],
-#                    [13, 14, 15, 16],
-#                    [17, 18, 19, 20],
-#                    [21, 22, 23, 24]]
-#
-#        self._eps = eps
-#        self._integrator = integrator
-#        self._hamiltonian = hamiltonian
-#        self._potential = potential
-#        self._job = job
-#        self._parameters = parameters
-#
-#        self._tree = Tree("36")  #Delegation instead of inheritance of Tree
-#        self._treeData = self._tree._treeData  #Top parent node object storing
-#        #all child node which also contain child node objects
-#
-#        model = SceneGraphModel(self._tree._rootNode0)
-#
-#        self.uiTree.setModel(model)
-#
-#    #    self.connect(self.uiGenerateFile, SIGNAL("activated()"), self.BrowserCon)
-#        self.uiGenerateFile.clicked.connect(self.output)
-#
 
 if __name__ == '__main__':
 
@@ -241,10 +208,6 @@ if __name__ == '__main__':
     treeView.resizeColumnToContents(0)
     treeView.resizeColumnToContents(1)
     treeView.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
-
-
-#    wnd =GenerateFile()
-#    wnd.show()
 
 
     sys.exit(app.exec_())

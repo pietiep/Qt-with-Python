@@ -169,7 +169,9 @@ class WidgetA(base, form):
         
 
     def editSession(self, name):
+        self.uiProjectName.blockSignals(True)
         self.uiProjectName.setText(str(name))
+        self.uiProjectName.blockSignals(False)
 
     def clearSession(self):
         self.uiProjectName.clear()
@@ -260,6 +262,7 @@ class WidgetA(base, form):
         #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
         #shutil.copy2(scr_sysTree, str(os.getcwd()))
         #shutil.copy2(scr_example, str(os.getcwd()))
+
     def TreeText(self):
         with open(self._SESsysTreeFile, "rb") as text:
             dataAll = text.readlines()
@@ -277,7 +280,7 @@ class WidgetA(base, form):
         else:
             self.managefolder()
 
-            self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
+            # self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
                 
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
@@ -390,10 +393,16 @@ class WidgetA(base, form):
         os.chdir("../")
         self.close()
 
+    def setSessionName(self, name):
+        self._SessionName = name
+
     def change0(self):
         self._SessionName = str(self.uiProjectName.text())
-        self.start()
-        self.backUp()
+        folders = os.walk(self._startingPath+'/'+self._ProjectName).next()[1]
+        if self._SessionName in folders:
+            self.showdialog('Folder already exists!')
+        # self.start()
+        # self.backUp()
 
     def change1(self):
         self._integrator[0] = str(self.uiStartTime.text())
@@ -484,6 +493,7 @@ class WidgetA(base, form):
         self.uiTree.expandAll()
         self.uiTree.resizeColumnToContents(0)
         self.uiTree.resizeColumnToContents(1)
+        # self.uiTree.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
 #        my_index = self.modelTree.index(0, 0, QtCore.QModelIndex())
         self.uiTree.clicked.connect(self.changeNode)
 

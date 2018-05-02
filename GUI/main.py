@@ -33,7 +33,7 @@ class Main(base, form):
         self.setList()
         self.uiNew.triggered.connect(self.openA)
         self.uiLoad.triggered.connect(self.openB)
-        self.uiMCTDHcalc.triggered.connect(self.openC)
+        self.uiMCTDHcalc.triggered.connect(self.openD)
         self.uiPlusBu.clicked.connect(self.openA)
         self.uiPlusBu2.clicked.connect(self.open0)
         self.uiMinusBu.clicked.connect(self.removeA)
@@ -130,6 +130,7 @@ class Main(base, form):
         os.chdir(self._ProjectName)
         self._WidgetA._ProjectName = projectFolder
         self._WidgetA.editSession(sessionFolder)
+        self._WidgetA.setSessionName(sessionFolder)
         self._WidgetA.start()
         self._WidgetA.backUp()
         self.openC()
@@ -233,6 +234,10 @@ class Main(base, form):
         dialog = self._WidgetA
         dialog.exec_()
 
+    def openD(self):
+        self._WidgetA.clearSession()
+        dialog = self._WidgetA
+        dialog.exec_()
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)

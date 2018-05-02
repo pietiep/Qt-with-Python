@@ -313,6 +313,9 @@ class BottomNode(Node):
     def typeInfo(self):
         return "Bottom"
 
+    def physcoor(self):
+        return self._physcoor
+
     def setPhyscoor(self, physcoor):
         self._physcoor = physcoor
 
