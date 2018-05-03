@@ -73,7 +73,8 @@ class Main(base, form):
         self.showdialog(session)
         if 'OK' in self._messageBu:
             self._model2.removeRows(rowNum,1, self._itemIndex2)
-            shutil.rmtree(self._ProjectName+'/'+session)
+
+            shutil.rmtree(self._startingPath+'/'+self._ProjectName+'/'+session)
 
     def removeA(self):
         """Removes Rows from ListModel()"""
@@ -236,6 +237,7 @@ class Main(base, form):
 
     def openD(self):
         self._WidgetA.clearSession()
+        self._WidgetA.setSessionName(None)
         dialog = self._WidgetA
         dialog.exec_()
 if __name__ == '__main__':

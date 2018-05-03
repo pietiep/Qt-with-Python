@@ -55,7 +55,7 @@ class WidgetA(base, form):
         self._messagebut = None
 
         #####LineEdit:Projectname#######
-        self.uiProjectName.textChanged.connect(self.change0)
+        #self.uiProjectName.textChanged.connect(self.change0)
 
         #####TextEdit:TreeFile#######
         self.uiTreeText.setReadOnly(True)
@@ -193,6 +193,16 @@ class WidgetA(base, form):
         os.chdir("../") #if dialog is closed, leave folder
         event.accept()
 
+    def showdialog3(self, Stringmes):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Information)
+
+        msg.setText(Stringmes)
+        msg.setStandardButtons(QtGui.QMessageBox.Save | QtGui.QMessageBox.Cancel)
+
+        msg.buttonClicked.connect(self.msgbtn)
+        msg.exec_()
+
     def showdialog2(self, Stringmes):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
@@ -224,24 +234,6 @@ class WidgetA(base, form):
 #        print "Button pressed is:",i.text()
 
     def managefolder(self):
-        # os.chdir(self._startingPath+"/"+self._ProjectName) 
-#        print os.getcwd()   
-        # try:
-        #     shutil.rmtree("tmp") #removes folder
-        # except Exception:
-        #     pass
-        # os.makedirs("tmp")
-        # os.chdir("./tmp")
-
-        # sessionContent = os.walk(self._startingPath+"/"+self._ProjectName+'/'+str(self._SessionName)).next()[2]
-        
-        # if sessionContent:
-            # print sessionContent, 'yes: from session'
-            # shutil.copy2(str(self._SESmctdhConfig), str(os.getcwd()))
-            # shutil.copy2(str(self._SESsysTreeFile), str(os.getcwd()))
-            # shutil.copy2(str(self._SESinputFile), str(os.getcwd())) #!!!!!!!!!
-        # else:
-            # print sessionContent, 'no: from Hamilton'
         print self._inputFile    
         print self._SESinputFile    
         print self._sysTreeFile
@@ -256,12 +248,6 @@ class WidgetA(base, form):
             shutil.copy2(self._inputFile, self._SESinputFile)
         else:
             pass
-            #shutil.copy2(self._inputFile, self._SESinputFile)
-                        
-
-        #shutil.copy2(scr_mctdhConfig, str(os.getcwd()))
-        #shutil.copy2(scr_sysTree, str(os.getcwd()))
-        #shutil.copy2(scr_example, str(os.getcwd()))
 
     def TreeText(self):
         with open(self._SESsysTreeFile, "rb") as text:
@@ -322,87 +308,78 @@ class WidgetA(base, form):
                 print e.message, 'No tmp: copytmp; widgetA.py'
 
             shutil.copytree(scr, self._dest)
+            print scr
+            print self._dest
 
 
     def saveProject(self):
-        if self._SessionName == None:
+        name = self.uiProjectName.text()
+        if name == '':
                 self.showdialog('Please give Session name')
+        elif name == self._SessionName:
+            self.showdialog2('Overwriting?')
+            if 'Yes' in self._messagebut:
+                self.output()  #saves all Parameter and Tree to *.in and tree only to *.txt 
+                os.chdir("../")
+            else:
+                pass
+        elif self.folderExist():
+            self.showdialog('Folder already exists! Please choose another Name')
+            
         else:
             files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+str(self._SessionName)).next()[2]
-            if files:
-                #print "overwrite stuff?"
-                self.showdialog2('Overwriting?')
-                if 'Yes' in self._messagebut:
-                    self.output()
-                    os.chdir("../")
-                    self.esc()
-                else:
-                    print 'out savePro'
-                    
-#            else:                         #Session Folder doesn't exists!
-#                self.managefolder()
-#                self.output()
-#                os.chdir("../")
 
-            # self.copytmp()
+                    
 
     def cancelFunc(self):    
         try:
             files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
-            print files
         except Exception:
             raise
         if files:
             print files
-            self.showdialog2("Warning if you proceed, your changes will irreversible lost? Do you want to proceed?")
-            if 'Yes' in self._messagebut:
-                print 'Yes'
-                for file_ in files:
-                    if 'txt' in file_:
-                        sysFile = file_
+            for file_ in files:
+                if 'txt' in file_:
+                    sysFile = file_
 
-                self._TMPmctdhConfig = self._startingPath + '/' \
-                + self._ProjectName + '/' + self._SessionName + \
-                '/tmp/mctdh.config'
+            self._TMPmctdhConfig = self._startingPath + '/' \
+            + self._ProjectName + '/' + self._SessionName + \
+            '/tmp/mctdh.config'
 
-                self._TMPsysTreeFile = self._startingPath + '/' \
-                + self._ProjectName + '/' + self._SessionName + \
-                '/tmp/' + sysFile
+            self._TMPsysTreeFile = self._startingPath + '/' \
+            + self._ProjectName + '/' + self._SessionName + \
+            '/tmp/' + sysFile
 
-                self._TMPinputFile =  self._startingPath  + '/' \
-                + self._ProjectName  + '/' + self._SessionName +\
-                '/tmp/example.in'
+            self._TMPinputFile =  self._startingPath  + '/' \
+            + self._ProjectName  + '/' + self._SessionName +\
+            '/tmp/example.in'
 
-                try:
-                    shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig)
-                    shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
-                    shutil.copy2(self._TMPinputFile, self._SESinputFile)
-                except Exception:
-                    print' Hello Error'
-                    raise
-                try:
-                    self.start()
-                except Exception:
-                    raise
-            else:
-                pass
-        else:
-            pass
+            ### in case of cancel, the session will be overwritten with the old status
+            try:
+                shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
+                shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
+                shutil.copy2(self._TMPinputFile, self._SESinputFile)
+            except Exception:
+                print' Hello Error'
+                raise
+        
+        self.esc()
 
     def esc(self):
-        os.chdir("../")
         self.close()
 
     def setSessionName(self, name):
         self._SessionName = name
 
-    def change0(self):
-        self._SessionName = str(self.uiProjectName.text())
+    def folderExist(self):
         folders = os.walk(self._startingPath+'/'+self._ProjectName).next()[1]
         if self._SessionName in folders:
             self.showdialog('Folder already exists!')
-        # self.start()
-        # self.backUp()
+            return False
+        return True
+        
+    def change0(self):
+        self._SessionName = str(self.uiProjectName.text())
 
     def change1(self):
         self._integrator[0] = str(self.uiStartTime.text())
@@ -503,16 +480,20 @@ class WidgetA(base, form):
     def generateTree(self, item):
         key = str(item.data().toString())
         self.getInput(key)
+        
         self._hamiltonian = self._dictHamil[str(key)]
 
         #####make tmp######
         self.managefolder()
 
         #####generates Tree###
-        self.TreeOnly()        
+        self.TreeOnly()
 
     def on_item_select1(self, item):
-        if self._SessionName != None:
+        name = str(self.uiProjectName.text())
+        print self._SessionName
+        if name != '':
+            self._SessionName = name
             sessionpath = self._startingPath+'/'+self._ProjectName+'/'+self._SessionName
             try:
                 SESfiles = os.walk(sessionpath).next()[2]
@@ -525,14 +506,15 @@ class WidgetA(base, form):
                 self.on_item_select1(item)
             print SESfiles
             if SESfiles:
-                self.showdialog2("Overwriting session's basis?")
-                if 'Yes' in self._messagebut:
-                    print 'Yes'
-                    self.generateTree(item)
-                else:
-                    print self._messagebut
+                self.showdialog("Folder %s already exists!" %name)
+                #if 'Yes' in self._messagebut:
+                #    print 'Yes'
+                #    self.generateTree(item)
+                #else:
+                #    print self._messagebut
             else:
                 self.generateTree(item)
+                self.backUp()
         else:
             self.showdialog('Please give Session name!')
 

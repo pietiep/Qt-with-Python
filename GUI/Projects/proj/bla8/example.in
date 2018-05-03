@@ -5,8 +5,8 @@ eps_2 =1E-5
 } 
 
 integrator = { 
-start = blow
-end = 1099
+start = 0
+end = 100
 dt = 0.1
 iteration = 100
 } 
@@ -14,14 +14,14 @@ iteration = 100
 Hamiltonian = 194
 Potential = 101
 
-job = flux eigenstates
+job = eigenstates
 
 
 basis = 
 {
 tree = [ 
-35 -2
-   35 -2
+120 -2
+   30 -2
       17 -2
          5 -1
             12  0   2
@@ -34,9 +34,9 @@ tree = [
             12  0   4
    19 -2
       9 -1
-         2  0   4
+         24  0   3
       4 -1
-         3  0   1
+         12  0   0
 ]
 
 
