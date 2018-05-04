@@ -79,7 +79,7 @@ class WidgetA(base, form):
         'flux eigenstates': self.fluxEigenstateRadio}
 
         ####PushBottoms#####
-        self.uiCancel.clicked.connect(self.esc)
+        self.uiCancel.clicked.connect(self.cancel)
         self.uiSaveJob.clicked.connect(self.saveProject)
         self.uiStartCal.clicked.connect(self.esc)
 
@@ -145,7 +145,7 @@ class WidgetA(base, form):
 
         print self._SessionName, 'from getInput, outside if clause'
 
-        self.genereInput(self._TMPinputFile)
+        print self._TMPinputFile
         
 
     def editSession(self, name):
@@ -295,19 +295,47 @@ class WidgetA(base, form):
             self.fromTMPToSES()
             self.output()  #saves all Parameter and Tree to *.in and tree only to *.txt 
 
+    def cancel(self):
+        self.removeContent()
+        self.esc()
+
     def removeContent(self):
-        sysPath = self._startingPath +'/'+ self._ProjectName +'/tmp'
-        files = os.walk(sysPath).next()[2]
+        sysPath = self._startingPath +'/'+ self._ProjectName
+        os.chdir(sysPath)
+
+        try:
+            shutil.rmtree('tmp')
+        except OSError:
+            pass
+            
+        os.mkdir('tmp')
+        os.chdir(self._startingPath)
+
+    def checkTMP(self):
+        sysPathTMP = self._startingPath +'/'+ self._ProjectName +'/tmp'
+        files = os.walk(sysPathTMP).next()[2]
         print files
-        for f_ in files:
-            os.remove
+        if files:
+            return True
+        return False
 
     def fromHToTMP(self, item):
+        if self.checkTMP():
+
+            self.showdialog2('Overwriting temporary Settings?')
+            if 'Yes' in self._messagebut:
+                print 'Yes'
+                self.fromHToTMPinner(item)
+            else:
+                pass
+        else:
+            self.fromHToTMPinner(item)
+
+    def fromHToTMPinner(self, item):
         sysPath = self._HamiltonianDir+'/'+item
         files = os.walk(sysPath).next()[2]
         for file_ in files:
             if 'txt' in file_:
-                print file_
                 sysFile = file_    
 
         self._mctdhConfig = sysPath+'/'+'mctdh.config'
@@ -333,6 +361,37 @@ class WidgetA(base, form):
         except Exception:
             print' Hello Error'
             raise
+
+    def fromSESToTMP(self):    
+        try:
+            files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
+        except Exception:
+            raise
+        if files:
+            print files
+            for file_ in files:
+                if 'txt' in file_:
+                    sysFile = file_
+
+            self._TMPmctdhConfig = self._startingPath + '/' \
+            + self._ProjectName + \
+            '/tmp/mctdh.config'
+
+            self._TMPsysTreeFile = self._startingPath + '/' \
+            + self._ProjectName + \
+            '/tmp/' + sysFile
+
+            self._TMPinputFile =  self._startingPath  + '/' \
+            + self._ProjectName  +\
+            '/tmp/example.in'
+
+            try:
+                shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
+                shutil.copy2(self._TMPsysTreeFile, self._SESSESsysTreeFile)
+                shutil.copy2(self._TMPinputFile, self._SESinputFile)
+            except Exception:
+                print' Hello Error'
+                raise
 
     def fromTMPToSES(self):    
         files = os.walk(self._startingPath + '/' \
@@ -363,37 +422,6 @@ class WidgetA(base, form):
         except Exception:
             print' Hello Error'
 
-    def fromSESToTMP(self):    
-        try:
-            files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
-        except Exception:
-            raise
-        if files:
-            print files
-            for file_ in files:
-                if 'txt' in file_:
-                    sysFile = file_
-
-            self._TMPmctdhConfig = self._startingPath + '/' \
-            + self._ProjectName + \
-            '/tmp/mctdh.config'
-
-            self._TMPsysTreeFile = self._startingPath + '/' \
-            + self._ProjectName + \
-            '/tmp/' + sysFile
-
-            self._TMPinputFile =  self._startingPath  + '/' \
-            + self._ProjectName  +\
-            '/tmp/example.in'
-
-            try:
-                shutil.copy2(self._TMPmctdhConfig, self._SESctdhConfig) 
-                shutil.copy2(self._TMPsysTreeFile, self._SESSESsysTreeFile)
-                shutil.copy2(self._TMPinputFile, self._SESinputFile)
-            except Exception:
-                print' Hello Error'
-                raise
-        
     def esc(self):
         self.close()
 
@@ -418,7 +446,6 @@ class WidgetA(base, form):
         self._integrator[2] = str(self.uiInit.text())
     def change4(self):
         self._integrator[3] = str(self.uiIter.text())
-
 
     def setJob1(self):
         self._job = "real-time Propagation"
@@ -458,9 +485,6 @@ class WidgetA(base, form):
             self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
             self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
             self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
-
-            ###delete content of tmp###
-            self.removeContent()        
 
             ###copies files from SES to TMP
             self.fromSESToTMP()
@@ -503,28 +527,13 @@ class WidgetA(base, form):
         
         self._hamiltonian = self._dictHamil[str(key)]
 
-        ###delete content of tmp###
-        self.removeContent()        
-
-        #####make tmp######
-        self.fromHToTMP(item)
-
         #####generates Tree###
         self.TreeOnly()
 
+
     def on_item_select1(self, item):
-        os.chdir(self._startingPath+'/'+self._ProjectName)
-        try:
-            shutil.rmtree('tmp') #removes folder
-        except Exception as e:
-            print e.message, 'No tmp: copytmp; widgetA.py'
-        os.makedirs('tmp')
-        os.chdir(self._startingPath)
 
         key = str(item.data().toString())        
-        
-        ###delete content of tmp###
-        self.removeContent()        
 
         ####Copy from default Hamilton to tmp
         self.fromHToTMP(key)

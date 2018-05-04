@@ -39,18 +39,6 @@ class InPut(Parameters):
         self.getPara("job")
         self.getPara2()
         self._paradict['para'] = self._paralist
-        print self._paradict['start']
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
-        print 'helo'
 
 
     def getPara2(self):

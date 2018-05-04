@@ -133,6 +133,7 @@ class Main(base, form):
         self._WidgetA.editSession(sessionFolder)
         self._WidgetA.setSessionName(sessionFolder)
         self._WidgetA.start()
+        self._WidgetA.removeContent()
         self.openC()
         os.chdir('./')
 
@@ -236,8 +237,10 @@ class Main(base, form):
     def openD(self):
         self._WidgetA.clearSession()
         self._WidgetA.setSessionName(None)
-        dialog = self._WidgetA
-        dialog.exec_()
+        self._WidgetA.removeContent()
+
+        self.openC()
+
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
