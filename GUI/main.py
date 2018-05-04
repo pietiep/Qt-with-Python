@@ -133,10 +133,8 @@ class Main(base, form):
         self._WidgetA.editSession(sessionFolder)
         self._WidgetA.setSessionName(sessionFolder)
         self._WidgetA.start()
-        self._WidgetA.backUp()
         self.openC()
         os.chdir('./')
-#        print os.getcwd(), 'after OC'
 
     def on_item_select(self, index):
         """clicked Event on Items belonging to ListModel()"""
