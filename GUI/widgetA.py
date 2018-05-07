@@ -7,7 +7,6 @@ from ModelTree import ModelTree
 from LogicalNodes import LogicalNodes
 from View import View
 import os, shutil
-from compiler.consts import CO_FUTURE_PRINT_FUNCTION
 
 base, form = uic.loadUiType("dialogA.ui")
 
@@ -81,6 +80,7 @@ class WidgetA(base, form):
         ####PushBottoms#####
         self.uiCancel.clicked.connect(self.cancel)
         self.uiSaveJob.clicked.connect(self.saveProject)
+        self.uiLoad.clicked.connect(self.FromLoadToTMP)
         self.uiStartCal.clicked.connect(self.esc)
 
         ####Line Edits#####
@@ -125,7 +125,7 @@ class WidgetA(base, form):
 
 
     def getInput(self, key):
-        ###get Attributes#######
+        ###Files for default Hamiltonians#######
         inputFile = self._HamiltonianDir + '/' + key + '/' + 'example.in' 
         self._inputFile = inputFile
         
@@ -137,16 +137,12 @@ class WidgetA(base, form):
         self._mctdhConfig = self._HamiltonianDir + '/' + key + '/' + 'mctdh.config'
         self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + sysTreeFile
 
+        ###Files for SES calculations####
         if self._ProjectName != None:
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
                 self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
-
-        print self._SessionName, 'from getInput, outside if clause'
-
-        print self._TMPinputFile
-        
 
     def editSession(self, name):
         self.uiProjectName.blockSignals(True)
@@ -208,18 +204,11 @@ class WidgetA(base, form):
 
 #        msg.buttonClicked.connect(self.msgbtn)
         msg.exec_()        #!!!!!!!!!!! short way to execute Qobject
-#        print "value of pressed message box button:", retval
 
 #    def msgbtn(self, i):
 #        print "Button pressed is:",i.text()
 
     def managefolder(self):
-        # print self._inputFile    
-        # print self._SESinputFile    
-        # print self._sysTreeFile
-        # print self._SESsysTreeFile
-        # print self._mctdhConfig        
-        # print self._SESmctdhConfig
 
         if self._inputFile != None or self._sysTreeFile != None or self._mctdhConfig != None:
 
@@ -233,10 +222,7 @@ class WidgetA(base, form):
         if self._SessionName == None:
                 self.showdialog('Please give Session name!')
         else:
-            self.managefolder()
-
-            # self.ModelTree = ModelTree(self._SESmctdhConfig, self._SESsysTreeFile)
-                
+            # self.managefolder()
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
             
@@ -247,8 +233,6 @@ class WidgetA(base, form):
         self.output()
 
         ####Pic with MCTDH Code and Networkx####
-        print self._SESmctdhConfig, 'from change Node'
-        print self._SESsysTreeFile, 'from change Node'
 
         self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._TMPmctdhConfig, self._TMPsysTreeFile) #object
@@ -261,40 +245,33 @@ class WidgetA(base, form):
         self.scene.addPixmap(pixmap)
         self.uiDisplayTree.setScene(self.scene)
 
-    def backUp(self):
-        print self._startingPath
-        print self._ProjectName
-        if self._SessionName != None:
-            scr = self._startingPath+ "/" + self._ProjectName + "/" + str(self._SessionName)
-            self._dest = scr + '/tmp'
-            try:
-                shutil.rmtree(self._dest) #removes folder
-            except Exception as e:
-                print e.message, 'No tmp: copytmp; widgetA.py'
-
-            shutil.copytree(scr, self._dest)
-            print scr
-            print self._dest
-
-
     def saveProject(self):
-        name = self.uiProjectName.text()
+        name = str(self.uiProjectName.text())
         self._SessionName = name
-        SESfolders = os.walk(self._startingPath+'/'+self._ProjectName).next()[1]
+        SESfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/'+name).next()[2]
         if name == '':
                 self.showdialog('Please give Session name')
-        elif name in SESfolders:
+
+        ###Checks if SES contains files###        
+        elif SESfiles:
+            print 'in elif SESfiles'
             self.showdialog2('Overwriting %s?' %name)
             if 'Yes' in self._messagebut:
-                print 'yes'
                 self.fromTMPToSES()
-                self.output()  #saves all Parameter and Tree to *.in and tree only to *.txt 
+                ###Saves all Parameter and Tree to *.in and tree only to *.txt### 
+                self.output()  
+                self.esc()
             else:
                 pass
         else:
-            self.fromTMPToSES()
-            self.output()  #saves all Parameter and Tree to *.in and tree only to *.txt 
-
+            TMPfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/tmp').next()[2]
+            if TMPfiles:
+                self.fromTMPToSES()
+                self.output()
+                self.esc()
+            else:
+                self.showdialog('Nothing to save?')
+            
     def cancel(self):
         self.removeContent()
         self.esc()
@@ -311,10 +288,29 @@ class WidgetA(base, form):
         os.mkdir('tmp')
         os.chdir(self._startingPath)
 
+    def copyLoad(self):
+        LOADinputFile = str(QtGui.QFileDialog.getOpenFileName())
+        try:
+            shutil.copy2(LOADinputFile, self._TMPinputFile)
+        except Exception:
+            print' Hello Error'
+            raise
+
+    def FromLoadToTMP(self):
+        
+        self._TMPinputFile =  self._startingPath  + '/' \
+        + self._ProjectName + \
+        '/tmp/example.in'
+        
+        self.removeContent()
+        self.copyLoad()
+        print 'bla'
+        sys.exit()
+            
+
     def checkTMP(self):
         sysPathTMP = self._startingPath +'/'+ self._ProjectName +'/tmp'
         files = os.walk(sysPathTMP).next()[2]
-        print files
         if files:
             return True
         return False
@@ -343,16 +339,17 @@ class WidgetA(base, form):
         self._inputFile   = sysPath+'/'+'example.in'
 
         self._TMPmctdhConfig = self._startingPath + '/' \
-        + self._ProjectName + '/' + \
+        + self._ProjectName + \
         '/tmp/mctdh.config'
 
         self._TMPsysTreeFile = self._startingPath + '/' \
-        + self._ProjectName + '/' + \
+        + self._ProjectName + \
         '/tmp/' + sysFile
 
         self._TMPinputFile =  self._startingPath  + '/' \
-        + self._ProjectName  + '/' \
+        + self._ProjectName + \
         '/tmp/example.in'
+
 
         try:
             shutil.copy2(self._mctdhConfig, self._TMPmctdhConfig) 
@@ -362,45 +359,36 @@ class WidgetA(base, form):
             print' Hello Error'
             raise
 
-    def fromSESToTMP(self):    
+    def fromSESToTMP(self, sysFile):    
+
+        self._TMPmctdhConfig = self._startingPath + '/' \
+        + self._ProjectName + \
+        '/tmp/mctdh.config'
+
+        self._TMPsysTreeFile = self._startingPath + '/' \
+        + self._ProjectName + \
+        '/tmp/' + sysFile
+
+        self._TMPinputFile =  self._startingPath  + '/' \
+        + self._ProjectName  +\
+        '/tmp/example.in'
+
         try:
-            files = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
+            shutil.copy2(self._SESmctdhConfig, self._TMPmctdhConfig) 
+            shutil.copy2(self._SESsysTreeFile, self._TMPsysTreeFile)
+            shutil.copy2(self._SESinputFile, self._TMPinputFile)
         except Exception:
+            print' Hello Error'
             raise
-        if files:
-            print files
-            for file_ in files:
-                if 'txt' in file_:
-                    sysFile = file_
-
-            self._TMPmctdhConfig = self._startingPath + '/' \
-            + self._ProjectName + \
-            '/tmp/mctdh.config'
-
-            self._TMPsysTreeFile = self._startingPath + '/' \
-            + self._ProjectName + \
-            '/tmp/' + sysFile
-
-            self._TMPinputFile =  self._startingPath  + '/' \
-            + self._ProjectName  +\
-            '/tmp/example.in'
-
-            try:
-                shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
-                shutil.copy2(self._TMPsysTreeFile, self._SESSESsysTreeFile)
-                shutil.copy2(self._TMPinputFile, self._SESinputFile)
-            except Exception:
-                print' Hello Error'
-                raise
 
     def fromTMPToSES(self):    
         files = os.walk(self._startingPath + '/' \
         + self._ProjectName + '/' + \
-        '/tmp').next()[2]
+        'tmp').next()[2]
 
         for file_ in files:
             if 'txt' in file_:
-                sysFile = file_  #Error prone!!! if you have multiple txt Files
+                sysFile = file_  
 
         self._TMPmctdhConfig = self._startingPath + '/' \
         + self._ProjectName + \
@@ -414,13 +402,12 @@ class WidgetA(base, form):
         + self._ProjectName +\
         '/tmp/example.in'
 
-        print self._TMPinputFile
         try:
             shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
             shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
             shutil.copy2(self._TMPinputFile,   self._SESinputFile)
         except Exception:
-            print' Hello Error'
+            raise
 
     def esc(self):
         self.close()
@@ -477,7 +464,6 @@ class WidgetA(base, form):
         #### if SES contains files, these files will be copied to TMP
         try:
             filenames = os.walk(self._startingPath+'/'+self._ProjectName+'/'+self._SessionName).next()[2]
-            print filenames       
             for val in filenames:
                 if 'txt' in val:
                     sysTreeFile = val
@@ -487,7 +473,7 @@ class WidgetA(base, form):
             self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
 
             ###copies files from SES to TMP
-            self.fromSESToTMP()
+            self.fromSESToTMP(sysTreeFile)
 
             ###Parameters from example.in in TMP will be loaded####
             self.genereInput(self._TMPinputFile)
@@ -496,6 +482,10 @@ class WidgetA(base, form):
             self.TreeOnly()
 
         except (StopIteration, UnboundLocalError):
+            ###when UnboundLocalError is raised then there are no files in SES###
+            # -> deleteing tmp
+            print 'bla'
+            self.removeContent()
             self.clearTree()
     
     def clearTree(self):
@@ -503,7 +493,6 @@ class WidgetA(base, form):
                     self.scene.clear()
                     self.uiDisplayTree.setScene(self.scene)
                     self.modelTree.removeRow(0)
-                    # print self.modelTree._rootNode._children
                 except (IndexError, AttributeError) as e:
                     print e.message, 'start'
             
@@ -537,6 +526,11 @@ class WidgetA(base, form):
 
         ####Copy from default Hamilton to tmp
         self.fromHToTMP(key)
+
+        ####Generate imput from *.in to self._paradict####
+        self.genereInput(self._TMPinputFile)
+
+        ####Building Tree####
         self.generateTree(key)
 
     def on_item_select2(self, item):

@@ -31,7 +31,7 @@
     <item row="0" column="1">
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Project sessions</string>
+       <string>Project calculations</string>
       </property>
      </widget>
     </item>

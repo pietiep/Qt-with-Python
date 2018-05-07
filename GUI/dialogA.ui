@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1062</width>
+    <width>1006</width>
     <height>659</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" rowspan="2">
+   <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -95,20 +95,49 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
+   <item row="0" column="2" rowspan="2">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
       <widget class="QTreeView" name="uiTree"/>
      </item>
-     <item row="0" column="1">
-      <widget class="QTextEdit" name="uiTreeText"/>
+     <item>
+      <widget class="QGraphicsView" name="uiDisplayTree"/>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QPushButton" name="uiCancel">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="uiSaveJob">
+         <property name="text">
+          <string>Save Job</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="uiLoad">
+         <property name="text">
+          <string>Load...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="uiStartCal">
+         <property name="text">
+          <string>Start calculation</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
-   <item row="1" column="2" rowspan="2">
-    <widget class="QGraphicsView" name="uiDisplayTree"/>
-   </item>
-   <item row="2" column="0" rowspan="2">
+   <item row="1" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QListView" name="listPES"/>
@@ -224,34 +253,6 @@
         </layout>
        </item>
       </layout>
-     </item>
-    </layout>
-   </item>
-   <item row="3" column="2">
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
-     </property>
-     <item>
-      <widget class="QPushButton" name="uiCancel">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="uiSaveJob">
-       <property name="text">
-        <string>Save Job</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="uiStartCal">
-       <property name="text">
-        <string>Start calculation</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
