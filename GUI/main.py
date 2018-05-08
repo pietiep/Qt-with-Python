@@ -130,6 +130,7 @@ class Main(base, form):
 
         os.chdir(self._ProjectName)
         self._WidgetA._ProjectName = projectFolder
+        self._WidgetA.makedir()
         self._WidgetA.editSession(sessionFolder)
         self._WidgetA.setSessionName(sessionFolder)
         self._WidgetA.start()
@@ -214,8 +215,8 @@ class Main(base, form):
 #            print path, 'before path.exists'
             if not os.path.exists(path):
                 try:
-
                     os.makedirs(path)
+                    os.makedirs(path+'/tmp')
                 except IOError as identifier:
                     print identifier
 #                self.getdirs()

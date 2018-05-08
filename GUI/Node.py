@@ -62,6 +62,7 @@ class InPut(Parameters):
                     pos = line.index('=')     # get Index
                     self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
 
+
 class OutPut(Parameters):
     def __init__(self, tree, paradict, sysFile, filename="example.in"):
         print paradict['job']
@@ -143,6 +144,33 @@ class OutPut(Parameters):
 
     def __repr__(self):
         return self.bringAllTogether()
+
+class OutPut2(object):
+    def __init__(self, paradict, sysFile, filename):
+        self._eps_general = paradict['eps_general']
+        self._eps_1 = paradict['eps_1']
+        self._eps_2 = paradict['eps_2']
+        self._start = paradict['start']
+        self._end =paradict['end']
+        self._dt = paradict['dt']
+        self._iteration = paradict['iteration']
+        self._hamiltonian = paradict['Hamiltonian']
+        self._potential = paradict['Potential']
+        self._job = paradict['job']
+        self._parameters = paradict['para']
+        self._formated = self.formatparameter()
+        self._filename = filename
+        self._sysFile = sysFile
+
+    def formatparameter(self):
+        output = ""
+        for row_ in self._parameters:
+                for ele_ in row_:
+                    if row_[-1] == ele_:
+                        output += str(ele_) + "\n"
+                    else:
+                        output += str(ele_) + "  "
+        return output
 
 
 class Tree(object):

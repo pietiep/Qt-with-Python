@@ -1,6 +1,6 @@
 from PyQt4 import QtCore, QtGui, uic
 import sys
-from Node import OutPut, Tree
+from Node import OutPut, OutPut2, Tree
 from Node import InPut
 from InputTree import SceneGraphModel
 from ModelTree import ModelTree
@@ -277,14 +277,15 @@ class WidgetA(base, form):
         self.esc()
 
     def removeContent(self):
-        sysPath = self._startingPath +'/'+ self._ProjectName
-        os.chdir(sysPath)
+        TMPpath = self._startingPath +'/'+ self._ProjectName + '/tmp'
 
         try:
-            shutil.rmtree('tmp')
+            shutil.rmtree(TMPpath)
         except OSError:
-            pass
+            raise
             
+        sysPath = self._startingPath +'/'+ self._ProjectName
+        os.chdir(sysPath)
         os.mkdir('tmp')
         os.chdir(self._startingPath)
 
@@ -302,9 +303,17 @@ class WidgetA(base, form):
         + self._ProjectName + \
         '/tmp/example.in'
         
+        ###removes tmp folder's content###
         self.removeContent()
+
+        ###copies *.in file to tmp folder###
         self.copyLoad()
-        print 'bla'
+
+        ###generates Parameter from *.in file###
+        self.genereInput(self._TMPinputFile)
+        self.makeParaDict()
+        outobj = OutPut2(self._paradict, self._TMPinputFile)
+        print outobj._eps_1
         sys.exit()
             
 
@@ -456,6 +465,13 @@ class WidgetA(base, form):
         self.listPES.setModel(self.modelPES)
         self.listPES.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.listPES.clicked.connect(self.on_item_select2)
+
+    def makedir(self):
+        path = self._startingPath + '/' + self._ProjectName + '/tmp'
+        try:
+            os.makedirs(path)
+        except (IOError, OSError) as e:
+            print e.message, ': 466'
 
     def start(self):
         self.clearTree()
