@@ -23,6 +23,8 @@ class WidgetA(base, form):
         self._eps = []
         self._integrator = []
         self._tree = None
+        self._treeFromLoad = None
+
 
         self._dictHamil = {'CH3': '194', 'NO3': '195'}
         self._dictPES = {'CH3': '100', 'NO3': '101'}
@@ -99,6 +101,7 @@ class WidgetA(base, form):
         ####Get all Parameters from example.in#####
         inobj = InPut(inputFile) 
         paradict = inobj._paradict
+        self._treeFromLoad = inobj._treeString
 
         self._integrator = []
         self._eps = []
@@ -312,9 +315,16 @@ class WidgetA(base, form):
         ###generates Parameter from *.in file###
         self.genereInput(self._TMPinputFile)
         self.makeParaDict()
-        outobj = OutPut2(self._paradict, self._TMPinputFile)
-        print outobj._eps_1
-        sys.exit()
+        pathTMP = self._startingPath + '/' + self._ProjectName + '/tmp'
+        outobj = OutPut2(self._paradict, self._treeFromLoad, self._TMPinputFile, pathTMP)
+        outobj.savefile()
+        outobj.savefile2()
+        ###Tree will be constructed from parameters###
+        self._TMPsysTreeFile = self._startingPath + '/' \
+        + self._ProjectName + \
+        '/tmp/Load.txt'
+
+        self.TreeOnly()
             
 
     def checkTMP(self):
@@ -471,7 +481,7 @@ class WidgetA(base, form):
         try:
             os.makedirs(path)
         except (IOError, OSError) as e:
-            print e.message, ': 466'
+            print e.message, ': makedir'
 
     def start(self):
         self.clearTree()
@@ -500,7 +510,6 @@ class WidgetA(base, form):
         except (StopIteration, UnboundLocalError):
             ###when UnboundLocalError is raised then there are no files in SES###
             # -> deleteing tmp
-            print 'bla'
             self.removeContent()
             self.clearTree()
     

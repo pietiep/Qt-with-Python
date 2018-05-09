@@ -24,6 +24,8 @@ class InPut(Parameters):
         self._filename = filename
         self._paradict = {}
         self._paralist = []
+        self._treelist = []
+        self._treeString = ''
         self.readFile()
 
     def readFile(self):
@@ -39,13 +41,20 @@ class InPut(Parameters):
         self.getPara("job")
         self.getPara2()
         self._paradict['para'] = self._paralist
+        self.getTree()
 
+    def file_len(self, fname):
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+        return i+1
 
     def getPara2(self):
+        lineNum = self.file_len(self._filename)
         with open(self._filename, "rb") as text:
             for line in text:
                 if "parameters" in line:
-                    for i in range(10):
+                    for i in range(lineNum):
                         try:
                             para = text.next()
                             if bool(re.search(r'\d', para)):
@@ -62,6 +71,21 @@ class InPut(Parameters):
                     pos = line.index('=')     # get Index
                     self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
 
+    def getTree(self):                
+        lineNum = self.file_len(self._filename)
+        with open(self._filename, "rb") as text:
+            for line in text:
+                if 'tree' in line:
+                    for i in range(lineNum):
+                        try:
+                            tree = text.next()
+                            if ']' in tree:
+                                break
+                                # tree = tree.split()     #if para contains numbers
+                            self._treelist.append(tree)
+                        except StopIteration:
+                            pass
+        self._treeString = ''.join(self._treelist)
 
 class OutPut(Parameters):
     def __init__(self, tree, paradict, sysFile, filename="example.in"):
@@ -146,7 +170,7 @@ class OutPut(Parameters):
         return self.bringAllTogether()
 
 class OutPut2(object):
-    def __init__(self, paradict, sysFile, filename):
+    def __init__(self, paradict, treeString, filename, pathTMP):
         self._eps_general = paradict['eps_general']
         self._eps_1 = paradict['eps_1']
         self._eps_2 = paradict['eps_2']
@@ -160,7 +184,30 @@ class OutPut2(object):
         self._parameters = paradict['para']
         self._formated = self.formatparameter()
         self._filename = filename
-        self._sysFile = sysFile
+        self._treeString = treeString
+        self._sysFile = pathTMP + '/Load.txt'
+        self._TMPmctdhConfig = pathTMP + '/mctdh.config'
+        self._path = pathTMP
+
+    def savefile(self):
+        with open(self._TMPmctdhConfig, "w") as text_file:
+            text_file.write("{0}".format(self.bringAllEPS()))
+
+    def savefile2(self):
+        with open(self._sysFile, "w") as text_file:
+            text_file.write("{0}".format(self.bringTreePara()))
+
+    def bringAllEPS(self):
+        output = self._eps_general + \
+        '\n' + self._eps_1 + '\n' + \
+        self._eps_2 + '\n 1E-5 \n 0 \n 0'
+        return output
+
+    def bringTreePara(self):
+        output =  self._treeString + \
+        "\n" \
+        + self._formated
+        return output
 
     def formatparameter(self):
         output = ""
