@@ -1,7 +1,7 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
 import networkx as nx
-import re
+import re, sys
 
 class Parameters(object):
     def __init__(self):
@@ -237,8 +237,8 @@ class Tree(object):
         self.addNode(self._elder, str(self._G.nodes[self._elder]['SPF']), self._rootNode0)
         self.readTree()
 
-        self._rootNode = self._dictNodes[10]
-        self._treeData = self._dictNodes[10].log()
+        self._rootNode = self._dictNodes[self._elder]
+        self._treeData = self._dictNodes[self._elder].log()
 
     def getElder(self):
         for ele_ in self._G.nodes():

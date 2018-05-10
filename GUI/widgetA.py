@@ -349,6 +349,7 @@ class WidgetA(base, form):
     def fromHToTMPinner(self, item):
         sysPath = self._HamiltonianDir+'/'+item
         files = os.walk(sysPath).next()[2]
+        # sysFile = []
         for file_ in files:
             if 'txt' in file_:
                 sysFile = file_    

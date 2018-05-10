@@ -1,0 +1,11 @@
+Regularization for Density matrices: 1e-06
+Accuracy parameter for CMF Integrator: 8e-05
+Accuracy parameter for Block Integrator: 5e-05
+Accuracy parameter for Bulirsch Stoer Integrator: 5e-05
+ControlParameters: Moving SPF set chosen.
+ControlParameters: BS Integrator used for toplayer in CMF scheme.
+Regularisation and Accuracy of Integration for oSQR
+were not set. Therefore they are set to default parameters
+Regularisation = 1e-08
+Accuracy = 1e-08
+
