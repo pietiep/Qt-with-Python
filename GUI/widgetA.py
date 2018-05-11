@@ -237,7 +237,10 @@ class WidgetA(base, form):
 
         ####Pic with MCTDH Code and Networkx####
         print self._TMPmctdhConfig ,'blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
+        if os.path.exists(self._TMPmctdhConfig):
+            self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
+        else:
+            sys.exit()
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._TMPmctdhConfig, self._TMPsysTreeFile) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
@@ -395,8 +398,6 @@ class WidgetA(base, form):
 
         try:
             shutil.copy2(self._SESmctdhConfig, self._TMPmctdhConfig) 
-            print self._SESmctdhConfig, self._TMPmctdhConfig
-            sys.exit()
             shutil.copy2(self._SESsysTreeFile, self._TMPsysTreeFile)
             shutil.copy2(self._SESinputFile, self._TMPinputFile)
         except Exception:
@@ -503,7 +504,6 @@ class WidgetA(base, form):
 
             ###copies files from SES to TMP
             self.fromSESToTMP(sysTreeFile)
-            sys.exit()
 
             ###Parameters from example.in in TMP will be loaded####
             self.genereInput(self._TMPinputFile)

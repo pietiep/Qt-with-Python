@@ -126,7 +126,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
-        grandfather = parentNode.parent()
+        # grandfather = parentNode.parent()
         # fathers = grandfather.childAll()
         # pos = fathers.index(parentNode)
                 
@@ -134,9 +134,9 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         for row in range(rows):
             # success = grandfather.removeChild(0)
-            print type(grandfather)
+            # print type(grandfather)
             
-            success = grandfather.removeChild(position)
+            success = parentNode.removeChild(position)
 
         self.endRemoveRows()
 
