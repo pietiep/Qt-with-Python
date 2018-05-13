@@ -136,7 +136,6 @@ class Main(base, form):
         self._WidgetA.start()
         self._WidgetA.removeContent()
         SESfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/'+sessionFolder).next()[2]
-        print SESfiles
         if SESfiles:
             for f_ in SESfiles:
                 if 'txt' in f_:

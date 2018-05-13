@@ -26,8 +26,10 @@ class WidgetA(base, form):
         self._treeFromLoad = None
 
 
-        self._dictHamil = {'CH3': '194', 'NO3': '195'}
-        self._dictPES = {'CH3': '100', 'NO3': '101'}
+        self._dictHamil = {'CH3': '194', 'CH4': '195', 'CH5+': '196', 'CHD3': '197', 'HCHD3': '198', 'NOCl':
+        '199'}
+        self._dictPES = {'CH3': '100', 'CH4': '101', 'CH5+': '102', 'CHD3': '103', 'HCHD3': '104', 'NOCl':
+        '105'}
         self._mctdhConfig = None 
         self._sysTreeFile = None
         self._inputFile = None
@@ -236,7 +238,6 @@ class WidgetA(base, form):
         self.output()
 
         ####Pic with MCTDH Code and Networkx####
-        print self._TMPmctdhConfig ,'blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         if os.path.exists(self._TMPmctdhConfig):
             self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         else:
@@ -260,7 +261,6 @@ class WidgetA(base, form):
 
         ###Checks if SES contains files###        
         elif SESfiles:
-            print 'in elif SESfiles'
             self.showdialog2('Overwriting %s?' %name)
             if 'Yes' in self._messagebut:
                 self.fromTMPToSES()
@@ -300,7 +300,6 @@ class WidgetA(base, form):
         try:
             shutil.copy2(LOADinputFile, self._TMPinputFile)
         except Exception:
-            print' Hello Error'
             raise
 
     def FromLoadToTMP(self):
@@ -342,7 +341,6 @@ class WidgetA(base, form):
 
             self.showdialog2('Overwriting temporary Settings?')
             if 'Yes' in self._messagebut:
-                print 'Yes'
                 self.fromHToTMPinner(item)
             else:
                 pass
@@ -351,12 +349,11 @@ class WidgetA(base, form):
 
     def fromHToTMPinner(self, item):
         sysPath = self._HamiltonianDir+'/'+item
+
         files = os.walk(sysPath).next()[2]
-        # sysFile = []
         for file_ in files:
             if 'txt' in file_:
                 sysFile = file_    
-
         self._mctdhConfig = sysPath+'/'+'mctdh.config'
         self._sysTreeFile = sysPath+'/'+sysFile
         self._inputFile   = sysPath+'/'+'example.in'
@@ -379,7 +376,6 @@ class WidgetA(base, form):
             shutil.copy2(self._sysTreeFile, self._TMPsysTreeFile)
             shutil.copy2(self._inputFile, self._TMPinputFile)
         except Exception:
-            print' Hello Error'
             raise
 
     def fromSESToTMP(self, sysFile):    
@@ -401,7 +397,6 @@ class WidgetA(base, form):
             shutil.copy2(self._SESsysTreeFile, self._TMPsysTreeFile)
             shutil.copy2(self._SESinputFile, self._TMPinputFile)
         except Exception:
-            print' Hello Error'
             raise
 
     def fromTMPToSES(self):    
@@ -485,7 +480,7 @@ class WidgetA(base, form):
         try:
             os.makedirs(path)
         except (IOError, OSError) as e:
-            print e.message, ': makedir'
+            pass
 
     def start(self):
         self.clearTree()
@@ -523,8 +518,8 @@ class WidgetA(base, form):
                     self.uiDisplayTree.setScene(self.scene)
                     self.modelTree.removeRow(0)
                 except (IndexError, AttributeError) as e:
-                    print e.message, 'start'
-            
+                    pass
+
     def TreeOnly(self):
         ####TreeView########
         self._tree = Tree(self._TMPmctdhConfig, self._TMPsysTreeFile)
