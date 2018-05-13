@@ -16,6 +16,7 @@ class WidgetA(base, form):
         self.setupUi(self)
 
         self._HamiltonianDir = None
+        
 
 
         ########Attributes######
