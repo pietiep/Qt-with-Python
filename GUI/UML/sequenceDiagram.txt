@@ -1,0 +1,20 @@
+@startuml
+ControlParameter - mctdhBasis
+mctdhBasis --> mctdhNode
+mctdhNode --> physCoor
+mctdhNode --> Tdim
+
+ControlParameter : +Initialize(mctdh.config)
+mctdhBasis : +Initialize(ControlParameterObj, BasisFile)
+mctdhBasis : +MCTDHNode(nodeAdress)
+mctdhBasis : +NmctdhNode()
+mctdhNode : +Bottomlayer()
+mctdhNode : +Toplayer()
+mctdhNode : +up()
+mctdhNode : +adress()
+mctdhNode : +phys_coor()
+mctdhNode : +t_dim()
+physCoor : +mode()
+Tdim : +GetnTensor()
+
+@enduml

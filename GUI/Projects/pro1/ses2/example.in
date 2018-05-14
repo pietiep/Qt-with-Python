@@ -11,7 +11,7 @@ dt = 0.1
 iteration = 100
 } 
 
-Hamiltonian = 194
+Hamiltonian = 199
 Potential = 101
 
 job = eigenstates
@@ -20,22 +20,13 @@ job = eigenstates
 basis = 
 {
 tree = [ 
-36 -3
-   23 -2
-      7 -1
-         12  0   4
-      7 -1
-         12  0   5
-   15 -2
-      4 -1
-         7  0   0
-      14 -2
-         5 -1
-            7  0   1
-         5 -1
-            7  0   2
-   9 -1
-      18  0   3
+10 -3
+   3 -1
+      24  0   0
+   3 -1
+      96  0   1
+   3 -1
+      60  0   2
 ]
 
 
