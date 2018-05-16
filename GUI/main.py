@@ -239,6 +239,7 @@ class Main(base, form):
     def openC(self):
         dialog = self._WidgetA
         dialog.exec_()
+        self.setList2()
 
     def openD(self):
         self._WidgetA.clearSession()

@@ -288,7 +288,9 @@ class WidgetA(base, form):
                     self.showdialog('Nothing to save?')
 
         else:
-            if '' in name:
+            if name == '':
+                print name
+                sys.exit()
                 self.showdialog('Please give Session name')
             else:
                 os.chdir(self._startingPath+'/'+self._ProjectName)
