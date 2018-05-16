@@ -57,15 +57,4 @@ class View(object):
 
 
     if __name__ == '__main__':
-        from ModelTree import ModelTree
-        from LogicalNodes import LogicalNodes
-        from View import View
-
-        ModelTree = ModelTree()
-        LogicalNodes = LogicalNodes(ModelTree.lay_matr_mode) #object
-        View = View(ModelTree.label_mode, ModelTree.nodes_spf) #object
-        View.Display(LogicalNodes.G) #View method Display() generated .png file
-#        print View._G.node()
-    #    print View._G.node[100]
-#        for children in View._G.successors(10):
-#            print children
+        pass

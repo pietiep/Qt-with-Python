@@ -17,8 +17,6 @@ class WidgetA(base, form):
 
         self._HamiltonianDir = None
         
-
-
         ########Attributes######
         self._paradict = {}
         self._eps = []
@@ -224,10 +222,12 @@ class WidgetA(base, form):
         else:
             pass
 
+
     def changeNode(self, my_index):
-        if self._SessionName == None:
-                self.showdialog('Please give Session name!')
-        else:
+        # self.Status_Session()
+        # if self._SessionName == None or self._SessionName == '':
+        #         self.showdialog('Please give Session name!')
+        # else:
             # self.managefolder()
             topNode = self.modelTree.getNode2(my_index).child(0) #modelTree from SceneGraphModel
             self._tree.setRootNode(topNode)
@@ -242,6 +242,7 @@ class WidgetA(base, form):
         if os.path.exists(self._TMPmctdhConfig):
             self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         else:
+            print 'Error'
             sys.exit()
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._TMPmctdhConfig, self._TMPsysTreeFile) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
@@ -253,31 +254,50 @@ class WidgetA(base, form):
         self.scene.addPixmap(pixmap)
         self.uiDisplayTree.setScene(self.scene)
 
+    def New_Session(self):
+        name = str(self.uiProjectName.text())
+        # print self._SessionName
+        if self._SessionName == None:
+            print name
+        sys.exit()
+
     def saveProject(self):
         name = str(self.uiProjectName.text())
         self._SessionName = name
-        SESfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/'+name).next()[2]
-        if name == '':
-                self.showdialog('Please give Session name')
+        Profiles = os.walk(self._startingPath+'/'+self._ProjectName+'/').next()[1]
+        if name in Profiles:
+            SESfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/'+name).next()[2]
 
-        ###Checks if SES contains files###        
-        elif SESfiles:
-            self.showdialog2('Overwriting %s?' %name)
-            if 'Yes' in self._messagebut:
-                self.fromTMPToSES()
-                ###Saves all Parameter and Tree to *.in and tree only to *.txt### 
-                self.output()  
-                self.esc()
+            ###Checks if SES contains files###        
+            if SESfiles:
+                self.showdialog2('Overwriting %s?' %name)
+                if 'Yes' in self._messagebut:
+                    self.fromTMPToSES()
+                    ###Saves all Parameter and Tree to *.in and tree only to *.txt### 
+                    self.output()  
+                    self.esc()
+                else:
+                    pass
             else:
-                pass
+                TMPfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/tmp').next()[2]
+                if TMPfiles:
+                    self.fromTMPToSES()
+                    self.output()
+                    self.esc()
+                else:
+                    self.showdialog('Nothing to save?')
+
         else:
-            TMPfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/tmp').next()[2]
-            if TMPfiles:
+            if '' in name:
+                self.showdialog('Please give Session name')
+            else:
+                os.chdir(self._startingPath+'/'+self._ProjectName)
+                os.mkdir(name)
+                os.chdir(self._startingPath)
                 self.fromTMPToSES()
                 self.output()
                 self.esc()
-            else:
-                self.showdialog('Nothing to save?')
+
             
     def cancel(self):
         self.removeContent()
