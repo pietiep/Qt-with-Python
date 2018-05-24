@@ -1,7 +1,8 @@
 from LogicalNodes import LogicalNodes
 from ModelTree import ModelTree
+import numpy as np
 import networkx as nx
-import re, sys
+import re, sys, os
 
 class Parameters(object):
     def __init__(self):
@@ -22,25 +23,31 @@ class InPut(Parameters):
     def __init__(self, filename='example.in'):
         super(InPut, self).__init__()
         self._filename = filename
+        self._filenameOld = None
         self._paradict = {}
         self._paralist = []
         self._treelist = []
         self._treeString = ''
+        self._commDict = {}
+        self.rmCommen()
         self.readFile()
 
     def readFile(self):
-        self.getPara("eps_general")
-        self.getPara("eps_1")
-        self.getPara("eps_2")
+        # self.getPara("eps_general")
+        # self.getPara("eps_1")
+        # self.getPara("eps_2")
+        self.getPara("mainfolder")
+        self.getPara("Hamiltonian")
+        self.getPara("Potential")
+        self.getPara("job")
         self.getPara("start")
         self.getPara("end")
         self.getPara("dt")
         self.getPara("iteration")
-        self.getPara("Hamiltonian")
-        self.getPara("Potential")
-        self.getPara("job")
+        self.getPara("out")
         self.getPara2()
         self._paradict['para'] = self._paralist
+        self._paradict['Comm'] = self._commDict
         self.getTree()
 
     def file_len(self, fname):
@@ -64,12 +71,29 @@ class InPut(Parameters):
                             pass
 #                    while bool(re.search(r'\d', line)):
 
+    def rmCommen(self):
+        with open(self._filename, "r") as in_put:
+            with open('new_InPut.in', 'wb') as output:
+                i = 0
+                for line in in_put:
+                    i += 1
+                    if '//' in line:
+                        self._commDict[i-1] = line
+                    else:
+                        output.write(line)
+
+        self._filename = 'new_InPut.in'              
+
+
     def getPara(self, para):
         with open(self._filename, "rb") as text:
             for line in text:
                 if para in line:
-                    pos = line.index('=')     # get Index
-                    self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
+                    try:
+                        pos = line.index('=')     # get Index
+                        self._paradict[para] = line[pos+1:].strip()  # removes whitestripes
+                    except ValueError:
+                        pass
 
     def getTree(self):                
         lineNum = self.file_len(self._filename)
@@ -89,13 +113,13 @@ class InPut(Parameters):
 
 class OutPut(Parameters):
     def __init__(self, tree, paradict, sysFile, filename="example.in"):
-        print paradict['job']
-        self._eps_general = paradict['eps_general']
-        self._eps_1 = paradict['eps_1']
-        self._eps_2 = paradict['eps_2']
+#        self._eps_general = paradict['eps_general']
+#        self._eps_1 = paradict['eps_1']
+#        self._eps_2 = paradict['eps_2']
         self._start = paradict['start']
         self._end =paradict['end']
         self._dt = paradict['dt']
+        self._out = paradict['out']
         self._iteration = paradict['iteration']
         self._hamiltonian = paradict['Hamiltonian']
         self._potential = paradict['Potential']
@@ -105,9 +129,13 @@ class OutPut(Parameters):
         self._treeData = tree._treeData
         self._filename = filename
         self._sysFile = sysFile
-        print filename, sysFile
 #        self.savefile()
 #        self.savefile2()
+
+    def incComm(self):
+        comDict = self._paradict['Comm']
+        for key in comDict:
+            print key
 
     def savefile(self):
         with open(self._filename, "w") as text_file:
@@ -119,33 +147,36 @@ class OutPut(Parameters):
 
     def formatparameter(self):
         output = ""
-        for row_ in self._parameters:
-                for ele_ in row_:
-                    if row_[-1] == ele_:
-                        output += str(ele_) + "\n"
-                    else:
-                        output += str(ele_) + "  "
+        A = self._parameters        
+        output = '\n'.join(['    '.join(['{:4}'.format(item) for item in row]) for row in A])
+        # for row_ in self._parameters:
+        #         for ele_ in row_:
+        #             if row_[-1] == ele_:
+        #                 output += str(ele_) + "\n"
+        #             else:
+        #                 output += str(ele_) + "  "
         return output
 
     def bringAllTogether(self):
-        output = "eps = { \n" \
-        "eps_general = " + self._eps_general + "\n" \
-        "eps_1 =" + self._eps_1 + "\n" \
-        "eps_2 =" + self._eps_2 + "\n" \
-        "} \n" \
+        #output = "eps = { \n" \
+        #"eps_general = " + self._eps_general + "\n" \
+        #"eps_1 =" + self._eps_1 + "\n" \
+        #"eps_2 =" + self._eps_2 + "\n" \
+        #"} \n" \
+        #"\n" \
+
+        output = "Hamiltonian = " + self._hamiltonian + "\n" \
+        "Potential = " + self._potential + "\n" \
+        "\n" \
+        "job = " + self._job + "\n" \
         "\n" \
         "integrator = { \n" \
         "start = " + self._start + "\n" \
         "end = " + self._end + "\n" \
         "dt = " + self._dt + "\n" \
         "iteration = " + self._iteration + "\n" \
+        "out = " + self._out + "\n" \
         "} \n" \
-        "\n" \
-        "Hamiltonian = " + self._hamiltonian + "\n" \
-        "Potential = " + self._potential + "\n" \
-        "\n" \
-        "job = " + self._job + "\n" \
-        "\n" \
         "\n" \
         "basis = \n" \
         "{\n" \
@@ -171,19 +202,12 @@ class OutPut(Parameters):
 
 class OutPut2(object):
     def __init__(self, paradict, treeString, filename, pathTMP):
-        self._eps_general = paradict['eps_general']
-        self._eps_1 = paradict['eps_1']
-        self._eps_2 = paradict['eps_2']
-        self._start = paradict['start']
-        self._end =paradict['end']
-        self._dt = paradict['dt']
-        self._iteration = paradict['iteration']
-        self._hamiltonian = paradict['Hamiltonian']
-        self._potential = paradict['Potential']
-        self._job = paradict['job']
+        # self._eps_general = paradict['eps_general']
+        # self._eps_1 = paradict['eps_1']
+        # self._eps_2 = paradict['eps_2']
         self._parameters = paradict['para']
         self._formated = self.formatparameter()
-        self._filename = filename
+        # self._filename = filename
         self._treeString = treeString
         self._sysFile = pathTMP + '/Load.txt'
         self._TMPmctdhConfig = pathTMP + '/mctdh.config'
@@ -198,9 +222,9 @@ class OutPut2(object):
             text_file.write("{0}".format(self.bringTreePara()))
 
     def bringAllEPS(self):
-        output = self._eps_general + \
-        '\n' + self._eps_1 + '\n' + \
-        self._eps_2 + '\n 1E-5 \n 0 \n 0'
+        output = '1E-6' + \
+        '\n' + '8E-5' + '\n' + \
+        '5E-5' + '\n 5E-5 \n 0 \n 0'
         return output
 
     def bringTreePara(self):
@@ -211,12 +235,16 @@ class OutPut2(object):
 
     def formatparameter(self):
         output = ""
-        for row_ in self._parameters:
-                for ele_ in row_:
-                    if row_[-1] == ele_:
-                        output += str(ele_) + "\n"
-                    else:
-                        output += str(ele_) + "  "
+        A = self._parameters        
+        output = '\n'.join(['    '.join(['{:4}'.format(item) for item in row]) for row in A])
+        #returns a string in which elements of list have been joind by '  ' and '\n'
+
+        # for row_ in self._parameters:
+        #         for ele_ in row_:
+        #             if row_[-1] == ele_:
+        #                 output += str(ele_) + "\n"
+        #             else:
+        #                 output += str(ele_) + "  "
         return output
 
 
@@ -226,8 +254,6 @@ class Tree(object):
         self._rootNode0 = Node("TOP")
         self._dictNodes = {}
 
-        print mctdhConfig, 'from Tree'
-        print sys_file, 'from Tree'
 
         model = ModelTree(mctdhConfig, sys_file)
         logical = LogicalNodes(model.lay_matr_mode, mctdhConfig, sys_file)
@@ -403,5 +429,10 @@ class BottomNode(Node):
 
 if __name__ == '__main__':
 
-    tree = Tree("36")
-    inobj = InPut()
+    # tree = Tree("36")
+    inobj = InPut('InPut.in')
+    path = os.getcwd()
+    outobj = OutPut2(inobj._paradict, inobj._treeString, 'bla', path)
+    outobj.savefile()
+    outobj.savefile2()
+    
