@@ -19,7 +19,7 @@ class WidgetA(base, form):
         
         ########Attributes######
         self._paradict = {}
-        self._eps = []
+        # self._eps = []
         self._integrator = []
         self._tree = None
         self._treeFromLoad = None
@@ -105,15 +105,17 @@ class WidgetA(base, form):
         self._treeFromLoad = inobj._treeString
 
         self._integrator = []
-        self._eps = []
+        # self._eps = []
 
-        self._eps.append(paradict['eps_general'])
-        self._eps.append(paradict['eps_1'])
-        self._eps.append(paradict['eps_2'])
+        # self._eps.append(paradict['eps_general'])
+        # self._eps.append(paradict['eps_1'])
+        # self._eps.append(paradict['eps_2'])
         self._integrator.append(paradict['start'])
         self._integrator.append(paradict['end'])
         self._integrator.append(paradict['dt'])
         self._integrator.append(paradict['iteration'])
+        self._integrator.append(paradict['out'])
+        self._mainfolder = paradict['mainfolder']
         self._hamiltonian = paradict['Hamiltonian']
         self._potential = paradict['Potential']
         self._job = paradict['job']
@@ -157,17 +159,21 @@ class WidgetA(base, form):
         self.uiProjectName.clear()
 
     def makeParaDict(self):
-        self._paradict['eps_general'] = self._eps[0]
-        self._paradict['eps_1']       = self._eps[1]
-        self._paradict['eps_2']       = self._eps[2]
+        # self._paradict['eps_general'] = self._eps[0]
+        # self._paradict['eps_1']       = self._eps[1]
+        # self._paradict['eps_2']       = self._eps[2]
+        self._paradict['mainfolder']  = self._mainfolder
         self._paradict['start']       = self._integrator[0]
         self._paradict['end']         = self._integrator[1]
         self._paradict['dt']          = self._integrator[2]
         self._paradict['iteration']   = self._integrator[3]
+        self._paradict['out']         = self._integrator[4]
         self._paradict['Hamiltonian'] = self._hamiltonian
         self._paradict['Potential']   = self._potential
         self._paradict['job']         = self._job
         self._paradict['para']        = self._parameters
+
+        print self._paradict
 
     def closeEvent(self, event):  #Overriding inherited memberfunction
         os.chdir("../") #if dialog is closed, leave folder
@@ -243,7 +249,6 @@ class WidgetA(base, form):
             self.ModelTree = ModelTree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         else:
             print 'Error'
-            sys.exit()
         self.LogicalNodes = LogicalNodes(self.ModelTree.lay_matr_mode, self._TMPmctdhConfig, self._TMPsysTreeFile) #object
         self.View = View(self.ModelTree.label_mode, self.ModelTree.nodes_spf) #object
         self.View.Display(self.LogicalNodes.G) #View method Display() generated .png file
@@ -259,7 +264,6 @@ class WidgetA(base, form):
         # print self._SessionName
         if self._SessionName == None:
             print name
-        sys.exit()
 
     def saveProject(self):
         name = str(self.uiProjectName.text())
@@ -290,7 +294,6 @@ class WidgetA(base, form):
         else:
             if name == '':
                 print name
-                sys.exit()
                 self.showdialog('Please give Session name')
             else:
                 os.chdir(self._startingPath+'/'+self._ProjectName)
@@ -345,9 +348,16 @@ class WidgetA(base, form):
         outobj.savefile()
         outobj.savefile2()
         ###Tree will be constructed from parameters###
-        self._TMPsysTreeFile = self._startingPath + '/' \
+        self._TMPmctdhConfig = self._startingPath + '/' \
         + self._ProjectName + \
         '/tmp/Load.txt'
+
+        self._TMPsysTreeFile = self._startingPath + '/' \
+        + self._ProjectName + \
+        '/tmp/mctdh.config'
+
+        # print self._TMPmctdhConfig, self._TMPsysTreeFile
+        # sys.exit()
 
         self.TreeOnly()
             

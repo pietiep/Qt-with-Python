@@ -116,6 +116,7 @@ class OutPut(Parameters):
 #        self._eps_general = paradict['eps_general']
 #        self._eps_1 = paradict['eps_1']
 #        self._eps_2 = paradict['eps_2']
+        self._mainfolder = paradict['mainfolder']
         self._start = paradict['start']
         self._end =paradict['end']
         self._dt = paradict['dt']
@@ -165,7 +166,8 @@ class OutPut(Parameters):
         #"} \n" \
         #"\n" \
 
-        output = "Hamiltonian = " + self._hamiltonian + "\n" \
+        output = "mainfolder = " + self._mainfolder + "\n" \
+        "Hamiltonian = " + self._hamiltonian + "\n" \
         "Potential = " + self._potential + "\n" \
         "\n" \
         "job = " + self._job + "\n" \
@@ -222,9 +224,11 @@ class OutPut2(object):
             text_file.write("{0}".format(self.bringTreePara()))
 
     def bringAllEPS(self):
-        output = '1E-6' + \
-        '\n' + '8E-5' + '\n' + \
-        '5E-5' + '\n 5E-5 \n 0 \n 0'
+        epsList = ['1E-6', '8E-5', '5E-5', '5E-5', '5E-5', '5E-5']
+        output = '\n'.join(epsList)
+        # output = '1E-6' + \
+        # '\n' + '8E-5' + '\n' + \
+        # '5E-5' + '\n 5E-5 \n 0 \n 0'
         return output
 
     def bringTreePara(self):
@@ -253,7 +257,6 @@ class Tree(object):
     def __init__(self, mctdhConfig, sys_file):
         self._rootNode0 = Node("TOP")
         self._dictNodes = {}
-
 
         model = ModelTree(mctdhConfig, sys_file)
         logical = LogicalNodes(model.lay_matr_mode, mctdhConfig, sys_file)
