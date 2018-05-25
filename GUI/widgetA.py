@@ -132,13 +132,17 @@ class WidgetA(base, form):
 
     def getInput(self, key):
         ###Files for default Hamiltonians#######
-        inputFile = self._HamiltonianDir + '/' + key + '/' + 'InPut.in' 
-        self._inputFile = inputFile
         
-        filenames = os.walk(self._HamiltonianDir+'/'+str(key)).next()[2]
-        for val in filenames:
-            if 'txt' in val:
-                sysTreeFile = val
+        path = self._HamiltonianDir + '/' + key 
+        DotIn = self.Finder(path, 'in')
+        self._inputFile = path + '/' + DotIn
+        
+        path = self._HamiltonianDir+'/'+str(key)
+        # for val in filenames:
+        #     if 'txt' in val:
+        #         sysTreeFile = val
+
+        sysTreeFile = self.Finder(path, 'txt')
     
         self._mctdhConfig = self._HamiltonianDir + '/' + key + '/' + 'mctdh.config'
         self._sysTreeFile  = self._HamiltonianDir + '/' + key + '/' + sysTreeFile
@@ -148,7 +152,7 @@ class WidgetA(base, form):
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
-                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'InPut.in'
+                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + DotIn
 
     def editSession(self, name):
         self.uiProjectName.blockSignals(True)
@@ -331,6 +335,8 @@ class WidgetA(base, form):
 
     def FromLoadToTMP(self):
         
+        self.clearTree()
+        
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName + \
         '/tmp/InPut.in'
@@ -390,15 +396,19 @@ class WidgetA(base, form):
             self.fromHToTMPinner(item)
 
     def fromHToTMPinner(self, item):
+        self.clearTree()
         sysPath = self._HamiltonianDir+'/'+item
 
-        files = os.walk(sysPath).next()[2]
-        for file_ in files:
-            if 'txt' in file_:
-                sysFile = file_    
+        sysFile = self.Finder(sysPath, '.txt')
+        DotIn = self.Finder(sysPath, '.in')
+        # files = os.walk(sysPath).next()[2]
+        # for file_ in files:
+        #     if 'txt' in file_:
+        #         sysFile = file_    
+
         self._mctdhConfig = sysPath+'/'+'mctdh.config'
         self._sysTreeFile = sysPath+'/'+sysFile
-        self._inputFile   = sysPath+'/'+'InPut.in'
+        self._inputFile   = sysPath+'/'+DotIn
 
         self._TMPmctdhConfig = self._startingPath + '/' \
         + self._ProjectName + \
@@ -410,7 +420,7 @@ class WidgetA(base, form):
 
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName + \
-        '/tmp/InPut.in'
+        '/tmp/' + DotIn
 
 
         try:
@@ -430,9 +440,15 @@ class WidgetA(base, form):
         + self._ProjectName + \
         '/tmp/' + sysFile
 
+        SESpath =  self._startingPath  + '/' \
+        + self._ProjectName+ '/'  +\
+        self._SessionName
+
+        DotIn = self.Finder(SESpath, '.in')
+
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName  +\
-        '/tmp/InPut.in'
+        '/tmp/' + DotIn
 
         try:
             shutil.copy2(self._SESmctdhConfig, self._TMPmctdhConfig) 
@@ -442,13 +458,12 @@ class WidgetA(base, form):
             raise
 
     def fromTMPToSES(self):    
-        files = os.walk(self._startingPath + '/' \
+        TMPpath = self._startingPath + '/' \
         + self._ProjectName + '/' + \
-        'tmp').next()[2]
+        'tmp'
 
-        for file_ in files:
-            if 'txt' in file_:
-                sysFile = file_  
+        sysFile = self.Finder(TMPpath,'txt')
+        DotIn = self.Finder(TMPpath,'.in')
 
         self._TMPmctdhConfig = self._startingPath + '/' \
         + self._ProjectName + \
@@ -460,7 +475,7 @@ class WidgetA(base, form):
 
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName +\
-        '/tmp/InPut.in'
+        '/tmp/' + DotIn
 
         try:
             shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
@@ -563,12 +578,17 @@ class WidgetA(base, form):
                 except (IndexError, AttributeError) as e:
                     pass
 
+    def Finder(self, path, app):
+        fileList = os.walk(path).next()[2]
+        return [f_ for f_ in fileList if app in f_][0]
+
     def TreeOnly(self):
         ####TreeView########
+
         TMPpath = self._startingPath+'/'+self._ProjectName+'/tmp'
         self._TMPmctdhConfig = TMPpath+'/mctdh.config'  
-        self._TMPsysTreeFile = TMPpath+'/Load.txt' 
-
+        textFile  = self.Finder(TMPpath, 'txt')
+        self._TMPsysTreeFile = TMPpath+'/'+textFile 
         self._tree = Tree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
         self.uiTree.setModel(self.modelTree)
@@ -587,6 +607,7 @@ class WidgetA(base, form):
         
         self._hamiltonian = self._dictHamil[str(key)]
 
+
         #####generates Tree###
         self.TreeOnly()
 
@@ -598,7 +619,7 @@ class WidgetA(base, form):
         ####Copy from default Hamilton to tmp
         self.fromHToTMP(key)
 
-        ####Generate imput from *.in to self._paradict####
+        ####Generate input from *.in to self._paradict####
         self.genereInput(self._TMPinputFile)
 
         ####Building Tree####

@@ -1,0 +1,63 @@
+// ======================================================================
+// ===== Input file for calculating vibrational eigenstates for CH3 =====
+// ======================================================================
+// Output directory (ensure that this directory exists)
+mainfolder = ch3.5/
+
+// System specification
+// 1. Hamiltonian
+Hamiltonian=1
+// 2. PES
+Potential=1
+
+// Job type should be an eigenstate calculation
+job=eigenstates
+
+// Parameters for the integrator
+integrator={
+start=0
+end=10000
+dt=0.5
+iteration=100
+out=50
+}
+// Basis definition
+basis=
+{
+// Multilayer MCTDH tree structure for CH3.
+// For more details please refer to the basis reference page.
+tree=[
+36    -2
+      20    -2
+            10    -1
+                  32    0     3
+            4     -1
+                  12    0     0
+      20    -2
+            15    -2
+                  4     -1
+                        12    0     1
+                  5     -1
+                        12    0     4
+            15    -2
+                  4     -1
+                        12    0     2
+                  5     -1
+                        12    0     5
+]
+// Parameter list specifying the primitive basis
+// the first two values specify the basis, the second two values
+// specify the initial wave packet. For more details refer to the
+// basis reference page.
+parameters=[
+0.0098	213.62318	213.523		0.0098
+574.13	0.955316664	0.95531666	574.13
+323.61	0.785398	0.785398	323.61
+108.42	1.821744	1.82174411032	108.42
+141.12	1.0471976	1.0471976	141.12
+46.892	3.14159		3.14159		46.892
+70.0	175.0		124.091		0.02
+-0.66	0.66		0.00		100.0
+-0.66	0.66		0.00		100.0
+100.	300.0		179.8334	0.006
+]

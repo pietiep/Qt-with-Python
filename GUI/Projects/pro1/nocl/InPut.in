@@ -1,4 +1,8 @@
 mainfolder = nocl/
+Hamiltonian = 199
+Potential = 101
+
+job = eigenstates
 
 integrator = { 
 start = 0
@@ -7,12 +11,6 @@ dt = 0.1
 iteration = 100
 out = 50
 } 
-
-Hamiltonian = 199
-Potential = 101
-
-job = eigenstates
-
 
 basis = 
 {
@@ -28,8 +26,7 @@ tree = [
 
 
 parameters = [
-0.010006	249.24	251		0.008
-583.54	1407.36	740.56	0.0027
-1000		0		2.22		90.
-]
+0.010006    249.24    251     0.008
+583.54    1407.36    740.56    0.0027
+1000    0       2.22    90. ]
 }

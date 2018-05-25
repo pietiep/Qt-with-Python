@@ -1,5 +1,5 @@
 mainfolder = ch3.5/
-Hamiltonian = 195
+Hamiltonian = 197
 Potential = 1
 
 job = eigenstates
@@ -15,14 +15,14 @@ out = 50
 basis = 
 {
 tree = [ 
-56 -2
-   65 -2
+90 -2
+   45 -2
       14 -2
          4 -1
             10  0   0
          8 -1
             25  0   3
-      30 -2
+      25 -2
          6 -1
             12  0   6
          20 -2
@@ -30,7 +30,7 @@ tree = [
                12  0   7
             6 -1
                12  0   8
-   60 -2
+   35 -2
       20 -2
          5 -1
             12  0   1
