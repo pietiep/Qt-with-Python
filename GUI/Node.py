@@ -112,7 +112,7 @@ class InPut(Parameters):
         self._treeString = ''.join(self._treelist)
 
 class OutPut(Parameters):
-    def __init__(self, tree, paradict, sysFile, filename="example.in"):
+    def __init__(self, tree, paradict, sysFile, filename="InPut.in"):
 #        self._eps_general = paradict['eps_general']
 #        self._eps_1 = paradict['eps_1']
 #        self._eps_2 = paradict['eps_2']
@@ -133,10 +133,10 @@ class OutPut(Parameters):
 #        self.savefile()
 #        self.savefile2()
 
-    def incComm(self):
-        comDict = self._paradict['Comm']
-        for key in comDict:
-            print key
+    # def incComm(self):
+    #     comDict = self._paradict['Comm']
+    #     for key in comDict:
+    #         print key
 
     def savefile(self):
         with open(self._filename, "w") as text_file:
@@ -224,7 +224,7 @@ class OutPut2(object):
             text_file.write("{0}".format(self.bringTreePara()))
 
     def bringAllEPS(self):
-        epsList = ['1E-6', '8E-5', '5E-5', '5E-5', '5E-5', '5E-5']
+        epsList = ['1E-6', '8E-5', '5E-5', '5E-5', '0', '0']
         output = '\n'.join(epsList)
         # output = '1E-6' + \
         # '\n' + '8E-5' + '\n' + \

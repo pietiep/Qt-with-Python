@@ -99,14 +99,13 @@ class WidgetA(base, form):
         self.scene = None
 
     def genereInput(self, inputFile):
-        ####Get all Parameters from example.in#####
+        ####Get all Parameters from InPut.in#####
         inobj = InPut(inputFile) 
         paradict = inobj._paradict
         self._treeFromLoad = inobj._treeString
 
         self._integrator = []
         # self._eps = []
-
         # self._eps.append(paradict['eps_general'])
         # self._eps.append(paradict['eps_1'])
         # self._eps.append(paradict['eps_2'])
@@ -120,6 +119,7 @@ class WidgetA(base, form):
         self._potential = paradict['Potential']
         self._job = paradict['job']
         self._parameters = paradict['para']
+        self._Comm = paradict['Comm']
 
         ###LineEdit####
         self.uiStartTime.setText(self._integrator[0])
@@ -132,7 +132,7 @@ class WidgetA(base, form):
 
     def getInput(self, key):
         ###Files for default Hamiltonians#######
-        inputFile = self._HamiltonianDir + '/' + key + '/' + 'example.in' 
+        inputFile = self._HamiltonianDir + '/' + key + '/' + 'InPut.in' 
         self._inputFile = inputFile
         
         filenames = os.walk(self._HamiltonianDir+'/'+str(key)).next()[2]
@@ -148,7 +148,7 @@ class WidgetA(base, form):
             if self._SessionName != None:
                 self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
                 self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
-                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
+                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'InPut.in'
 
     def editSession(self, name):
         self.uiProjectName.blockSignals(True)
@@ -172,8 +172,9 @@ class WidgetA(base, form):
         self._paradict['Potential']   = self._potential
         self._paradict['job']         = self._job
         self._paradict['para']        = self._parameters
+        self._paradict['Comm']        = self._Comm
 
-        print self._paradict
+
 
     def closeEvent(self, event):  #Overriding inherited memberfunction
         os.chdir("../") #if dialog is closed, leave folder
@@ -332,8 +333,16 @@ class WidgetA(base, form):
         
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName + \
-        '/tmp/example.in'
+        '/tmp/InPut.in'
         
+        self._SESsysTreeFile =  self._startingPath  + '/' \
+        + self._ProjectName + '/' \
+        + self._SessionName + '/Load.txt'
+
+        self._SESinputFile =  self._startingPath  + '/' \
+        + self._ProjectName + '/' \
+        + self._SessionName + '/InPut.in'
+
         ###removes tmp folder's content###
         self.removeContent()
 
@@ -389,7 +398,7 @@ class WidgetA(base, form):
                 sysFile = file_    
         self._mctdhConfig = sysPath+'/'+'mctdh.config'
         self._sysTreeFile = sysPath+'/'+sysFile
-        self._inputFile   = sysPath+'/'+'example.in'
+        self._inputFile   = sysPath+'/'+'InPut.in'
 
         self._TMPmctdhConfig = self._startingPath + '/' \
         + self._ProjectName + \
@@ -401,7 +410,7 @@ class WidgetA(base, form):
 
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName + \
-        '/tmp/example.in'
+        '/tmp/InPut.in'
 
 
         try:
@@ -423,7 +432,7 @@ class WidgetA(base, form):
 
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName  +\
-        '/tmp/example.in'
+        '/tmp/InPut.in'
 
         try:
             shutil.copy2(self._SESmctdhConfig, self._TMPmctdhConfig) 
@@ -451,11 +460,12 @@ class WidgetA(base, form):
 
         self._TMPinputFile =  self._startingPath  + '/' \
         + self._ProjectName +\
-        '/tmp/example.in'
+        '/tmp/InPut.in'
 
         try:
             shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
             shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
+
             shutil.copy2(self._TMPinputFile,   self._SESinputFile)
         except Exception:
             raise
@@ -528,12 +538,12 @@ class WidgetA(base, form):
 
             self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
             self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
-            self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'example.in'
+            self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + 'InPut.in'
 
             ###copies files from SES to TMP
             self.fromSESToTMP(sysTreeFile)
 
-            ###Parameters from example.in in TMP will be loaded####
+            ###Parameters from InPut.in in TMP will be loaded####
             self.genereInput(self._TMPinputFile)
 
             ###Tree will be constructed from parameters###
@@ -555,6 +565,10 @@ class WidgetA(base, form):
 
     def TreeOnly(self):
         ####TreeView########
+        TMPpath = self._startingPath+'/'+self._ProjectName+'/tmp'
+        self._TMPmctdhConfig = TMPpath+'/mctdh.config'  
+        self._TMPsysTreeFile = TMPpath+'/Load.txt' 
+
         self._tree = Tree(self._TMPmctdhConfig, self._TMPsysTreeFile)
         self.modelTree = SceneGraphModel(self._tree._rootNode0)
         self.uiTree.setModel(self.modelTree)
@@ -563,7 +577,7 @@ class WidgetA(base, form):
         self.uiTree.resizeColumnToContents(1)
         # self.uiTree.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
         self.uiTree.clicked.connect(self.changeNode)
-
+        # sys.exit()
         #####make Pic from tmp###
         self.PicGenerate()
 
