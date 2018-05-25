@@ -155,7 +155,6 @@
     </property>
     <addaction name="uiMCTDHcalc"/>
     <addaction name="uiMCTDHexisting"/>
-    <addaction name="uiProperties"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>

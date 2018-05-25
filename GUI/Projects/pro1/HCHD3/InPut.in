@@ -1,5 +1,5 @@
 mainfolder = ch3.5/
-Hamiltonian = 198
+Hamiltonian = 1
 Potential = 1
 
 job = eigenstates

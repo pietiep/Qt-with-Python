@@ -34,6 +34,7 @@ class Main(base, form):
         self.uiNew.triggered.connect(self.openA)
         self.uiLoad.triggered.connect(self.openB)
         self.uiMCTDHcalc.triggered.connect(self.openD)
+        self.uiMCTDHexisting.triggered.connect(self.runJob)
         self.uiPlusBu.clicked.connect(self.openA)
         self.uiPlusBu2.clicked.connect(self.open0)
         self.uiMinusBu.clicked.connect(self.removeA)
@@ -247,6 +248,18 @@ class Main(base, form):
         self._WidgetA.removeContent()
 
         self.openC()
+
+    def Finder(self, path, app):
+        fileList = os.walk(path).next()[2]
+        return [f_ for f_ in fileList if app in f_][0]
+
+    def runJob(self):
+        '''Try QProcess from Qt'''
+        import subprocess
+        mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
+        inputPath = self._startingPath +'/'+ self._ProjectName +'/'+ self._path2
+        inputFile = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/pro1/HCHD3/InPut.in'
+        subprocess.call([mctdh, inputFile])
 
 if __name__ == '__main__':
 
