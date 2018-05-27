@@ -1,4 +1,5 @@
-from PyQt4 import QtGui, uic
+from __future__ import print_function
+from PyQt4 import QtGui, QtCore, uic
 import sys, os, shutil
 from widgetA import WidgetA
 from InputPro import ListModel, ListModel2
@@ -118,7 +119,7 @@ class Main(base, form):
                 pass
             self._proContent = sorted(directories)
         else:
-            print "path doesn't exists"
+            print("path doesn't exists")
 
     def on_item_select0(self, index):
         """clicked Event on Items belonging to ListModel2()"""
@@ -201,11 +202,11 @@ class Main(base, form):
                     os.makedirs(self._path2)
                     os.chdir(self._startingPath)
                 except IOError as identifier:
-                    print dir(identifier)
+                    print (dir(identifier))
                 self.getContent()
                 self.setList2()
             else:
-                print 'Folder already exists!'
+                print('Folder already exists!')
                 self.open0('Folder already exists!')
 
     def openA(self, warnings):
@@ -224,11 +225,11 @@ class Main(base, form):
                     os.makedirs(path)
                     os.makedirs(path+'/tmp')
                 except IOError as identifier:
-                    print identifier
+                    print (identifier)
 #                self.getdirs()
                 self.setList()
             else:
-                print 'Folder already exists!'
+                print('Folder already exists!')
                 self.openA('Folder already exists!')
 
     def openB(self):
@@ -255,11 +256,15 @@ class Main(base, form):
 
     def runJob(self):
         '''Try QProcess from Qt'''
-        import subprocess
         mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
         inputPath = self._startingPath +'/'+ self._ProjectName +'/'+ self._path2
         inputFile = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/pro1/HCHD3/InPut.in'
-        subprocess.call([mctdh, inputFile])
+
+        process = QtCore.QProcess()
+        process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        process.readyReadStandardOutput.connect(lambda: print(process.readAllStandardOutput().data()))
+        process.start()
+
 
 if __name__ == '__main__':
 
