@@ -159,7 +159,7 @@
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="uiStatusbar"/>
   <action name="uiNew">
    <property name="text">
     <string>New project</string>

@@ -2,14 +2,13 @@ mainfolder = nocl/
 
 integrator = { 
 start = 0
-end = 100
+end = 2100.
 dt = 0.1
-iteration = 100
-out = 50
+iteration=100
+out = 41.362
 } 
 
-Hamiltonian = 199
-Potential = 101
+Hamiltonian = 5
 
 job = eigenstates
 

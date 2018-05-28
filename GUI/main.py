@@ -1,9 +1,9 @@
-from __future__ import print_function
 from PyQt4 import QtGui, QtCore, uic
 import sys, os, shutil
 from widgetA import WidgetA
 from InputPro import ListModel, ListModel2
 from dialogC import DialogC
+from dialogD import DialogD
 
 
 base, form = uic.loadUiType("main.ui")
@@ -49,6 +49,7 @@ class Main(base, form):
         self.uiSessions.clicked.connect(self.on_item_select0)
         self.uiSessions.customContextMenuRequested.connect(self.openMenu0)
 
+        self._dialogD = DialogD()
 
         self._messageBu = None
 
@@ -256,14 +257,28 @@ class Main(base, form):
 
     def runJob(self):
         '''Try QProcess from Qt'''
-        mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
-        inputPath = self._startingPath +'/'+ self._ProjectName +'/'+ self._path2
-        inputFile = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/pro1/HCHD3/InPut.in'
+        dialog = self._dialogD
+        self.getContent()
+        self._dialogD._model = QtGui.QStandardItemModel(self._dialogD.uiRunList)
+        self._dialogD.uiRunList.setModel(self._dialogD._model)
+        self._dialogD.uiRunList.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        for calc in self._proContent:
+            item = QtGui.QStandardItem(calc)
+            self._dialogD._model.appendRow(item)
+        dialog.exec_()
+        
+    #     mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
+    #     inputPath = self._startingPath +'/'+ self._ProjectName +'/'+ self._path2
+    #     inputFile = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Hamiltonians/NOCl/InPut.in'
+    #     self.process = QtCore.QProcess()
+    #     self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+    #     self.process.readyReadStandardOutput.connect(self.mctdhOut)
+    #     print self._WidgetA._mainfolder
+    #     # self.process.start(mctdh+' '+inputFile)
 
-        process = QtCore.QProcess()
-        process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-        process.readyReadStandardOutput.connect(lambda: print(process.readAllStandardOutput().data()))
-        process.start()
+    # def mctdhOut(self):
+    #     output = str(self.process.readAllStandardOutput())
+    #     print output
 
 
 if __name__ == '__main__':
