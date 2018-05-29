@@ -255,31 +255,59 @@ class Main(base, form):
         fileList = os.walk(path).next()[2]
         return [f_ for f_ in fileList if app in f_][0]
 
+    def getRunInput(self):
+        filePathList = []
+        self.getContent()
+        self._proContent
+        for root, dirs, files in os.walk(self._startingPath+'/'+self._ProjectName):
+            for name in files:
+                filePathList.append(os.path.join(root, name))
+        filePathList = [p_ for p_ in filePathList if '.in' in p_]
+        filePathList = [f_.split('/')[-2:] for f_ in filePathList]
+        filePathList = [f_ for f_ in filePathList if f_[0] in self._proContent]
+        return ['/'.join(f_) for f_ in filePathList]
+
+    
+
     def runJob(self):
         '''Try QProcess from Qt'''
         dialog = self._dialogD
-        self.getContent()
         self._dialogD._model = QtGui.QStandardItemModel(self._dialogD.uiRunList)
         self._dialogD.uiRunList.setModel(self._dialogD._model)
         self._dialogD.uiRunList.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        for calc in self._proContent:
+        inputList = self.getRunInput()
+
+        for calc in inputList:
             item = QtGui.QStandardItem(calc)
             self._dialogD._model.appendRow(item)
+
+        self._dialogD.uiRunList.clicked.connect(self.on_item_select2)
         dialog.exec_()
         
-    #     mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
-    #     inputPath = self._startingPath +'/'+ self._ProjectName +'/'+ self._path2
-    #     inputFile = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Hamiltonians/NOCl/InPut.in'
-    #     self.process = QtCore.QProcess()
-    #     self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-    #     self.process.readyReadStandardOutput.connect(self.mctdhOut)
-    #     print self._WidgetA._mainfolder
-    #     # self.process.start(mctdh+' '+inputFile)
 
-    # def mctdhOut(self):
-    #     output = str(self.process.readAllStandardOutput())
-    #     print output
+    def on_item_select2(self, index):
+        inputFile = self._startingPath+'/'+self._ProjectName+'/'+str(index.data().toString())
 
+        self.process = QtCore.QProcess()
+        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.mctdhOut)
+        self.results(inputFile)
+
+    def results(self, inputFile):
+        os.chdir('../Results')
+        self._WidgetA.genereInput(inputFile)
+        try:
+            os.mkdir(self._WidgetA._mainfolder)
+        except OSError:
+            pass
+        mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
+        self.process.start(mctdh+' '+inputFile)
+        os.chdir(self._startingPath)
+        self._dialogD.close()
+
+    def mctdhOut(self):
+        output = str(self.process.readAllStandardOutput())
+        print output
 
 if __name__ == '__main__':
 

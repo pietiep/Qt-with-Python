@@ -8,3 +8,7 @@ class DialogD(base, form):
         super(base, self).__init__(parent)
         self.setupUi(self)
         self._model = None
+        
+
+    def esc(self):
+        self.close()

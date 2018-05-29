@@ -109,17 +109,20 @@ class WidgetA(base, form):
         # self._eps.append(paradict['eps_general'])
         # self._eps.append(paradict['eps_1'])
         # self._eps.append(paradict['eps_2'])
-        self._integrator.append(paradict['start'])
-        self._integrator.append(paradict['end'])
-        self._integrator.append(paradict['dt'])
-        self._integrator.append(paradict['iteration'])
-        self._integrator.append(paradict['out'])
-        self._mainfolder = paradict['mainfolder']
-        self._hamiltonian = paradict['Hamiltonian']
-        self._potential = paradict['Potential']
-        self._job = paradict['job']
-        self._parameters = paradict['para']
-        self._Comm = paradict['Comm']
+        try:
+            self._integrator.append(paradict['start'])
+            self._integrator.append(paradict['end'])
+            self._integrator.append(paradict['dt'])
+            self._integrator.append(paradict['iteration'])
+            self._integrator.append(paradict['out'])
+            self._mainfolder = paradict['mainfolder']
+            self._hamiltonian = paradict['Hamiltonian']
+            self._job = paradict['job']
+            self._parameters = paradict['para']
+            self._Comm = paradict['Comm']
+            self._potential = paradict['Potential']
+        except KeyError as e:
+            pass
 
         ###LineEdit####
         self.uiStartTime.setText(self._integrator[0])
