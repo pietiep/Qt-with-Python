@@ -194,8 +194,9 @@ class Main(base, form):
         dialogC.setWarning(str(warn))
         dialogC.exec_()
         self._path2 = str(dialogC._FolderName)
+        print self._path2
 
-        if self._path2 != 'Cancel':
+        if str(dialogC._cancel) != 'Cancel':
             path = self._startingPath + '/' + self._ProjectName + '/' + self._path2
             if not os.path.exists(path):
                 try:

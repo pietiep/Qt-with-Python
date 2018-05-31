@@ -5,10 +5,10 @@ job = eigenstates
 
 integrator = { 
 start = 0
-end = 100
+end = 2100.
 dt = 0.1
 iteration = 100
-out = 50
+out = 41.362
 } 
 
 basis = 

@@ -11,6 +11,7 @@ class DialogC(base, form):
         self.setupUi(self)
 
         self._FolderName = ""
+        self._cancel = None
 
         self.uiWarning.setText('')
         self.uiFolderName.setText("Give name for new Folder!")
@@ -32,7 +33,7 @@ class DialogC(base, form):
             print 'Name contains whitespace'
 
     def esc(self):
-        self._FolderName = "Cancel"
+        self._cancel = "Cancel"
         self.close()
 
     def change0(self):

@@ -31,7 +31,7 @@ def getPhysCoord():
 
 print getPhysCoord()
 
-def get_SPFs(basis):
+def get_SPFs():
     """get the SPFs of each Node"""
     for i in range(basis.NmctdhNodes()):
         node = basis.MCTDHnode(i)
@@ -39,4 +39,4 @@ def get_SPFs(basis):
         nodes_spf[i] = tdim.GetnTensor() #dict
     return nodes_spf
 
-print get_SPFs(basis)
+print get_SPFs()

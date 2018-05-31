@@ -25,10 +25,11 @@ class WidgetA(base, form):
         self._treeFromLoad = None
 
 
-        self._dictHamil = {'CH3': '194', 'CH4': '195', 'CH5+': '196', 'CHD3': '197', 'HCHD3': '198', 'NOCl':
-        '199'}
-        self._dictPES = {'CH3': '100', 'CH4': '101', 'CH5+': '102', 'CHD3': '103', 'HCHD3': '104', 'NOCl':
-        '105'}
+        # self._dictHamil = {'CH3Quasie_exact': '1', 'CH4_rst': '2', 'HCH4_rst': '4', 'NOCl': '5'}
+        self._dictHamil = {'CH3Quasie_exact': '1', 'CH4_rst': '2', 'NOCl': '5'}
+        self._dictPES = {'CH3Potential': '1', 'PES_CH4': '2', 'PES_HCH4_Zang': '4'}
+        self._potential = 'no Potential'
+
         self._mctdhConfig = None 
         self._sysTreeFile = None
         self._inputFile = None
@@ -63,6 +64,7 @@ class WidgetA(base, form):
         self.onRadio.setChecked(True)
         self.onRadio.toggled.connect(self.setPES)
         self.offRadio.toggled.connect(self.unsetPES)
+        self.offRadio.toggled.connect(self.noPotenial)
 
         #####ListView of PES is built###
         self.setPES()
@@ -84,7 +86,7 @@ class WidgetA(base, form):
         self.uiCancel.clicked.connect(self.cancel)
         self.uiSaveJob.clicked.connect(self.saveProject)
         self.uiLoad.clicked.connect(self.FromLoadToTMP)
-        self.uiStartCal.clicked.connect(self.esc)
+        self.uiStartCal.clicked.connect(self.runJob)
 
         ####Line Edits#####
         self.uiStartTime.textChanged.connect(self.change1)
@@ -98,12 +100,14 @@ class WidgetA(base, form):
         self.modelTree = None
         self.scene = None
 
+    def noPotenial(self):
+        self._potential = 'no Potential'
+
     def genereInput(self, inputFile):
         ####Get all Parameters from InPut.in#####
         inobj = InPut(inputFile) 
         paradict = inobj._paradict
         self._treeFromLoad = inobj._treeString
-
         self._integrator = []
         # self._eps = []
         # self._eps.append(paradict['eps_general'])
@@ -123,7 +127,10 @@ class WidgetA(base, form):
             self._potential = paradict['Potential']
         except KeyError as e:
             pass
-
+        if 'no Potential' in self._potential:
+        #####RadioButtonsPES#####
+            self.offRadio.setChecked(True)
+            self.noPotenial()
         ###LineEdit####
         self.uiStartTime.setText(self._integrator[0])
         self.uiEndTime.setText(self._integrator[1])
@@ -131,7 +138,6 @@ class WidgetA(base, form):
         self.uiIter.setText(self._integrator[3])
 
         self._dictJob[self._job].setChecked(True)
-
 
     def getInput(self, key):
         ###Files for default Hamiltonians#######
@@ -169,14 +175,20 @@ class WidgetA(base, form):
         # self._paradict['eps_general'] = self._eps[0]
         # self._paradict['eps_1']       = self._eps[1]
         # self._paradict['eps_2']       = self._eps[2]
-        self._paradict['mainfolder']  = self._mainfolder
+        # self._paradict['mainfolder']  = self._mainfolder
+        self._paradict['mainfolder']  = self._SessionName+'/'
         self._paradict['start']       = self._integrator[0]
         self._paradict['end']         = self._integrator[1]
         self._paradict['dt']          = self._integrator[2]
         self._paradict['iteration']   = self._integrator[3]
         self._paradict['out']         = self._integrator[4]
         self._paradict['Hamiltonian'] = self._hamiltonian
-        self._paradict['Potential']   = self._potential
+
+        try:
+            self._paradict['Potential']   = self._potential
+        except AttributeError:
+            pass
+
         self._paradict['job']         = self._job
         self._paradict['para']        = self._parameters
         self._paradict['Comm']        = self._Comm
@@ -271,11 +283,24 @@ class WidgetA(base, form):
         name = str(self.uiProjectName.text())
         # print self._SessionName
         if self._SessionName == None:
-            print name
+                print name
+
+    def SESfiles(self):
+        
+        path = self._startingPath + '/' + self._ProjectName + '/tmp'
+        DotIn = self.Finder(path, 'in')
+        sysTreeFile = self.Finder(path, 'txt')
+
+        if self._ProjectName != None:
+            if self._SessionName != None:
+                self._SESmctdhConfig = self._startingPath + '/' + self._ProjectName +'/' + self._SessionName + '/' + 'mctdh.config'
+                self._SESsysTreeFile  = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + sysTreeFile
+                self._SESinputFile = self._startingPath + '/' + self._ProjectName + '/' + self._SessionName + '/' + DotIn
 
     def saveProject(self):
         name = str(self.uiProjectName.text())
         self._SessionName = name
+        self.SESfiles()
         Profiles = os.walk(self._startingPath+'/'+self._ProjectName+'/').next()[1]
         if name in Profiles:
             SESfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/'+name).next()[2]
@@ -284,17 +309,17 @@ class WidgetA(base, form):
             if SESfiles:
                 self.showdialog2('Overwriting %s?' %name)
                 if 'Yes' in self._messagebut:
+                    self.output()  
                     self.fromTMPToSES()
                     ###Saves all Parameter and Tree to *.in and tree only to *.txt### 
-                    self.output()  
                     self.esc()
                 else:
                     pass
             else:
                 TMPfiles = os.walk(self._startingPath+'/'+self._ProjectName+'/tmp').next()[2]
                 if TMPfiles:
-                    self.fromTMPToSES()
                     self.output()
+                    self.fromTMPToSES()
                     self.esc()
                 else:
                     self.showdialog('Nothing to save?')
@@ -307,10 +332,16 @@ class WidgetA(base, form):
                 os.chdir(self._startingPath+'/'+self._ProjectName)
                 os.mkdir(name)
                 os.chdir(self._startingPath)
-                self.fromTMPToSES()
                 self.output()
+                self.fromTMPToSES()
                 self.esc()
-
+        if self._potential == 'no Potential':
+            with open(self._SESinputFile, 'r') as f:
+                lines = f.readlines()
+            with open(self._SESinputFile, 'w') as f:
+                for line in lines:
+                    if 'Potential' not in line:
+                        f.write(line)
             
     def cancel(self):
         self.removeContent()
@@ -335,6 +366,7 @@ class WidgetA(base, form):
             shutil.copy2(LOADinputFile, self._TMPinputFile)
         except Exception:
             raise
+
 
     def FromLoadToTMP(self):
         
@@ -375,7 +407,6 @@ class WidgetA(base, form):
         '/tmp/mctdh.config'
 
         # print self._TMPmctdhConfig, self._TMPsysTreeFile
-        # sys.exit()
 
         self.TreeOnly()
             
@@ -483,10 +514,11 @@ class WidgetA(base, form):
         try:
             shutil.copy2(self._TMPmctdhConfig, self._SESmctdhConfig) 
             shutil.copy2(self._TMPsysTreeFile, self._SESsysTreeFile)
-
-            shutil.copy2(self._TMPinputFile,   self._SESinputFile)
+            shutil.copy2(self._TMPinputFile, self._SESinputFile)
         except Exception:
             raise
+        
+
 
     def esc(self):
         self.close()
@@ -523,8 +555,7 @@ class WidgetA(base, form):
         self._job = "flux eigenstates"
 
     def unsetPES(self):
-        self.modelPES.removeRows(0, 2, QtCore.QModelIndex())
-        self._potential = "None"
+        self.modelPES.removeRows(0, len(self._dictPES), QtCore.QModelIndex())
 
     def setPES(self):
         #####ListModelPES#######
@@ -600,7 +631,6 @@ class WidgetA(base, form):
         self.uiTree.resizeColumnToContents(1)
         # self.uiTree.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
         self.uiTree.clicked.connect(self.changeNode)
-        # sys.exit()
         #####make Pic from tmp###
         self.PicGenerate()
 
@@ -639,6 +669,31 @@ class WidgetA(base, form):
         outobj = OutPut(self._tree, self._paradict, self._TMPsysTreeFile, self._TMPinputFile)
         outobj.savefile()
         outobj.savefile2()
+
+    def runJob(self):
+        self.process = QtCore.QProcess()
+        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.mctdhOut)
+        inputFile = self._startingPath+'/'+self._ProjectName+'/'+self._SessionName
+        DotIn = self.Finder(inputFile, 'in')
+        inputFile = inputFile+'/'+DotIn
+        print inputFile
+        self.results(inputFile)
+
+    def results(self, inputFile):
+        os.chdir('../Results')
+        self.genereInput(inputFile)
+        try:
+            os.mkdir(self._mainfolder)
+        except OSError:
+            pass
+        mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
+        self.process.start(mctdh+' '+inputFile)
+        os.chdir(self._startingPath)
+
+    def mctdhOut(self):
+        output = str(self.process.readAllStandardOutput())
+        print output
 
 if __name__ == '__main__':
 

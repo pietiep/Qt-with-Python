@@ -70,6 +70,9 @@ class InPut(Parameters):
                         except StopIteration:
                             pass
 #                    while bool(re.search(r'\d', line)):
+        lastLine = [x for x in self._paralist[-1] if x != ']']
+        del self._paralist[-1]
+        self._paralist.append(lastLine)
 
     def rmCommen(self):
         with open(self._filename, "r") as in_put:
@@ -123,7 +126,10 @@ class OutPut(Parameters):
         self._out = paradict['out']
         self._iteration = paradict['iteration']
         self._hamiltonian = paradict['Hamiltonian']
-        self._potential = paradict['Potential']
+        try:
+            self._potential = paradict['Potential']
+        except KeyError:
+            self._potential = 'no Potential'
         self._job = paradict['job']
         self._parameters = paradict['para']
         self._formated = self.formatparameter()
