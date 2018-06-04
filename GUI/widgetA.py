@@ -176,7 +176,7 @@ class WidgetA(base, form):
         # self._paradict['eps_1']       = self._eps[1]
         # self._paradict['eps_2']       = self._eps[2]
         # self._paradict['mainfolder']  = self._mainfolder
-        self._paradict['mainfolder']  = self._SessionName+'/'
+        self._paradict['mainfolder']  = str(self._SessionName)+'/'
         self._paradict['start']       = self._integrator[0]
         self._paradict['end']         = self._integrator[1]
         self._paradict['dt']          = self._integrator[2]
