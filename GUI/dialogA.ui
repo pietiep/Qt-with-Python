@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1231</width>
-    <height>655</height>
+    <height>697</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -25,7 +25,7 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0" rowminimumheight="40,60" columnminimumwidth="0,0,0">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -96,7 +96,7 @@
     </widget>
    </item>
    <item row="0" column="2" rowspan="2">
-    <layout class="QVBoxLayout" name="verticalLayout_4">
+    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="40,60,0">
      <item>
       <widget class="QTreeView" name="uiTree"/>
      </item>
