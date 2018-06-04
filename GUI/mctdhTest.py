@@ -1,9 +1,9 @@
 import mctdh
 
 config = mctdh.controlParameters()
-config.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/pro1/ch3/mctdh.config')
+config.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/mctdh.config')
 basis = mctdh.MctdhBasis()
-basis.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/pro1/ch3/CH3f11.txt', config)
+basis.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/basis2.txt', config)
 
 
 bottom_list = []
@@ -18,7 +18,7 @@ def getBottomlayer():
             bottom_list.append(i)
     return bottom_list
 
-print getBottomlayer()
+#print getBottomlayer()
 
 def getPhysCoord():
     """get the Modes of the pys. Coordinates"""
@@ -29,7 +29,8 @@ def getPhysCoord():
             mode_list.append(phys.mode()) #append Modes to list
     return mode_list
 
-print getPhysCoord()
+#print getPhysCoord()
+
 
 def get_SPFs():
     """get the SPFs of each Node"""
@@ -37,6 +38,15 @@ def get_SPFs():
         node = basis.MCTDHnode(i)
         tdim = node.t_dim()
         nodes_spf[i] = tdim.GetnTensor() #dict
-    return nodes_spf
 
-print get_SPFs()
+    #mode_spf = [str(basis.MCTDHnode(i).t_dim().active(0))+':'+str(i) for i in \
+    #            range(basis.NmctdhNodes()) if \
+    #            basis.MCTDHnode(i).Bottomlayer() == True ]
+    mode_spf = {i: basis.MCTDHnode(i).t_dim().active(0) for i in \
+                range(basis.NmctdhNodes()) if \
+                basis.MCTDHnode(i).Bottomlayer() == True}
+    print nodes_spf
+    print mode_spf #only Bottomlayer
+    
+
+get_SPFs()

@@ -1,34 +1,38 @@
 mainfolder = nocl/
 
-integrator = { 
-start = 0
-end = 2100.
-dt = 0.1
+
+integrator = {
+start=0
+end=1985.376
+dt=1
 iteration=100
-out = 41.362
-} 
-
-Hamiltonian = 5
-
-job = eigenstates
-
-
-basis = 
-{
-tree = [ 
-1 -3
-   3 -1
-      24  0   0
-   3 -1
-      96  0   1
-   3 -1
-      60  0   2
-]
-
-
-parameters = [
-0.010006	249.24	251		0.008
-583.54	1407.36	740.56	0.0027
-1000		0		2.22		90.
-]
+out=41.362
 }
+
+Hamiltonian=9
+
+job=integrate
+
+basis=
+{
+tree=[
+1   -3
+    3   -1
+        24  0   0
+    3   -1
+        96  1   1
+    3   -1
+        60  2   2
+]
+
+
+parameters=[
+0.010006    249.24    251     0.008
+583.54    1407.36    740.56    0.0027
+1000    0       2.22    90.
+]
+
+
+}
+
+

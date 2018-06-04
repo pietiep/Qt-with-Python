@@ -26,7 +26,7 @@ class WidgetA(base, form):
 
 
         # self._dictHamil = {'CH3Quasie_exact': '1', 'CH4_rst': '2', 'HCH4_rst': '4', 'NOCl': '5'}
-        self._dictHamil = {'CH3Quasie_exact': '1', 'CH4_rst': '2', 'NOCl': '5'}
+        self._dictHamil = {'CH3Quasie_exact': '1', 'CH4_rst': '2', 'NOCl': '9'}
         self._dictPES = {'CH3Potential': '1', 'PES_CH4': '2', 'PES_HCH4_Zang': '4'}
         self._potential = 'no Potential'
 
@@ -77,8 +77,8 @@ class WidgetA(base, form):
         self.fluxEigenstateRadio.toggled.connect(self.setJob4)
 
         self._job = None
-        self._dictJob = {'real-time Propagation': self.RealRadio,
-        'imaginary-time Propagation': self.ImaginaryRadio,
+        self._dictJob = {'integrate': self.RealRadio,
+        'integrate': self.ImaginaryRadio,
         'eigenstates': self.EigenstateRadio,
         'flux eigenstates': self.fluxEigenstateRadio}
 
@@ -546,13 +546,13 @@ class WidgetA(base, form):
         self._integrator[3] = str(self.uiIter.text())
 
     def setJob1(self):
-        self._job = "real-time Propagation"
+        self._job = "integrate"
     def setJob2(self):
-        self._job = "imaginary-time Propagation"
+        self._job = "integrate"
     def setJob3(self):
         self._job = "eigenstates"
     def setJob4(self):
-        self._job = "flux eigenstates"
+        self._job = "thermalflux"
 
     def unsetPES(self):
         self.modelPES.removeRows(0, len(self._dictPES), QtCore.QModelIndex())
@@ -671,23 +671,24 @@ class WidgetA(base, form):
         outobj.savefile2()
 
     def runJob(self):
+        self.esc()
         self.process = QtCore.QProcess()
         self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self.process.readyReadStandardOutput.connect(self.mctdhOut)
         inputFile = self._startingPath+'/'+self._ProjectName+'/'+self._SessionName
         DotIn = self.Finder(inputFile, 'in')
         inputFile = inputFile+'/'+DotIn
-        print inputFile
         self.results(inputFile)
 
     def results(self, inputFile):
-        os.chdir('../Results')
+
+        os.chdir(self._startingPath+'/../Results')
         self.genereInput(inputFile)
         try:
             os.mkdir(self._mainfolder)
         except OSError:
             pass
-        mctdh = '/home/piet/newRepo/QuantumDynamics/build/bin/mctdh'
+        mctdh = '/home/piet/newRepo2/QuantumDynamics/build/bin/mctdh'
         self.process.start(mctdh+' '+inputFile)
         os.chdir(self._startingPath)
 

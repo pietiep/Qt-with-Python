@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1231</width>
-    <height>697</height>
+    <width>1322</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -96,7 +96,7 @@
     </widget>
    </item>
    <item row="0" column="2" rowspan="2">
-    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="40,60,0">
+    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="20,80,0">
      <item>
       <widget class="QTreeView" name="uiTree"/>
      </item>

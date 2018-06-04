@@ -86,7 +86,9 @@ class ModelTree(object):
 
 if __name__ == '__main__':
 
-    model = ModelTree()
+    conf = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/mctdh.config'
+    bas = '/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/basis2.txt'
+    model = ModelTree(conf, bas)
 #    model.getLayerMatr()
 #    model.getPhysCoord()
 #    model.modeToGetLayer()
