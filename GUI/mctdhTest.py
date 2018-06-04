@@ -1,52 +1,57 @@
-import mctdh
+import mctdh,sys
 
 config = mctdh.controlParameters()
 config.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/mctdh.config')
 basis = mctdh.MctdhBasis()
-basis.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/basis2.txt', config)
+basis.initialize('/home/piet/Schreibtisch/masterarbeit/Qt-with-Python/GUI/Projects/Project1/tmp/a8.txt', config)
 
-
-bottom_list = []
-mode_list = []
 nodes_spf = {}
-
-def getBottomlayer():
-    """Get the bottom nodes"""
-    for i in range(basis.NmctdhNodes()):
-        node = basis.MCTDHnode(i)
-        if node.Bottomlayer() == True:
-            bottom_list.append(i)
-    return bottom_list
-
-#print getBottomlayer()
-
-def getPhysCoord():
-    """get the Modes of the pys. Coordinates"""
-    for i in range(basis.NmctdhNodes()):
-        node = basis.MCTDHnode(i)
-        if node.Bottomlayer() == True:
-            phys = node.phys_coor()
-            mode_list.append(phys.mode()) #append Modes to list
-    return mode_list
-
-#print getPhysCoord()
-
+sumBottomNode = {}
+sumTopNode = {}
+sumPerNode = {}
+maxNodes = basis.NmctdhNodes()
 
 def get_SPFs():
     """get the SPFs of each Node"""
-    for i in range(basis.NmctdhNodes()):
+    for i in range(maxNodes):
         node = basis.MCTDHnode(i)
         tdim = node.t_dim()
         nodes_spf[i] = tdim.GetnTensor() #dict
 
-    #mode_spf = [str(basis.MCTDHnode(i).t_dim().active(0))+':'+str(i) for i in \
-    #            range(basis.NmctdhNodes()) if \
-    #            basis.MCTDHnode(i).Bottomlayer() == True ]
     mode_spf = {i: basis.MCTDHnode(i).t_dim().active(0) for i in \
-                range(basis.NmctdhNodes()) if \
+                range(maxNodes) if \
                 basis.MCTDHnode(i).Bottomlayer() == True}
-    print nodes_spf
-    print mode_spf #only Bottomlayer
-    
+                
+    for key in mode_spf:
+        sumBottomNode[key] = mode_spf[key] + nodes_spf[key]
+
+
+
+    SumTopNode = 0
+    for i in range(maxNodes):
+        if basis.MCTDHnode(i).Toplayer() == True:
+                children = basis.MCTDHnode(i).NChildren()
+                for j in range(children):
+                    SumTopNode += basis.MCTDHnode(i).down(j).t_dim().GetnTensor()
+
+    remnantNode = 0
+    remnantNodeDict = {}
+    for i in range(maxNodes):
+        if basis.MCTDHnode(i).Toplayer() == False and basis.MCTDHnode(i).Bottomlayer() == False:
+                children = basis.MCTDHnode(i).NChildren()
+                parent = basis.MCTDHnode(i).t_dim().GetnTensor()
+                for j in range(children):
+                    remnantNode += basis.MCTDHnode(i).down(j).t_dim().GetnTensor() 
+                    
+                remnantNode += parent
+                remnantNodeDict[i] = remnantNode
+                remnantNode = 0
+    print remnantNodeDict + SumTopNode + sumBottomNode
+
+    def sumOfDicts(*dict_arg):
+        for dicts in *dict_args:
+            print dicts
+
+#    for i in range()
 
 get_SPFs()
