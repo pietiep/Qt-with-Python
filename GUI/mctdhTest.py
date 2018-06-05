@@ -10,13 +10,16 @@ sumBottomNode = {}
 sumTopNode = {}
 sumPerNode = {}
 maxNodes = basis.NmctdhNodes()
+remnantNodeList = []
 
 def get_SPFs():
-    """get the SPFs of each Node"""
+    SumTopNode = 0
+    remnantNode = 0
+
     for i in range(maxNodes):
         node = basis.MCTDHnode(i)
         tdim = node.t_dim()
-        nodes_spf[i] = tdim.GetnTensor() #dict
+        nodes_spf[i] = tdim.GetnTensor() 
 
     mode_spf = {i: basis.MCTDHnode(i).t_dim().active(0) for i in \
                 range(maxNodes) if \
@@ -24,18 +27,15 @@ def get_SPFs():
                 
     for key in mode_spf:
         sumBottomNode[key] = mode_spf[key] + nodes_spf[key]
+    BottomSum = sum([l_[1] for l_ in sumBottomNode.items()])
 
-
-
-    SumTopNode = 0
     for i in range(maxNodes):
         if basis.MCTDHnode(i).Toplayer() == True:
                 children = basis.MCTDHnode(i).NChildren()
                 for j in range(children):
                     SumTopNode += basis.MCTDHnode(i).down(j).t_dim().GetnTensor()
+                SumTopNode += basis.MCTDHnode(i).t_dim().GetnTensor()
 
-    remnantNode = 0
-    remnantNodeDict = {}
     for i in range(maxNodes):
         if basis.MCTDHnode(i).Toplayer() == False and basis.MCTDHnode(i).Bottomlayer() == False:
                 children = basis.MCTDHnode(i).NChildren()
@@ -44,14 +44,10 @@ def get_SPFs():
                     remnantNode += basis.MCTDHnode(i).down(j).t_dim().GetnTensor() 
                     
                 remnantNode += parent
-                remnantNodeDict[i] = remnantNode
+                remnantNodeList.append(remnantNode)
                 remnantNode = 0
-    print remnantNodeDict + SumTopNode + sumBottomNode
+    remnantSum = sum(remnantNodeList)
 
-    def sumOfDicts(*dict_arg):
-        for dicts in *dict_args:
-            print dicts
+    return BottomSum + SumTopNode + remnantSum
 
-#    for i in range()
-
-get_SPFs()
+print get_SPFs()
