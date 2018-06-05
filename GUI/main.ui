@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>MCTDH</class>
+ <widget class="QMainWindow" name="MCTDH">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MCTDH (GUI)</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -31,7 +31,7 @@
     <item row="0" column="1">
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Project calculations</string>
+       <string>Calculations</string>
       </property>
      </widget>
     </item>
@@ -148,6 +148,8 @@
     </property>
     <addaction name="uiNew"/>
     <addaction name="uiLoad"/>
+    <addaction name="separator"/>
+    <addaction name="uiExit"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -183,6 +185,11 @@
   <action name="uiProperties">
    <property name="text">
     <string>Properties</string>
+   </property>
+  </action>
+  <action name="uiExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
