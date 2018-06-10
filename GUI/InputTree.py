@@ -55,7 +55,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if role == QtCore.Qt.DisplayRole:
             if section == 0:
-                return "Scenegraph"
+                return "Node"
             else:
                 return "Mode"
 

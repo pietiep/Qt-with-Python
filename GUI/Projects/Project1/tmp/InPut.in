@@ -1,6 +1,6 @@
-mainfolder = None/
+mainfolder = NOCl/
 Hamiltonian = 9
-Potential = no Potential
+Potential = 1
 
 job = integrate
 

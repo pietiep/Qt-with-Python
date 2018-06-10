@@ -32,7 +32,8 @@ def get_SPFs():
         if basis.MCTDHnode(i).Toplayer() == True:
                 children = basis.MCTDHnode(i).NChildren()
                 for j in range(children):
-                    ProdTopNode *= basis.MCTDHnode(i).down(j).t_dim().GetnTensor()
+                    ProdTopNode *= basis.MCTDHnode(i).down(j)/
+                    .t_dim().GetnTensor()
                 ProdTopNode *= basis.MCTDHnode(i).t_dim().GetnTensor()
 
     for i in range(maxNodes):
